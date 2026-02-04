@@ -1,7 +1,8 @@
 # Gino's New Blog
 
-這是我用來記錄技術筆記與生活隨筆的個人部落格。
-(This is my personal blog for tech notes, algorithm studies, and thoughts.)
+這是我用來記錄各種學東西的筆記與生活隨筆的個人部落格。
+
+This is my personal blog for learning notes, life records and personal thoughts.
 
 
 ## Tech Stack
