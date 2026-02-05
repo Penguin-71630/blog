@@ -46,30 +46,31 @@ const filteredRouters = filterNavItems(routers, configuredSeriesSlugs, enabledSe
     {christmasConfig.enabled && christmasConfig.features.christmasHat && <ChristmasHat />}
   </div>
 
-  <p class="mt-2">{siteConfig?.name}</p>
-  <p class="text-muted-foreground mt-3 text-center">{siteConfig?.description}</p>
+  <p class="mt-3 text-2xl font-bold">{siteConfig?.name}</p>
+  <p class="text-muted-foreground mt-1 text-center text-xs">{siteConfig?.description}</p>
   <Social />
   <div
-    class="text-muted-foreground mt-3 flex justify-center text-center text-sm/4 whitespace-nowrap select-none dark:text-white/80"
+    class="text-muted-foreground mt-2 flex justify-center text-center text-sm/4 whitespace-nowrap select-none dark:text-white/80"
   >
     <a href="/" class="hover:text-blue flex cursor-pointer flex-col gap-2 p-1 transition">
       <span class="text-lg/5 font-bold">{postCount}</span>
+      {/*<Icon name=ri:article-line class="inline-block size-3" />*/}
       文章
     </a>
     <div class="bg-muted-foreground mx-3 w-px"></div>
     <a href="/categories" aria-label="分类" class="hover:text-blue">
       <p class="flex cursor-pointer flex-col gap-2 p-1 transition">
         <span class="text-lg/5 font-bold">{Object.keys(countMap).length}</span>
-        分类
+        分類
       </p>
     </a>
     <div class="bg-muted-foreground mx-3 w-px"></div>
     <a href="/tags" class="hover:text-blue flex cursor-pointer flex-col gap-2 p-1 transition">
       <span class="text-lg/5 font-bold">{allTags?.length ?? 0}</span>
-      标签
+      標籤
     </a>
   </div>
-  <div class="mt-6 flex w-full flex-col items-center gap-2.5">
+  <div class="mt-4 flex w-full flex-col items-center gap-2.5">
     {
       filteredRouters.map(({ name, path, icon, children }, index) => {
         if (children?.length) {
