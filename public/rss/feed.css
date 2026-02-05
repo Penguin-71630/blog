@@ -42,7 +42,7 @@ html {
 }
 
 body {
-  font-family: 'Quicksand', '寒蝉全圆体', 'Chill Round', sans-serif;
+  font-family: 'Linux Biolinum', 'Source Han Serif TC', 'Quicksand', '寒蝉全圆体', 'Chill Round', sans-serif;
   background-color: var(--bg-dark);
   color: var(--text-main);
   line-height: 1.5;

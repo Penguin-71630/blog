@@ -121,10 +121,10 @@ async function renderInfographic(container: HTMLElement, source: string): Promis
 theme
   base
     text
-      font-family 寒蝉全圆体
+      font-family Source Han Serif TC
   item
     label
-      font-family 寒蝉全圆体
+      font-family Source Han Serif TC
 `;
   const sourceWithFont = `${source}\n${fontConfig}`;
 
@@ -344,10 +344,10 @@ async function reRenderAllInfographics(): Promise<void> {
 theme
   base
     text
-      font-family 寒蝉全圆体
+      font-family Source Han Serif TC
   item
     label
-      font-family 寒蝉全圆体
+      font-family Source Han Serif TC
 `;
 
   for (const [, entry] of infographicInstances) {

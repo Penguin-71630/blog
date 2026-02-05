@@ -16,7 +16,7 @@ site:
   subtitle: 偶爾會發些學東西的筆記或生活日記 # 网站副标题
   name: Gino # 作者名称 - 请修改为你的名字
   description: 一隻喜歡 CS 的企鵝 # 网站描述
-  avatar: /img/avatars/Lagrange.webp # 网站头像
+  avatar: /img/avatars/Gino_2026_02.webp # 网站头像
   siteImageFileBaseName: Hikari_Tairitsu_Flowzon_Note
   showLogo: false # 是否显示 Logo
   author: Gino # 作者名称 - 请修改为你的名字
@@ -557,7 +557,7 @@ christmas:
 #     - urlTemplate: URL 模板，支持占位符 {path}（文件绝对路径）
 # -----------------------------------------------------------------------------
 dev:
-  localProjectPath: '/Users/yourname/path/to/astro-koharu' # 请修改为你的项目绝对路径
+  localProjectPath: '/Users/polarbear03617/Documents/blog' # 请修改为你的项目绝对路径
   contentRelativePath: 'src/content/blog'
   editors:
     - id: vscode

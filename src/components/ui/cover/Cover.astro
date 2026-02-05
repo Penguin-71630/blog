@@ -21,7 +21,7 @@ const readState = readingTime(data?.body ?? '');
 const isDraft = import.meta.env.DEV && draft === true;
 
 // 获取横幅图片的 LQIP 样式
-const bannerLqipStyle = getLqipStyle('/img/site_header_1920.webp');
+const bannerLqipStyle = getLqipStyle(`/img/site_headers/${siteConfig?.siteImageFileBaseName}.webp`);
 ---
 
 <div class="relative flex h-[60dvh] z-0 max-h-200 overflow-hidden">
@@ -77,8 +77,8 @@ const bannerLqipStyle = getLqipStyle('/img/site_header_1920.webp');
         </>
       ) : (
         <>
-          <h2 class="shadow-text font-chill-round text-5xl/[1.2]">{siteConfig?.alternate}</h2>
-          <h1 class="shadow-text font-chill-round mt-3 text-5xl/[1.2] font-bold tracking-widest">{siteConfig?.title}</h1>
+          <h2 class="shadow-text text-5xl/[1.2]">{siteConfig?.alternate}</h2>
+          <h1 class="shadow-text mt-3 text-5xl/[1.2] tracking-widest">{siteConfig?.title}</h1>
           <p class="shadow-text mt-5 text-sm">{siteConfig?.subtitle}</p>
         </>
       )
