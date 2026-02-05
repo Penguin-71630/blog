@@ -11,9 +11,9 @@ const { categories, countMap } = await getCategoryList();
 const links = getCategoryLinks(categories, '');
 ---
 
-<Layout title={`全部分类 | ${seoConfig.title}`}>
+<Layout title={`全部分類 | ${seoConfig.title}`}>
   <TwoColumnLayout>
-    <Cover slot="cover" title="全部分类" />
+    <Cover slot="cover" title="全部分類" />
     <HomeSider slot="sider" />
     <CategoryList categories={categories} countMap={countMap} totalCount={links.length ?? 0} />
   </TwoColumnLayout>
