@@ -37,6 +37,7 @@ export function MobilePostHeader({
   logoSrc,
   enableNumbering = true,
 }: MobilePostHeaderProps) {
+  return null;
   const shouldReduceMotion = useReducedMotion();
 
   // Check if we're on mobile (tablet breakpoint: max-width 992px)
@@ -75,15 +76,10 @@ export function MobilePostHeader({
     </a>
   );
 
-  /*
   // If not mobile or not a post page, always show logo
   if (!isMobile) {
     return <Logo />;
   }
-  */
- if (!isMobile) {
-  return null;
- }
 
   return (
     <div className="flex items-center gap-2">
