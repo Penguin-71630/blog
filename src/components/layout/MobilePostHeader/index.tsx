@@ -75,10 +75,15 @@ export function MobilePostHeader({
     </a>
   );
 
+  /*
   // If not mobile or not a post page, always show logo
   if (!isMobile) {
     return <Logo />;
   }
+  */
+ if (!isMobile) {
+  return null;
+ }
 
   return (
     <div className="flex items-center gap-2">

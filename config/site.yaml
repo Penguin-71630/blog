@@ -11,24 +11,29 @@
 # Site Basic Information
 # =============================================================================
 site:
-  title: 余弦の博客 # 网站名称
-  alternate: cosine # 网站英文名称 用于页脚、Logo、@ handle 等
-  subtitle: WA 的一声就哭了 # 网站副标题
-  name: cos # 作者名称 - 请修改为你的名字
-  description: 一个基于 Astro 的现代化博客主题 # 网站描述
-  avatar: /img/avatar.webp # 网站头像
-  showLogo: true # 是否显示 Logo
-  author: Author # 作者名称 - 请修改为你的名字
+  title: Ginoの部落格 # 网站名称
+  alternate: # 网站英文名称 用于页脚、Logo、@ handle 等
+  subtitle: 偶爾會發些學東西的筆記，或生活日記 # 网站副标题
+  name: Gino # 作者名称 - 请修改为你的名字
+  description: 一隻喜歡 CS 的企鵝 # 网站描述
+  avatar: /img/avatars/Lagrange.webp # 网站头像
+  siteImageFileBaseName: Kou_angry_Flowzon_Note
+  showLogo: false # 是否显示 Logo
+  author: Gino # 作者名称 - 请修改为你的名字
   url: https://koharu.cosine.ren # 站点 URL 用于 RSS 和 SEO
-  defaultOgImage: /img/avatar.webp # 默认 Open Graph 图片
-  startYear: 2024 # 建站年份
-  timezone: Asia/Shanghai # 时区配置 (IANA 格式)，用于日期显示和处理
+  defaultOgImage: /img/avatars/Lagrange.webp # 默认 Open Graph 图片
+  startYear: 2026 # 建站年份
+  timezone: Asia/Taipei # 时区配置 (IANA 格式)，用于日期显示和处理
   keywords: # SEO 关键词
-    - 博客
-    - Astro
-    - 技术
-    - 前端
-    # 请根据你的网站内容添加关键词
+    - Gino
+    - polarbear03617
+    - penguin71630
+    - blog
+    - 部落格
+    - 資工
+    - 資訊工程
+    - 交大
+    - 交通大學
   # breadcrumbHome: 首页  # 面包屑导航中首页的显示名称（默认: '首页'）
 
 # =============================================================================
@@ -62,17 +67,17 @@ categoryMap:
 # -----------------------------------------------------------------------------
 featuredCategories:
   - link: life # 对应 categoryMap 中 随笔: life
-    label: 随笔
+    label: 隨筆
     image: /img/cover/2.webp
-    description: 生活记录、随想随笔
+    description: 生活札記
   - link: note # 对应 categoryMap 中 笔记: note
-    label: 笔记
+    label: 筆記
     image: /img/cover/4.webp
-    description: 技术笔记、学习笔记
+    description: 學東西的筆記
   - link: note/front-end # 嵌套分类：笔记/前端
     label: 前端
     image: /img/cover/1.webp
-    description: 前端技术相关
+    description: 前端技術相關
   - link: tools # 对应 categoryMap 中 工具: tools
     label: 工具
     image: /img/cover/11.webp
@@ -99,11 +104,11 @@ featuredSeries:
   - slug: weekly # URL 路径: /weekly
     categoryName: 周刊 # 必须与 categoryMap 中的分类名匹配
     label: 我的周刊 # 简短名称
-    fullName: 我的技术周刊 # 完整名称
+    fullName: 我的技術週刊 # 完整名称
     description: | # 支持多行 Markdown
-      这是周刊/系列文章功能的示例配置。
-      你可以用它来发布定期更新的系列内容，如技术周刊、读书笔记系列等。
-      设置 enabled: false 可以关闭此功能。
+      這是周刊/系列文章功能的範例配置。
+      你可以用它來發布定期更新的系列内容，如技術周刊、讀書筆記系列等。
+      設定 enabled: false 可以關掉此功能。
     cover: /img/weekly_header.webp # 系列页面头图
     enabled: true # 启用此系列
     icon: ri:newspaper-line # 导航图标
@@ -136,17 +141,21 @@ featuredSeries:
 # -----------------------------------------------------------------------------
 social:
   github:
-    url: https://github.com/your-username # 替换为你的 GitHub 链接
+    url: https://github.com/Penguin-71630 # 替换为你的 GitHub 链接
     icon: ri:github-fill # Remix Icon 的 GitHub 图标
     color: '#191717' # (可选) 图标颜色
+  #facebook:
+  #  url: https://www.facebook.com/gino.604245/
+  #  icon: ri:facebook-circle-fill
+  #  color: '#191717'
   email:
-    url: mailto:your@email.com # 替换为你的邮箱，需加 mailto: 前缀
-    icon: ri:mail-line
-    color: '#55acd5'
+    url: mailto:ginow514sm@gmail.com # 替换为你的邮箱，需加 mailto: 前缀
+    icon: ri:mail-fill
+    color: '#191717'
   rss:
     url: /rss.xml # 站内 RSS 订阅地址
-    icon: ri:rss-line
-    color: '#ff6600'
+    icon: ri:rss-fill
+    color: '#191717'
   # -------------------------------------------------------------------------
   # 以下是更多可选的社交平台配置示例，取消注释并修改即可启用：
   # -------------------------------------------------------------------------
@@ -166,6 +175,7 @@ social:
   #   url: https://music.163.com/#/user/home?id=your-id
   #   icon: ri:netease-cloud-music-line
   #   color: '#e60026'
+  
 
 # =============================================================================
 # Friends Links
@@ -187,17 +197,17 @@ social:
 # -----------------------------------------------------------------------------
 friends:
   intro:
-    title: 友情链接 # 页面标题
-    subtitle: 欢迎交换友链！ # 页面副标题
-    applyTitle: 申请友链 # 申请区块标题
-    applyDesc: 请在本页留言，格式如下 # 申请说明
+    title: 友站 # 页面标题
+    subtitle: 歡迎互友！ # 页面副标题
+    applyTitle: 互友申請 # 申请区块标题
+    applyDesc: 請在此頁留言，格式如下 # 申请说明
     exampleYaml: | # 申请格式示例，会显示在页面上
-      - site: 你的博客名称 # 站点名称
+      - site: 你的部落格名稱 # 站点名称
         url: https://your-blog.com/ # 站点网址
-        owner: 你的昵称 # 昵称
-        desc: 站点简介 # 站点简介
+        owner: 你的暱稱 # 昵称
+        desc: 部落格簡介 # 站点简介
         image: https://your-blog.com/avatar.jpg # 头像链接
-        color: "#ffc0cb" # 主题色（可选）
+        color: "#d9d9d9" # 主题色（可选）
   data: # 友链列表
     - site: 余弦の博客
       url: https://blog.cosine.ren
@@ -205,24 +215,24 @@ friends:
       desc: FE / ACG / 手工 / 深色模式强迫症 / INFP / 兴趣广泛养两只猫的老宅女 / remote
       image: https://blog.cosine.ren/img/avatar.webp
       color: '#ed788b'
-    - site: 示例博客 A
-      url: https://example-a.com
-      owner: Alice
-      desc: 一个热爱技术的开发者
-      image: https://api.dicebear.com/7.x/avataaars/svg?seed=Alice
-      color: '#BEDCFF'
-    - site: 示例博客 B
-      url: https://example-b.com
-      owner: Bob
-      desc: 分享生活与技术的小站
-      image: https://api.dicebear.com/7.x/avataaars/svg?seed=Bob
-      color: '#FBC1CC'
-    - site: 示例博客 C
-      url: https://example-c.com
-      owner: Carol
-      desc: 记录学习与成长的地方
-      image: https://api.dicebear.com/7.x/avataaars/svg?seed=Carol
-      color: '#ABDCFF'
+    # - site: 示例博客 A
+    #   url: https://example-a.com
+    #   owner: Alice
+    #   desc: 一个热爱技术的开发者
+    #   image: https://api.dicebear.com/7.x/avataaars/svg?seed=Alice
+    #   color: '#BEDCFF'
+    # - site: 示例博客 B
+    #   url: https://example-b.com
+    #   owner: Bob
+    #   desc: 分享生活与技术的小站
+    #   image: https://api.dicebear.com/7.x/avataaars/svg?seed=Bob
+    #   color: '#FBC1CC'
+    # - site: 示例博客 C
+    #   url: https://example-c.com
+    #   owner: Carol
+    #   desc: 记录学习与成长的地方
+    #   image: https://api.dicebear.com/7.x/avataaars/svg?seed=Carol
+    #   color: '#ABDCFF'
 
 # =============================================================================
 # Announcements
@@ -320,7 +330,7 @@ content:
 #   - Remix Icon: https://icon-sets.iconify.design/ri/
 # -----------------------------------------------------------------------------
 navigation:
-  - name: 首页 # 菜单显示名称
+  - name: 首頁 # 菜单显示名称
     path: / # 链接路径
     icon: ri:home-heart-fill # 图标
   # - name: 书摘
@@ -331,19 +341,19 @@ navigation:
   - name: 文章 # 有子菜单时，path 可省略
     icon: ri:quill-pen-ai-fill
     children: # 子菜单列表
-      - name: 分类
+      - name: 分類
         path: /categories
         icon: ri:grid-fill
-      - name: 标签
+      - name: 標籤
         path: /tags
         icon: fa6-solid:tags
-      - name: 归档
+      - name: 歸檔
         path: /archives
         icon: ri:archive-2-fill
-  - name: 友链
+  - name: 友站
     path: /friends
     icon: ri:links-line
-  - name: 关于
+  - name: 關於
     path: /about
     icon: fa6-regular:circle-user
 

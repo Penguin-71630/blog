@@ -68,6 +68,8 @@ const blogCollection = defineCollection({
       .array(z.string())                    // 格式1: ['工具']
       .or(z.array(z.array(z.string())))     // 格式2: [['笔记', '前端', 'React']]
       .optional(),
+
+    siteImageFileBaseName: z.string(),
   }) satisfies z.ZodType<BlogSchema>,
 });
 

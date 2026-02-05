@@ -27,9 +27,9 @@ const { categories: allCategories, countMap } = await getCategoryList();
 const displayCategories = category ? [category] : allCategories;
 ---
 
-<Layout title={`分类 - ${category?.name} | ${seoConfig.title}`}>
+<Layout title={`分類 - ${category?.name} | ${seoConfig.title}`}>
   <TwoColumnLayout>
-    <Cover slot="cover" title={`分类于"${category?.name}"的文章`} />
+    <Cover slot="cover" title={`分類於"${category?.name}"的文章`} />
     <HomeSider slot="sider" />
     <CategoryPostList rootCategory={category} categories={displayCategories} countMap={countMap} />
   </TwoColumnLayout>

@@ -184,6 +184,7 @@ export const siteConfig: SiteConfig = {
   breadcrumbHome: yamlConfig.site.breadcrumbHome,
   featuredCategories: yamlConfig.featuredCategories,
   featuredSeries: normalizeFeaturedSeries(yamlConfig.featuredSeries),
+  siteImageFileBaseName: yamlConfig.site.siteImageFileBaseName
 };
 
 export const socialConfig: SocialConfig = yamlConfig.social ?? {};
