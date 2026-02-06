@@ -1049,3 +1049,142 @@ body.lightbox-open {
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+
+
+
+/* ========== Infobox / Admonition 提示框樣式 ========== */
+
+/* 基礎容器樣式 */
+.prose .admonition {
+  position: relative;
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  border-left: 4px solid hsl(var(--primary));
+  border-radius: 0.5rem;
+  background-color: hsl(var(--muted) / 0.3); /* 輕微背景色 */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* 懸停微互動（可選） */
+.prose .admonition:hover {
+  background-color: hsl(var(--muted) / 0.5);
+}
+
+/* 標題樣式 */
+.prose .admonition-title {
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem !important;
+  font-weight: 700;
+  font-family: var(--font-sans); /* 跟隨你的思源黑體/宋體 */
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* 內容文字樣式 */
+.prose .admonition > p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+
+/* === 各種類型配色 (與你的代碼塊圓點顏色呼應) === */
+
+/* Info (藍色) - 預設 */
+.prose .admonition.info {
+  border-color: #3b82f6; /* Blue-500 */
+  background-color: rgba(59, 130, 246, 0.05);
+}
+.prose .admonition.info .admonition-title {
+  color: #3b82f6;
+}
+
+/* Success (綠色) */
+.prose .admonition.success {
+  border-color: #22c55e; /* Green-500 */
+  background-color: rgba(34, 197, 94, 0.05);
+}
+.prose .admonition.success .admonition-title {
+  color: #22c55e;
+}
+
+/* Warning (黃色) */
+.prose .admonition.warning {
+  border-color: #eab308; /* Yellow-500 */
+  background-color: rgba(234, 179, 8, 0.05);
+}
+.prose .admonition.warning .admonition-title {
+  color: #eab308;
+}
+
+/* Danger / Error (紅色) */
+.prose .admonition.danger,
+.prose .admonition.error {
+  border-color: #ef4444; /* Red-500 */
+  background-color: rgba(239, 68, 68, 0.05);
+}
+.prose .admonition.danger .admonition-title,
+.prose .admonition.error .admonition-title {
+  color: #ef4444;
+}
+
+/* Tip (紫色 - 額外贈送) */
+.prose .admonition.tip {
+  border-color: #a855f7; /* Purple-500 */
+  background-color: rgba(168, 85, 247, 0.05);
+}
+.prose .admonition.tip .admonition-title {
+  color: #a855f7;
+}
+
+
+
+
+
+
+/* 陰影 */
+.dark .prose .admonition {
+  /*background-color: hsl(var(--muted) / 0.15);*/
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2);
+}
+
+/* Info (藍色) */
+.dark .prose .admonition.info {
+  background-color: rgba(59, 130, 246, 0.15); /* 從 0.05 提升到 0.15 */
+  border-left-color: rgba(59, 130, 246, 0.8); /* 讓左邊框在深色下更亮一點 */
+}
+
+/* Success (綠色) */
+.dark .prose .admonition.success {
+  background-color: rgba(34, 197, 94, 0.15);
+  border-left-color: rgba(34, 197, 94, 0.8);
+}
+
+/* Warning (黃色) */
+.dark .prose .admonition.warning {
+  background-color: rgba(234, 179, 8, 0.15);
+  border-left-color: rgba(234, 179, 8, 0.8);
+}
+
+/* Danger / Error (紅色) */
+.dark .prose .admonition.danger,
+.dark .prose .admonition.error {
+  background-color: rgba(239, 68, 68, 0.15);
+  border-left-color: rgba(239, 68, 68, 0.8);
+}
+
+/* Tip (紫色) */
+.dark .prose .admonition.tip {
+  background-color: rgba(168, 85, 247, 0.15);
+  border-left-color: rgba(168, 85, 247, 0.8);
+}
+
+/* 確保標題顏色在深色模式下足夠明亮 */
+.dark .prose .admonition-title {
+  filter: brightness(1.2); /* 稍微調亮標題文字 */
+}

@@ -13,3 +13,7 @@ dist/
 .env
 .env.*
 !.env.example
+
+# 暫存
+.log
+tmp

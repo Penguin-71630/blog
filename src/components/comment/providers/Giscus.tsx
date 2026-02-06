@@ -63,7 +63,7 @@ export default function Giscus() {
       emitMetadata={config?.emitMetadata}
       inputPosition={config?.inputPosition ?? 'top'}
       theme={config?.theme ?? theme}
-      lang={config?.lang ?? 'zh-CN'}
+      lang={config?.lang ?? 'zh-TW'}
       loading={config?.loading ?? 'lazy'}
     />
   );

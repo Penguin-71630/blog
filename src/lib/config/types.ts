@@ -244,7 +244,7 @@ export interface WalineConfig {
   /**
    * 显示语言
    * Display language
-   * @default 'zh-CN'
+   * @default 'zh-TW'
    */
   lang?: string;
 

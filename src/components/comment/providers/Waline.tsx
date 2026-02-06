@@ -18,7 +18,7 @@ export default function Waline() {
     walineInstanceRef.current = init({
       el: containerRef.current,
       serverURL: config.serverURL,
-      lang: config.lang ?? 'zh-CN',
+      lang: config.lang ?? 'zh-TW',
       dark: config.dark ?? 'html.dark', // CSS selector to auto-follow theme
       meta: config.meta ?? ['nick', 'mail', 'link'],
       requiredMeta: config.requiredMeta ?? ['nick'],

@@ -111,7 +111,8 @@ export default {
       },
       fontFamily: {
         sans: ['Linux Biolinum', 'Source Han Serif TC', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
-        'chill-round': ['Source Han Serif TC', 'sans-serif'],
+        bold: ['Linux Biolinum Bold', 'Source Han Serif TC Bold'],
+        'chill-round': ['Linux Biolinum', 'Source Han Serif TC', 'sans-serif'],
       },
       clipPath: {
         'post-img-left': 'polygon(0 0,92% 0%,100% 100%,0% 100%)',

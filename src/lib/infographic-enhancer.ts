@@ -121,10 +121,10 @@ async function renderInfographic(container: HTMLElement, source: string): Promis
 theme
   base
     text
-      font-family Source Han Serif TC
+      font-family "Source Han Serif TC"
   item
     label
-      font-family Source Han Serif TC
+      font-family "Source Han Serif TC"
 `;
   const sourceWithFont = `${source}\n${fontConfig}`;
 

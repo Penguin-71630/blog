@@ -20,6 +20,11 @@ import { rehypeImagePlaceholder } from './src/lib/markdown/rehype-image-placehol
 import { remarkLinkEmbed } from './src/lib/markdown/remark-link-embed.ts';
 import { normalizeUrl } from './src/lib/utils.ts';
 
+
+/* For InfoBox */
+import remarkDirective from 'remark-directive'; // 引入插件
+import { visit } from 'unist-util-visit'; // 需要安裝: pnpm add -D unist-util-visit
+
 // Load YAML config directly with Node.js (before Vite plugins are available)
 // This is only used in astro.config.mjs - other files use @rollup/plugin-yaml
 function loadConfigForAstro() {
@@ -73,6 +78,32 @@ function conditionalSnowfall() {
   };
 }
 
+// 自定義轉換函式：把 :::type 轉成 <div class="admonition type">
+function remarkAdmonitions() {
+  return (tree) => {
+    visit(tree, (node) => {
+      if (
+        node.type === 'containerDirective' ||
+        node.type === 'leafDirective' ||
+        node.type === 'textDirective'
+      ) {
+        const data = node.data || (node.data = {});
+        const type = node.name; // 這裡就是 ::: 後面的字 (info, success...)
+
+        // 只有當它是我們定義的類型時才處理
+        if (['info', 'success', 'warning', 'danger', 'tip'].includes(type)) {
+          data.hName = 'div';
+          data.hProperties = { class: `admonition ${type}` };
+
+          // 如果使用者沒有寫標題，自動產生預設標題
+          // 這裡邏輯稍微簡化，通常可以直接用內容
+          // 為了簡單，我們假設結構是 :::type [標題]
+        }
+      }
+    });
+  };
+}
+
 // https://astro.build/config
 export default defineConfig({
   site: yamlConfig.site.url,
@@ -80,15 +111,17 @@ export default defineConfig({
   markdown: {
     // Enable GitHub Flavored Markdown
     gfm: true,
-    // Configure remark plugins for link embedding
+    // Configure remark plugins 
     remarkPlugins: [
       [
-        remarkLinkEmbed,
+        remarkLinkEmbed,   // for link embedding
         {
           enableTweetEmbed: yamlConfig.content?.enableTweetEmbed ?? true,
           enableOGPreview: yamlConfig.content?.enableOGPreview ?? true,
         },
       ],
+      remarkDirective,     // for InfoBox
+      remarkAdmonitions,   // for InfoBox
     ],
     // Configure rehype plugins for automatic heading IDs and anchor links
     rehypePlugins: [

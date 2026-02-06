@@ -29,3 +29,28 @@ const { frontmatter } = Astro.props;
     </div>
   </TwoColumnLayout>
 </Layout>
+
+
+<!-- /Users/polarbear03617/Documents/blog/src/lib/infographic-enhancer.ts -->
+<script>
+  // 請確認這個路徑指向你之前修改的那個 .ts 檔案
+  // 假設你的 infographic-enhancer.ts 在 src/utils/ 或 src/scripts/
+  // 請根據實際位置調整 import路徑，例如 '../../utils/infographic-enhancer'
+  import { initInfographicEnhancer } from '../lib/infographic-enhancer';
+
+  // 立即執行渲染
+  initInfographicEnhancer();
+
+  // 支援 Astro View Transitions (如果你有點擊連結跳轉過來的情況)
+  document.addEventListener('astro:page-load', () => {
+    initInfographicEnhancer();
+  });
+</script>
+
+
+
+
+<!-- Remixicon -->
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+</head>
