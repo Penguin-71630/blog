@@ -1188,3 +1188,19 @@ body.lightbox-open {
 .dark .prose .admonition-title {
   filter: brightness(1.2); /* 稍微調亮標題文字 */
 }
+
+
+
+
+
+/* 防止全域字體覆蓋 KaTeX 的數學符號 */
+.katex {
+  font-family: KaTeX_Main, 'Times New Roman', serif !important;
+  text-indent: 0;
+  text-rendering: auto;
+}
+
+/* 確保公式在深色模式下顏色正確 */
+.dark .katex {
+  color: hsl(var(--foreground));
+}

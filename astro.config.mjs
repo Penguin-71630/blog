@@ -20,6 +20,9 @@ import { rehypeImagePlaceholder } from './src/lib/markdown/rehype-image-placehol
 import { remarkLinkEmbed } from './src/lib/markdown/remark-link-embed.ts';
 import { normalizeUrl } from './src/lib/utils.ts';
 
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+
 
 /* For InfoBox */
 import remarkDirective from 'remark-directive'; // 引入插件
@@ -122,6 +125,7 @@ export default defineConfig({
       ],
       remarkDirective,     // for InfoBox
       remarkAdmonitions,   // for InfoBox
+      remarkMath,  // LaTeX
     ],
     // Configure rehype plugins for automatic heading IDs and anchor links
     rehypePlugins: [
@@ -137,6 +141,7 @@ export default defineConfig({
         },
       ],
       rehypeImagePlaceholder,
+      rehypeKatex,  // LaTeX
     ],
     syntaxHighlight: {
       type: 'shiki',
