@@ -13,11 +13,14 @@
  * Semantic color names mapped to CSS custom properties for theme support.
  * Colors automatically adapt to light/dark theme via CSS variables.
  */
+
+export const primaryColor = '#55ccaa'; // Arcaea Fuchsia
+
 export const colors = {
   // Primary brand colors
   primary: {
-    DEFAULT: 'hsl(var(--primary))',
-    foreground: 'hsl(var(--primary-foreground))',
+    DEFAULT: primaryColor, 
+    foreground: '#ffffff',
   },
 
   // Secondary colors
@@ -44,7 +47,7 @@ export const colors = {
 
   // Shoka theme accent (replaces hardcoded #E95469)
   shoka: {
-    DEFAULT: '#E95469',
+    DEFAULT: primaryColor,
     light: '#FF6B7A',
     dark: '#D63F55',
   },
@@ -79,9 +82,10 @@ export const colors = {
   badge: {
     primary: {
       // WCAG
-      DEFAULT: 'hsl(var(--badge-primary))',
+      DEFAULT: primaryColor, 
     },
   },
+
   // Backgrounds and foregrounds
   background: 'hsl(var(--background))',
   foreground: 'hsl(var(--foreground))',
