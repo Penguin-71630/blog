@@ -14,7 +14,7 @@
  * Colors automatically adapt to light/dark theme via CSS variables.
  */
 
-export const primaryColor = '#55ccaa'; // Arcaea Fuchsia
+export const primaryColor = '#a088d4'; // Arcaea Fuchsia
 
 export const colors = {
   // Primary brand colors

@@ -1,0 +1,52 @@
+---
+interface Props {
+  text?: string;
+}
+
+const { text } = Astro.props;
+---
+
+<!-- <div class="my-2 flex items-start gap-1.5 text-xs leading-relaxed" style="color: #8e8e8e;">
+  <i class="ri-edit-2-fill"></i><span class="font-bold">Note ⟩</span> {text}
+</div> -->
+
+<!-- <div class="my-3 flex items-start gap-2.5 text-xs leading-relaxed" style="color: #8e8e8e;">
+  <div class="flex items-center gap-1 flex-shrink-0 whitespace-nowrap font-bold">
+    <i class="ri-edit-2-fill text-sm"></i>
+    <span>Note ⟩</span>
+  </div>
+  <div class="flex-1">
+    {text}
+  </div>
+</div> -->
+
+
+<!-- <div class="my-3 flex items-start gap-2.5 text-xs leading-relaxed" style="color: #8e8e8e;">
+  <div class="flex items-center gap-1 flex-shrink-0 whitespace-nowrap font-bold select-none">
+    <i class="ri-edit-2-fill text-sm"></i>
+    <span>Note ⟩</span>
+  </div>
+  
+  <div class="flex-1 min-w-0">
+    {
+      text ? (
+        /* 如果是用舊的 text="..." 寫法，直接顯示文字 */
+        text
+      ) : (
+        /* ✅ 推薦：這是 Slot 區域，這裡面會自動支援 Markdown */
+        <slot />
+      )
+    }
+  </div>
+</div> -->
+
+<div class="my-3 flex items-start gap-2 text-xs leading-relaxed text-[#8e8e8e]">
+  <div class="flex-shrink-0 flex items-center gap-1 font-bold select-none mt-[0.1em]">
+    <i class="ri-edit-2-fill text-sm"></i>
+    <span>Note ⟩</span>
+  </div>
+  
+  <div class="flex-1 min-w-0 [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+    <slot />
+  </div>
+</div>

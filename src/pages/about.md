@@ -13,7 +13,6 @@ description: "自我介紹"
 以後發文應該會以這些為主，偶爾會發點日常生活，請多指教！
 
 
-
 ## <i class="ri-graduation-cap-fill"></i> 學業軌跡
 
 - 師大附中 1510 資訊科學班

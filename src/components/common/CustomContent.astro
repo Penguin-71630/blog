@@ -5,6 +5,15 @@ import { defaultContentConfig } from '@constants/content-config';
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
 import { christmasConfig } from '@/constants/site-config';
 
+// 👇 新增：引入你剛剛寫好的自定義組件
+import Mark from '@components/markdown/Mark.astro'; 
+import Note from '@components/markdown/Note.astro';
+
+const globalComponents = {
+  Mark,
+  Note,
+};
+
 interface Props {
   Content: AstroComponentFactory;
   config?: Partial<ContentConfig>;
@@ -14,11 +23,18 @@ const { Content, config = {} } = Astro.props;
 const finalConfig = { ...defaultContentConfig, ...config };
 ---
 
+
+<!-- Remixicon -->
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+</head>
+
+
 <div
   class:list={['custom-content', { 'relative z-5': christmasConfig.enabled && christmasConfig.features.snowfall }]}
   data-config={JSON.stringify(finalConfig)}
 >
-  <Content />
+  <Content components={globalComponents} />
 </div>
 
 {/* Only load EmbedHydrator if tweet embeds are enabled (link previews are now server-rendered) */}

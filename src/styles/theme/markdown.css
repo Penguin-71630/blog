@@ -462,7 +462,12 @@
 /* 图片容器 */
 .prose .markdown-image-wrapper {
   position: relative;
-  display: block;
+
+  display: flex;           /* ✨ 改成 Flex */
+  justify-content: center; /* ✨ 水平置中 */
+  align-items: center;     /* ✨ 垂直置中 */
+  width: 100%;             /* 佔滿寬度 */
+
   margin: 1.5rem 0;
   overflow: hidden;
   border-radius: 0.5rem;
@@ -472,7 +477,8 @@
 /* 图片样式 - 16:9 默认占位比例 */
 .prose .markdown-image {
   display: block;
-  width: 100%;
+  /* width: 100%; */
+  max-width: 100%;
   height: auto;
 
   /* 默认 16:9 比例防止布局抖动 */
@@ -486,6 +492,33 @@
   /* 加载时的背景色 */
   background-color: hsl(var(--muted));
 }
+
+/* 使用方法: ![圖](/path/img.png#full) -> 100% 寬 */
+/* --- 電腦版：標準級距 --- */
+img[src$="#100"] { width: 100% !important; }
+img[src$="#90"] { width: 90% !important; }
+img[src$="#80"] { width: 80% !important; }
+img[src$="#70"] { width: 70% !important; }
+img[src$="#60"] { width: 60% !important; }
+img[src$="#50"] { width: 50% !important; }
+img[src$="#40"] { width: 40% !important; }
+img[src$="#30"] { width: 30% !important; }
+img[src$="#20"] { width: 20% !important; }
+img[src$="#10"] { width: 10% !important; }
+
+/* --- 手機版優化：<= 70 的圖片自動 +30% --- */
+@media (max-width: 768px) {
+  img[src$="#70"] { width: calc(70% + 30%) !important; } /* 變 100% */
+  img[src$="#60"] { width: calc(60% + 30%) !important; } /* 變 90% */
+  img[src$="#50"] { width: calc(50% + 30%) !important; } /* 變 80% */
+  img[src$="#40"] { width: calc(40% + 30%) !important; } /* 變 70% */
+  img[src$="#30"] { width: calc(30% + 30%) !important; } /* 變 60% */
+  img[src$="#20"] { width: calc(20% + 30%) !important; } /* 變 50% */
+  img[src$="#10"] { width: calc(10% + 30%) !important; } /* 變 40% */
+}
+
+
+
 
 /* 图片加载完成状态 - 使用实际尺寸，限制最大高度 */
 .prose .markdown-image.loaded {
@@ -1215,9 +1248,8 @@ body.lightbox-open {
 /* 存 pdf 用 */
 @media print {
   /* =========================================
-     1. 強制背景變白 (Override Variables)
+     強制背景變白 (Override Variables)
      ========================================= */
-
   :root {
     --gradient-bg-start: #ffffff;
     --gradient-bg-end: #ffffff;
@@ -1239,6 +1271,17 @@ body.lightbox-open {
     --color-pink: #ed6ea0;
     --color-pink-a3: rgba(237, 110, 160, 0.3);
   }
+
+  img[src$="#100"] { width: 100% !important; }
+  img[src$="#90"] { width: 90% !important; }
+  img[src$="#80"] { width: 80% !important; }
+  img[src$="#70"] { width: 70% !important; }
+  img[src$="#60"] { width: 60% !important; }
+  img[src$="#50"] { width: 50% !important; }
+  img[src$="#40"] { width: 40% !important; } 
+  img[src$="#30"] { width: 30% !important; }
+  img[src$="#20"] { width: 20% !important; }
+  img[src$="#10"] { width: 15% !important; }
 
 
 

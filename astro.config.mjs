@@ -23,6 +23,9 @@ import { normalizeUrl } from './src/lib/utils.ts';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
+import mdx from '@astrojs/mdx';
+
+
 
 /* For InfoBox */
 import remarkDirective from 'remark-directive'; // 引入插件
@@ -157,6 +160,7 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap(),
+    mdx(),
     icon({
       include: {
         gg: ['*'],
