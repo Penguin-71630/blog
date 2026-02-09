@@ -8,10 +8,12 @@ import { christmasConfig } from '@/constants/site-config';
 // 👇 新增：引入你剛剛寫好的自定義組件
 import Mark from '@components/markdown/Mark.astro'; 
 import Note from '@components/markdown/Note.astro';
+import Reference from '@components/markdown/Reference.astro'
 
 const globalComponents = {
   Mark,
   Note,
+  Reference,
 };
 
 interface Props {

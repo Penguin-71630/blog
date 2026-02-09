@@ -8,11 +8,9 @@ draft: true
 
 
 
-
 ## ABSTRACT
 
 As the sizes and variety of training data scale over time, data preprocessing is becoming an important performance bottleneck for training deep recommendation systems. This challenge becomes more serious when training data is stored in Solid-State Drives (SSDs). Due to the access behavior gap between recommendation systems and SSDs, unused training data may be read and filtered out during preprocessing. This work advocates a joint management middleware to avoid reading unused data by bridging the access behavior gap. The evaluation results show that our middleware can effectively improve the performance of the data preprocessing phase so as to boost training performance.
-
 
 
 ## INTRODUCTION
@@ -41,11 +39,46 @@ For example, during model training, <Mark>more than 56% of GPU cycles were idle 
   如果 CPU ingest 和 preprocess 資料時間太久，那 GPU 會經常 idle。
 </Note>
 
-We show that, due to the access behavior gap between recommendation model training and SSDs, a significant amount of the data preprocessing phase is spent on <Mark>reading and filtering unused training data.</Mark> To improve training performance by minimizing the needs of reading and preprocessing unused data, this work aims to bridge the access behavior gap by advocating a joint management middleware between a GPU-based recommendation training systems and SSDs.
+We show that, due to the access behavior gap between recommendation model training and SSDs, <Mark>a significant amount of the data preprocessing phase is spent on reading and filtering unused training data.</Mark> To improve training performance by minimizing the needs of reading and preprocessing unused data, this work aims to bridge the access behavior gap by advocating a joint management middleware between a GPU-based recommendation training systems and SSDs.
 
-The industry, such as Facebook, Baidu and Google, have adopted deep recommendation models to recommend e-commerce products to each users. Recommendation models comprise the Fully-Connected (FC) layers to handle dense features and the embedding-table layers to look up the categorical features, which are usually represented by sparse vectors. To improve the inference performance, several previous works focus on co-designing recommendation models with various accelerators (e.g., GPUs, TPU-like devices, or in-storage processors). In addition to inference, improving the performance of model training on large-scale datasets is crucial to the success of products supported by deep recommendation models. Generally, there are two key phases for training: the "data preprocessing phase" transforms raw data from storage devices to materialized tensor data and the "feature training phase" trains tensor data. To support massive scale feature training, Baidu proposes a distributed GPU hierarchical parameter server. Aiming at improving the performance of feature training, cDLRM prefetches embedding tables from the host memory to GPU memory at runtime. In addition to feature training, as the sizes and variety of training data scale all the time, Facebook performs an end-to-end analysis in 2021 and shows that the data preprocessing phase gradually becomes the performance bottleneck of recommendation model training.
+The industry, such as Facebook, Baidu and Google, have adopted deep recommendation models to recommend e-commerce products to each users. Recommendation models comprise:
+- Fully-Connected (FC) Layers: Handle dense features
+- Embedding-table Layers: Look up the categorical features (usually represented by sparse vectors)
 
-Industrial recommendation models require tens of petabytes of training data, and are constantly growing all the time. An ever-increasing memory capacity is required to hold all training data in memory. However, Dynamic Random Access Memory (DRAM) faces the scaling challenge and also the average DRAM price has increased several times in recent years. A practical and cost-effective system configuration for a recommendation system is to cache the most recently used training data in DRAM to enjoy its fast response time, and store all training data in the flash-based SSDs to save the deploy cost. Due to the design of flash cells, SSDs mainly suffer from limited lifetime and the lifetime becomes shorter when storing more data bits in a cell. Besides, SSDs can only update data out-of-place because data in the flash page shall be erased before written new data in it, but the erase granularity is around dozens times larger than a flash page (please find more details in Section 2.1.2). The out-of-place update means the data shall be read out from the flash page, updated and written to a new flash page. To make SSDs easily compatible with any systems, SSDs adopt the Flash Translation Layer (FTL) to hide these constrains from host systems. FTL comprises a wear leveler to level write accesses on all cells to avoid wearing out some cells earlier, and an address mapper to keep track of the address of the updated data without the intervention from host systems. FTL is a double-edged sword, managing SSDs without host intervention but suffering from weak integration between applications.
+To improve the inference performance, several previous works focus on co-designing recommendation models with various accelerators (e.g., GPUs, TPU-like devices, or in-storage processors). 
+
+<Note>
+  作者列舉了三種大家常拿來做 Co-design 的對象：
+  1. `GPUs`\
+    特性：平行運算能力強。\
+    Co-design：調整 Batch Size 一次塞一堆資料進 GPU 運算。
+  2. `TPU-like devices (Tensor Processing Units)`\
+    特性：Google 專門為 AI 發明的晶片，只懂矩陣運算。\
+    Co-design：TPU 記憶體有限，所以模型結構不能太發散；或者專門設計成適合 TPU 脈動陣列 (Systolic Array) 的運算模式。
+  3. `In-storage processors`\
+    這是最特別的一個，也跟這篇論文最相關。傳統上 SSD 只負責存資料。要運算時，必須把資料從 SSD 搬到 CPU/RAM。\
+    Co-design：在 SSD 硬碟裡面直接裝一顆小 CPU，那簡單的工作比如 Filtering 可以丟給 SSD 自己做，以省下大量的 PCIe 傳輸頻寬。
+</Note>
+
+In addition to inference, improving the performance of model training on large-scale datasets is crucial to the success of products supported by deep recommendation models. Generally, there are two key phases for training:
+1. data preprocessing phase: transforms raw data from storage devices to materialized tensor data
+2. feature training phase: trains tensor data.
+
+To support massive scale feature training, Baidu proposes a distributed GPU hierarchical parameter server. Aiming at improving the performance of feature training, cDLRM prefetches embedding tables from the host memory to GPU memory at runtime. In addition to feature training, as the sizes and variety of training data scale all the time, <Mark>Facebook performs an end-to-end analysis in 2021 and shows that the data preprocessing phase gradually becomes the performance bottleneck of recommendation model training.</Mark>
+
+Industrial recommendation models require tens of petabytes of training data, and are constantly growing all the time. An ever-increasing memory capacity is required to hold all training data in memory. However, Dynamic Random Access Memory (DRAM) faces the scaling challenge and also the average DRAM price has increased several times in recent years.
+
+<Note>
+  目前主流的 AI 訓練主力是 NVIDIA DGX H100 或類似規格的伺服器，DRAM 頂多只有 2 TB。當然大公司肯定不會只有一台，都是用叢集。以 Meta 在 2022 年發表的 AI Research SuperCluster (RSC) 為例，規模約 2,000 台伺服器（共 16,000 張 GPU）。整個叢集總 DRAM 容量估算約是 $2,000 \text{ nodes} \times 2 \text{ TB/node} = 4 \text{ PB}$。論文提到的推薦系統資料量：「Tens of Petabytes」就算把 Meta 整座超級電腦所有的 DRAM 全部清空拿來放資料（完全不留給 OS 或其他程式），我們連 1/5 的訓練資料都放不下。
+</Note>
+
+A practical and cost-effective system configuration for a recommendation system is to cache the most recently used training data in DRAM to enjoy its fast response time, and store all training data in the flash-based SSDs to save the deploy cost.
+
+<Note>
+  Flash Memory 叫 flash 的原因是來自舛岡富士雄博士（發明人）的同事有泉正二的建議，因為這種記憶體的 erase 流程讓他想起了相機的閃光燈。以前的 EEPROM 如果要清除資料，必須一個 byte、一個 byte 慢慢擦掉，就像在黑板上寫滿了字，然後拿一個小小的橡皮擦，一個字一個字慢慢擦，速度非常慢。 舛岡博士的 flash 特點是允許電路一次性地把成千上萬個 cell 的電子全部洩洪掉。
+</Note>
+
+Due to the design of flash cells, SSDs mainly suffer from limited lifetime and the lifetime becomes shorter when storing more data bits in a cell. Besides, SSDs can only update data out-of-place because data in the flash page shall be erased before written new data in it, but the erase granularity is around dozens times larger than a flash page (please find more details in Section 2.1.2). The out-of-place update means the data shall be read out from the flash page, updated and written to a new flash page. To make SSDs easily compatible with any systems, SSDs adopt the Flash Translation Layer (FTL) to hide these constrains from host systems. FTL comprises a wear leveler to level write accesses on all cells to avoid wearing out some cells earlier, and an address mapper to keep track of the address of the updated data without the intervention from host systems. FTL is a double-edged sword, managing SSDs without host intervention but suffering from weak integration between applications.
 
 Based on our investigation, the access behavior gap between recommendation model training and SSDs may increase the time of reading training data from SSDs during data preprocessing phases. The access behavior gap is that recommendation systems read out whole features during the data preprocessing phase, but the data arrangement of SSDs is not aware of this access behavior and mixes key-value items belonging to different features in the same flash page. Under this access behavior gap, unused key-value items will be read from SSDs, increasing the overall read time while incurring wasted SSD bandwidth. To mitigate the data movement overhead, this paper proposes a middleware, namely rec-aware SSD data arranger, to manage SSDs by taking into account the behavior of recommendation model training. In particular, the proposed middleware comprises (1) a rec-aware data merger to pro-actively merge data belonging to the same feature without seriously hurting SSD's lifetime, and (2) a rec-aware data pinner to smartly pin data in the write buffer to enhance SSD's bandwidth utilization. The evaluation results show that our rec-aware SSD data arranger reduces the overall read time by 20%~38% over that of the Log-Structured Merge-Tree (LSM) based strategy adopted in Baidu's recommendation systems. Our read throughput results are within 12% of the optimal case.
 
@@ -59,18 +92,97 @@ Based on our investigation, the access behavior gap between recommendation model
 
 Recommendation systems suggest relevant contents to users by leveraging a large-scale training data corpus, such as the online shopping history or the rating of movies. Recommendation models are trained with relevant data stored in storage devices. However, training data read from storage devices cannot be naively fed into trainers (e.g. GPUs or TPUs). One of the reason is that training data will usually be compressed or serialized before storing on storage devices. The data preprocessing design is widely adopted (e.g., Facebook and Google) to extract and transform training data to tensor data that is subsequently ingested into trainers.
 
-A conceptual data flow of data preprocessing is shown in `Figure 1`. A recommendation model is trained using multiple features. Each feature is associated with multiple key-value items (or KV-items for short), where each key represents an item and its value indicates the correlation between the item and the feature. For example, the average book ratings of users can be one of the feature, and each book item with its average ratings is stored as a KV-item. Assuming feature A ($F_A$) is selected for feature training in `Figure 1`. CPU reads out raw data (including all items and values) belonging to $F_A$ from storage devices <span class="text-red-500">(❶)</span>. However, due to mismatching formats, extra data including invalid or unused data will also be read out from storage devices (Details of extra data are introduced in Section 2.1.2). During the extraction stage <span class="text-red-500">(❷)</span>, CPU filters out the data belonging to unused features, and group KV-items for each feature. In the transformation stage <span class="text-red-500">(❸)</span>, each value will be transformed to the suitable format based on trainers' requirements (e.g., sorting or normalizing floating numbers). Finally, features will be batched as tensors and loaded to trainers.
+A conceptual data flow of data preprocessing is shown in `Figure 1`. A recommendation model is trained using multiple features. Each feature is associated with multiple key-value items (or KV-items for short), where each key represents an item and its value indicates the correlation between the item and the feature. 
 
-![Figure 1](/img/content/thesis-0206/fig1.png#40)
+<Note>
+- $F$：Feature，特徵名稱，例如「書籍的評分」。
+- $I$：Item，物件名稱，例如《哈利波特》這本書。
+- $V$：Value，具體數值，例如 4.5。
+
+$\{F_{評分} + I_{哈利波特} : 4.5\}$ 代表《哈利波特》這本書評分是 4.5。
+</Note>
+
+For example, the average book ratings of users can be one of the feature, and each book item with its average ratings is stored as a KV-item. Assuming feature A ($F_A$) is selected for feature training in `Figure 1`. CPU reads out raw data (including all items and values) belonging to $F_A$ from storage devices <span class="text-red-500">(❶)</span>. However, due to mismatching formats, extra data including invalid or unused data will also be read out from storage devices (Details of extra data are introduced in Section 2.1.2). During the extraction stage <span class="text-red-500">(❷)</span>, CPU filters out the data belonging to unused features, and group KV-items for each feature. In the transformation stage <span class="text-red-500">(❸)</span>, each value will be transformed to the suitable format based on trainers' requirements (e.g., sorting or normalizing floating numbers). Finally, features will be batched as tensors and loaded to trainers.
+
+![Figure 1](/img/content/thesis-0206/fig1.png#50)
 
 #### 2.1.2 Solid-State Drives (SSDs)
 
-With the advancement of manufacturing technology, die costs and the performance of flash-based SSDs have been improved year-by-year. In the rest of this paper, SSDs represent flash-based SSDs. SSDs are widely deployed in recommendation systems as the storage backend. In contrast to Hard Disk Drives (HDDs) which can update data in-place, SSDs shall update data out-of-place. Generally, the in-place update operation is realized by executing an erase operation to remove the old data and then running a write operation to write new data at the same place. However, due to the characteristic of flash cells, an erase operation cannot erase only one flash page, a minimum read/write granularity for SSDs, because the minimum erase granularity is a flash block, dozens times larger than a flash page.
+With the advancement of manufacturing technology, die costs and the performance of flash-based SSDs have been improved year-by-year.
 
-Without executing erase operations, a common way to update data in SSDs is to do the Read-Modify-Write (RMW) operation, that is to read out flash pages containing the old data, modify all old data to new data, and write all modified flash pages to other free space. With using RMW operations to update data, the minimum update granularity shall align with the flash page size (e.g., 16KB), even when an SSD controller intends to update only few bytes (e.g., 4 Bytes for each value) of data in a flash page. This exaggerated update amplification seriously hurts the lifetime of SSDs. Although systems configure a portion of the DRAM as a write buffer to collect updates, the update amplification can not be effectively alleviated, especially when the capacity of training data scales up.
+<Note>
+  Die Costs：晶片製造術語。一塊完整的圓形矽晶圓 (wafer) 會被切割成無數個小方塊，每一個小方塊就是一個 die。die costs 指的就是製造這一小塊 flash memory 晶片的成本。隨著製程進步，我們可以在同樣大小的 die 裡面塞更多容量或者讓 die 變得更便宜，所以 SSD 的價格逐年下降。
+</Note>
+
+In the rest of this paper, SSDs represent flash-based SSDs. SSDs are widely deployed in recommendation systems as the storage backend. In contrast to Hard Disk Drives (HDDs) which can update data in-place, SSDs shall update data out-of-place. Generally, the in-place update operation is realized by executing an erase operation to remove the old data and then running a write operation to write new data at the same place. However, due to the characteristic of flash cells, an erase operation cannot erase only one flash page, a minimum read/write granularity for SSDs, because the minimum erase granularity is a flash block, dozens times larger than a flash page.
+
+<Note>
+Flash-based SSD 單位：
+- Cell：最小的物理單位。想像 flash cell 是電子桶，裡面有沒有電子代表 1 或 0。
+- Page：read/write 最小單位，通常是 4/8/16 KB。每個 cell 雖然有自己的 control gate，但因為電路設計限制所以動 control gate 就必須一次動一整排也就是一條 word line，這一整排就是一個 page。
+- Block：erase 最小單位，通常是 2 MB。因為 erase 是對元件最底下的基材施加正電壓把電子從 floating gate 吸出來，但基材是一大片包含很多 page 的，所以 erase 會動到的資料又更多。
+
+寫入是以 page 為單位，但擦除必須以 block 為單位。 如果你想修改 block A 裡面的 page 1，你不能直接對 page 1 放電（因為一放電，整個 block A 的 page 2 ~ 256 也會被清空），不僅沒效率又傷 SSD，因為 SSD 寫入次數是有限的。
+</Note>
+
+<Note>
+補充：雖然我們常說「一條 Word Line = 一個 Page」，但在現代 SSD (TLC/QLC) 中，關係其實更複雜一點：
+- SLC (Single Level Cell)：一個 Cell 存 1 bit。一條 Word Line 等於 1 個 Page。
+- TLC (Triple Level Cell)：一個 Cell 存 3 bits，靠電壓分 8 個等級。這時候，同一條 Word Line 其實包含了 3 個 logical pages，當你對這一條 Word Line 施加電壓時，你其實是在操作這 3 個 Pages 的資料。
+</Note>
+
+Without executing erase operations, a common way to update data in SSDs is to do the Read-Modify-Write (RMW) operation, that is to read out flash pages containing the old data, modify all old data to new data, and write all modified flash pages to other free space. With using RMW operations to update data, the minimum update granularity shall align with the flash page size (e.g., 16KB), even when an SSD controller intends to update only few bytes (e.g., 4 Bytes for each value) of data in a flash page. This exaggerated update amplification seriously hurts the lifetime of SSDs. Although systems configure <Mark>a portion of the DRAM as a write buffer</Mark> to collect updates, the update amplification can not be effectively alleviated, especially when the capacity of training data scales up.
 
 
-To alleviate the lifetime issues caused by updating training data, systems usually employ the append-only Log-Structured Merge-Tree (LSM) based strategy. The bottom part of `Figure 1` provides the conceptual procedures of the append-only LSM-based strategy. All updated training data will be buffered in the write buffer before being updated to SSDs <span class="text-blue-500">(❶)</span>. For example, $\{F_A + I_1 : V'_{A1}\}$ in the write buffer denotes that the value of item 1 ($I_1$) belonging to feature A ($F_A$) is updated to $V'_{A1}$. Instead of updating data in the SSD out-of-place, LSM-based strategy appends newly updated data to new flash pages and marks the previous data as invalid in the software middleware <span class="text-blue-500">(❷)</span>. Practically, a batch of updated data will be written to SSDs as a file (usually aligns with the flash page size) and the software middleware keeps track of the metadata of each file (e.g., the amount of invalid data). Due to the fact that, the invalid status of data is maintained in the software middleware, the SSD controller cannot know which flash pages contain invalid data. To reclaim space occupied by invalid data, the LSM-based data merging is executed to merge files containing more than half of invalid data <span class="text-blue-500">(❸)</span>. Practically, LSM-based data merging reads out the rest of valid data in the file (e.g. $\{F_A + I_2 : V_{A2}\}$, $\{F_A + I_5 : V_{A5}\}$, and $\{F_B + I_2 : V_{B2}\}$), sorts data by their keys, merges to a new file, and writes the file to new flash pages.
+To alleviate the lifetime issues caused by updating training data, systems usually employ the append-only Log-Structured Merge-Tree (LSM) based strategy. The bottom part of `Figure 1` provides the conceptual procedures of the append-only LSM-based strategy. <Mark>All updated training data will be buffered in the write buffer before being updated to SSDs</Mark> <span class="text-blue-500">(❶)</span>.
+
+![Figure 1](/img/content/thesis-0206/fig1.png#50)
+
+For example, $\{F_A + I_1 : V'_{A1}\}$ in the write buffer denotes that the value of item 1 ($I_1$) belonging to feature A ($F_A$) is updated to $V'_{A1}$. Instead of updating data in the SSD out-of-place, LSM-based strategy <Mark>appends newly updated data to new flash pages</Mark>,
+
+<Note>
+這一步是由 software middleware 執行，它會呼叫 syscall（例如 `write()`）把 DRAM write buffer 的資料寫入 SSD。這裡的 software middleware 似乎指的是在 OS user space 運作的 KV storage engine，例如 RocksDB、LevelDB。
+</Note>
+
+and <Mark>marks the previous data as invalid in the software middleware</Mark> <span class="text-blue-500">(❷)</span>.
+
+<Note>
+這裡的 software middleware 也是指 KV storage engine。
+</Note>
+
+Practically, a batch of updated data will be written to SSDs <Mark>as a file (usually aligns with the flash page size)</Mark> and <Mark>the software middleware keeps track of the metadata of each file</Mark> (e.g., the amount of invalid data).
+
+<Note>
+software middleware 就是全知者，它管理了所有 page 的 metadata。當 $\{F_A + I_1 : V'_{A1}\}$ 寫進 page 4 時，它會知道 $\{F_A + I_1 : V_{A1}\}$ 曾經出現在 page 1，因此會把 page 1 的 `invalid data count` `+1`。
+</Note>
+
+
+Due to the fact that, <Mark>the invalid status of data is maintained in the software middleware</Mark>, the SSD controller cannot know which flash pages contain invalid data.
+
+To reclaim space occupied by invalid data, the LSM-based data merging is executed to <Mark>merge files containing more than half of invalid data</Mark> <span class="text-blue-500">(❸)</span>.  Practically, LSM-based data merging reads out the rest of valid data in the file (e.g. $\{F_A + I_2 : V_{A2}\}$, $\{F_A + I_5 : V_{A5}\}$, and $\{F_B + I_2 : V_{B2}\}$), sorts data by their keys, merges to a new file, and writes the file to new flash pages.
+
+<Note>
+compaction（這裡提到的 merge）也是由 software middleware 執行，並且是非同步執行。software middleware 會監控每個 file（也就是它 maintain 的那些 pages），每次 DRAM $\rightarrow$ SSD 寫入發生都會增加一定量的 invalid KV items。而當 invalid data 量達到一個閾值（例如 > 50%）之後就會觸發 compaction：
+1. 讀取所有 `invalid data count` 超過一半的 files 到 DRAM，filter 出 valid KV items。
+2. 重新按照 key 字典序排序。（如果每個 SSD 內的 page 都已經按照 key 字典序排序了，那這裡排序其實可以做到 $O(n)$，方法類似 merge sort 的雙指針）
+3. 再次 batch 這些資料，寫入 SSD 乾淨的 pages。
+4. Discard：對舊的 files 佔用的空間呼叫 `TRIM` 指令告訴 SSD controller。
+5. Physical Reclaim：SSD controller 收到 `TRIM` 後，會將舊 files 所在的物理 pages 標記為垃圾。實際的空間回收會等到 SSD 內部執行 garbage collection 時以 Block 為單位進行擦除。
+</Note>
+
+<Reference>
+[tshine73 - 資料工程師修煉之路 系列 第 9 篇：Storage and Retrieval(2) - SSTables and LSM-Tree](https://ithelp.ithome.com.tw/m/articles/10243418)
+</Reference>
+
+
+<Reference>
+[数据存储张 - LevelDB深入浅出之整体架构](https://zhuanlan.zhihu.com/p/67833030)
+</Reference>
+
+<Reference>
+[Fu Zhe's Blog - [笔记] WiscKey: Separating Keys from Values in SSD-Conscious Storage（但這篇筆記提到的方法跟論文不一樣，WiscKey 這種 key、value 分離的設計不適用於 RecSys）](https://fuzhe1989.github.io/2017/05/19/wisckey-separating-keys-from-values-in-ssd-conscious-storage/)
+</Reference>
+
 
 ### 2.2 Observation & Motivation
 
@@ -168,3 +280,4 @@ Aiming for minimizing reading the amount of unused data from SSDs during recomme
 ## 6 ACKNOWLEDGEMENT
 
 We would like to thank Yunho Jin, Samuel Hsia, Udit Gupta, Mark Wilkening and Jeff (Jun) Zhang for their thoughtful comments and suggestions. This work was supported in part by the Ministry of Science and Technology, Taiwan, under Grant No. 110-2917-1-564-025, the Application Driving Architectures (ADA) Research Center, a JUMP Center cosponsored by SRC and DARPA.
+
