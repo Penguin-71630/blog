@@ -1,12 +1,21 @@
 ---
-title: A Joint Management Middleware to Improve Training Performance of Deep Recommendation Systems with SSDs
-link: thesis-0206
+title: 論文筆記：A Joint Management Middleware to Improve Training Performance of Deep Recommendation Systems with SSDs
+link: paper-0206
 excludeFromSummary: true
 date: 2026-02-06
 draft: true
 ---
 
 
+
+:::info
+Chun-Feng Wu, Carole-Jean Wu, Gu-Yeon Wei, and David Brooks. 2022.
+A Joint Management Middleware to Improve Training Performance of
+Deep Recommendation Systems with SSDs. In Proceedings of the 59th
+ACM/IEEE Design Automation Conference (DAC) (DAC ’22), July 10–
+14, 2022, San Francisco, CA, USA. ACM, New York, NY, USA, 6 pages.
+https://doi.org/10.1145/3489517.3530426
+:::
 
 ## ABSTRACT
 
@@ -186,53 +195,218 @@ compaction（這裡提到的 merge）也是由 software middleware 執行，並�
 
 ### 2.2 Observation & Motivation
 
-Although LSM-based strategy can recycle space occupied by invalid KV-items, it is not made aware of the access behavior gap between SSDs and the recommendation model training. The access behavior gap is that the recommendation model training reads out whole features during the data preprocessing phase, each of feature contains ten of thousands or even more KV-items, but the data arrangement of SSDs is not aware of this application behavior. Due to the unawareness, a LSM-based strategy may mix KV-items belonging to different features in the same flash page during data merging. For example, data belonging to feature A ($F_A$) and B ($F_B$) are mixed in several flash pages in `Figure 1`. Data belonging to $F_A$ occupies three flash pages even though only two flash pages are enough to store $F_A$ in the ideal case. In this example, all three flash pages shall be read out even when the training process only requires $F_A$, and data belonging to $F_B$ are considered as unused data. Reading out unused data may increase the overall read size and systems require longer read time to get the required features. On the other hand, SSDs provide high bandwidth to increase read performance by reading out multiple flash pages simultaneously. However, reading flash pages with unused data wastes the bandwidth resources and hurts the throughput. Finally, reading unused data may increase overall read size and waste high bandwidth so as to increase the time for training recommendation models.
+Although LSM-based strategy can recycle space occupied by invalid KV-items, it is not made aware of the access behavior gap between SSDs and the recommendation model training. The access behavior gap is that the recommendation model training reads out whole features during the data preprocessing phase, each of feature contains ten of thousands or even more KV-items, but <Mark>the data arrangement of SSDs is not aware of this application behavior</Mark>. Due to the unawareness, a <Mark>LSM-based strategy may mix KV-items belonging to different features in the same flash page during data merging</Mark>. For example, data belonging to feature A ($F_A$) and B ($F_B$) are mixed in several flash pages in `Figure 1`. Data belonging to $F_A$ occupies three flash pages even though only two flash pages are enough to store $F_A$ in the ideal case. In this example, all three flash pages shall be read out even when the training process only requires $F_A$, and data belonging to $F_B$ are considered as unused data. Reading out unused data may increase the overall read size and systems require longer read time to get the required features. On the other hand, SSDs provide high bandwidth to increase read performance by reading out multiple flash pages simultaneously. However, reading flash pages with unused data wastes the bandwidth resources and hurts the throughput. Finally, reading unused data may increase overall read size and waste high bandwidth so as to increase the time for training recommendation models.
 
-We build an emulator to validate that running a LSM-based strategy will mix data belonging to different features and thus degrades read performance. In this case, unused training data will be read during training recommendation models. We collect multiple recommendation datasets from Kaggle and build six synthetic datasets. The extra extra large (XXL), extra large (XL), large (L), medium (M), small (S) and extra small (XS) datasets have around 1.6, 0.8, 0.51, 0.31, 0.16 and 0.08 billions of training KV-items, respectively. For the initialization, all items belonging to the same feature will be written to the SSD in a batch. After the initialization, our emulator uniformly updates KV-items and triggers LSM-based data merging to merge files which contain more than half of invalid data. After that, our emulator will read out features from the SSD to simulate the behavior of recommendation model training. More details of the datasets and the experimental setups are provided in Section 4.1.
+#### Experiment
+
+We build an emulator to validate that running a LSM-based strategy will mix data belonging to different features and thus degrades read performance. In this case, unused training data will be read during training recommendation models.
+- We collect multiple recommendation datasets from Kaggle and build 6 synthetic datasets.
+- The extra extra large (XXL), extra large (XL), large (L), medium (M), small (S) and extra small (XS) datasets have around 1.6, 0.8, 0.51, 0.31, 0.16 and 0.08 billions of training KV-items, respectively.
+
+1. Initialization: all items belonging to the same feature will be written to the SSD in a batch.
+2. Our emulator uniformly updates KV-items and triggers LSM-based data merging to merge files which contain more than half of invalid data. 
+3. Our emulator will read out features from the SSD to simulate the behavior of recommendation model training.
+
+(More details of the datasets and the experimental setups are provided in Section 4.1)
 
 The evaluation results of both overall read time and read throughput are shown in Figure 2. Figure 2a illustrates that systems adopting the LSM-based strategy incur 1.53X ~ 2X longer read time than that of the optimal read case. This extra read time is caused by reading out 1.47X ~ 1.85X more data, where the data turns out to be unused. Moreover, reading un-needed data consumes additional bandwidth provided by SSDs and thus decreases effective bandwidth utilization. Based on our evaluation results shown in Figure 2b, the throughput of reading features from systems running the LSM-based strategy drops by around 22% ~ 31% compared with the optimal read case.
 
-![Figure 2](/img/content/thesis-0206/fig2.png#40)
+![Figure 2](/img/content/thesis-0206/fig2.png#60)
 
-This work is strongly motivated by the urgent need to improve the read performance for recommendation training systems with SSDs. We propose a joint management middleware between recommendation systems and SSDs, so as to exploit unique access patterns of the recommendation model training (i.e. feature-based training) to facilitate the management of SSDs. Our ultimate goal is to improve the read performance by reducing the amount of unused data and utilizing the high parallelism offered by SSDs. The major technical challenge falls on (1) how to eliminate the access behavior gap by pro-actively merging data belonging to the same feature without seriously hurting SSD's lifetime, and (2) how to improve SSD's bandwidth utilization by smartly pinning data in the write buffer.
+This work is strongly motivated by the urgent need to improve the read performance for recommendation training systems with SSDs. <Mark>We propose a joint management middleware between recommendation systems and SSDs, so as to exploit unique access patterns of the recommendation model training</Mark> (i.e. feature-based training) to facilitate the management of SSDs. Our ultimate goal is to:
+
+1. Improve the read performance by reducing the amount of unused data.
+2. Utilizing the high parallelism offered by SSDs.
+
+<Note>
+SSD 跟 HDD 最大的不同之一就是 read/write 可以 multi-channel 平行處理。
+</Note>
+
+The major technical challenge falls on:
+1. How to eliminate the access behavior gap by <Mark>pro-actively merging data belonging to the same feature</Mark> without seriously hurting SSD's lifetime.
+2. how to improve SSD's bandwidth utilization by <Mark>smartly pinning data in the write buffer</Mark>.
 
 
 ## 3 REC-AWARE SSD DATA ARRANGER
 
 ### 3.1 Overview
 
-This section presents our rec-aware SSD data arranger (READER) to periodically rearrange KV-items stored inside SSDs with considering the recommendation model training behavior. As shown in Figure 3, READER is a middleware between the deep recommendation system and the SSD, and there is no modifications needed for both the recommendation training system and the FTL design inside the SSD. Section 3.2 presents two main data structures to keep track of the relation between each feature and its data arrangements in the SSD. Section 3.3 introduces the rec-aware data merger to merge scattered data belonging to the same feature. Section 3.4 then presents the rec-aware data pinner to improve bandwidth utilization by selecting frequently updated features and pinning data belonging to the features. Additionally, to avoid seriously hurting the lifetime of SSDs, updated KV-items will be buffered in the memory and appended to SSDs as a batch.
+This section presents our rec-aware SSD data arranger (READER) to periodically rearrange KV-items stored inside SSDs with considering the recommendation model training behavior. As shown in Figure 3, READER is a middleware between the deep recommendation system and the SSD, and there is no modifications needed for both the recommendation training system and the FTL design inside the SSD.
+
+<Note>
+  FTL：Flash Translation Layer，SSD 的核心韌體，負責 address mapping（把主機的 LBA (Logical Block Address) 轉換成 PBA (Physical Block Address)）、garbage collection、wear leveling（磨損均衡，因為每個 cell 都有 P/E Cycle）等。
+</Note>
+
+- Section 3.2 presents two main data structures to keep track of the relation between each feature and its data arrangements in the SSD.
+- Section 3.3 introduces the rec-aware data merger to merge scattered data belonging to the same feature.
+- Section 3.4 then presents the rec-aware data pinner to improve bandwidth utilization by selecting frequently updated features and pinning data belonging to the features. Additionally, to avoid seriously hurting the lifetime of SSDs, updated KV-items will be buffered in the memory and appended to SSDs as a batch.
 
 ![Figure 3](/img/content/thesis-0206/fig3.png#30)
 
 
-### 3.2 Metadata Manger
+### 3.2 Metadata Manager
+
+<Note>
+ 備註：原論文標題有 typo。
+</Note>
 
 To bridge the access behavior gap between recommendation model training and the SSD, the metadata manager maintains two major data structures (as shown in Figure 4) to keep track of the relation between each feature and its data arrangements in the SSD, i.e., a feature table and a logical page table. Both of them are stored in storage devices and parts of these tables will be loaded and cached in memory on-demand for fast lookup.
 
-The feature table is a hash table, where the key is a feature (i.e., $F_i$) and its corresponding value is a linked list. Each node in a linked list stores an id of a logical page (i.e., $LP_{id}$) which accommodates KV-items belonging to the feature, and a counter (i.e., KV_Cnt) to indicate the numbers of the KV-items in the page. Please note that, the size of a logical page is aligned with the flash page size. To obtain KV-items belonging to a feature, our middleware traverses the linked list to find all corresponding pages, reads out all these pages to memory, and then looks up KV-items inside these pages byte-by-byte. This design can save a significant amount of space without maintaining an address for each KV-item especially when the size of an address is close to a KV-item. Even if each KV-item can attain an address, the corresponding page shall still be entirely read out because the minimum read granularity of an SSD is a flash page. Thus, most of key-value databases designed for SSDs usually follow this design philosophy (e.g., LevelDB) to trade little read overhead for significantly minimizing the space requirements.
+![Figure 4](/img/content/thesis-0206/fig4.png#60)
 
-Additionally, controllers inside the SSD lack of the status information (i.e., valid or invalid) of each KV-item because both data updating and merging are controlled by our middleware outside SSDs. Thus, we also maintain a logical page table to keep track of the status information for each page. The logical page table is a hash table, where the key is an id of a logical page (i.e., $LP_{id}$) and its value is a linked list chaining all features (i.e., $F_i$) whose KV-items are stored in this page. When all KV-items in a page are marked as invalid, then all features will be removed from the linked list. In this case, our middleware will notify the SSD to mark the corresponding physical page as an invalid page.
+The <Mark>feature table</Mark> is a hash table, where:
+- `key`: a feature (i.e., $F_i$)
+- `value`: a linked list
+
+Each node in a linked list stores:
+- an id of a logical page (i.e., $LP_{id}$) which accommodates KV-items belonging to the feature
+- and a counter (i.e., `KV_Cnt`) to indicate the numbers of the KV-items in the page
+
+```cpp
+FeatureTable = {
+  F0 : LinkedList(
+    Node(LP_id, KV_Cnt) -> Node(LP_id, KV_Cnt) -> Node(LP_id, KV_Cnt)
+  ),
+  F1 : LinkedList(
+    Node(LP_id, KV_Cnt) -> Node(LP_id, KV_Cnt)
+  ),
+}
+```
+
+Please note that, the size of a logical page is aligned with the flash page size.
+
+To obtain KV-items belonging to a feature, our middleware traverses the linked list to find all corresponding pages, <Mark>reads out all these pages</Mark> to memory, and then <Mark>looks up KV-items inside these pages byte-by-byte</Mark>.
+
+<Note>
+假設要抓 `F0` 的 KV items，那只要某個 page 包含至少一個屬於 `F0` 的 KV item 這個 page 就會被讀取。
+</Note>
+
+This design can save a significant amount of space without maintaining an address for each KV-item especially when the size of an address is close to a KV-item. Even if each KV-item can attain an address, the corresponding page shall still be entirely read out because the minimum read granularity of an SSD is a flash page.
+
+<Note>
+通常一個 KV item 跟位址指標大小是同個量級的，所以如果對每個 KV item 都要維護一個指標那記憶體 overhead 會非常高，再來就是 SSD 也只允許你一次讀一個 flash page（minimum read granularity）。
+</Note>
+
+Thus, most of key-value databases designed for SSDs usually follow this design philosophy (e.g., LevelDB) to trade little read overhead for significantly minimizing the space requirements.
+
+Additionally, controllers inside the SSD lack of the status information (i.e., valid or invalid) of each KV-item because both data updating and merging are controlled by our middleware outside SSDs. Thus, we also maintain a logical page table to keep track of the status information for each page.
+
+The <Mark>logical page table</Mark> is a hash table, where:
+- `key`: an id of a logical page (i.e., $LP_{id}$)
+- `value`: is a linked list chaining all features (i.e., $F_i$) whose KV-items are stored in this page.
+
+```cpp
+LogicalPageTable = {
+  LP_id0 : LinkedList(
+    Node(F0) -> Node(F2) -> Node(F5)
+  ),
+  LP_id1 : LinkedList(
+    Node(F1) -> Node(F2)
+  ),
+}
+```
+
+When all KV-items in a page are marked as invalid:
+1. Remove all nodes (aka. features) from the linked list.
+2. READER notifies SSD's FTL firmware to mark the corresponding physical page as an invalid page.
 
 
 ### 3.3 Rec-aware Data Merger
 
-The proposed rec-aware data merger, as shown in Figure 4, is designed to merge scattered KV-items belonging to the same feature with exploiting the feature-oriented data structures maintained by the metadata manager. Our rec-aware data merger is activated when an updated KV-item is appended from the write buffer to an SSD.
+The proposed <Mark>rec-aware data merger</Mark>, as shown in Figure 4, is:
+- Purpose: To merge scattered KV-items belonging to the same feature
+- How to Achieve: exploiting the feature-oriented data structures maintained by the metadata manager. Our rec-aware data merger is activated when an updated KV-item is appended from the write buffer to an SSD.
 
-![Figure 4](/img/content/thesis-0206/fig4.png#40)
 
-As shown in Figure 4, there are two main stages of our data merger: (1) select victim features <span class="text-blue-500">(❶)</span>, and (2) merge KV-items <span class="text-blue-500">(❷ - ❺)</span>. To select a suitable victim feature, our data merger looks up the feature table and picks the updated features whose feature-fragmentation degree is higher than a threshold. The feature-fragmentation degree indicates the ratio between the overall size of flash pages occupied by all KV-items corresponding to the feature and the total size of these KV-items.To avoid hurting SSD lifetime, instead of merging all KV-items belonging to victim features, our data merger will not merge KV-items located in the low-merging-benefit pages. A low-merging-benefit page indicates a page containing a lot of KV-items (e.g., more than a half in a page) belonging to the victim feature. Merging KV-items in the low-merging-benefit page has very limited improvement on read performance, but the merge traffics may degrade the lifetime of SSDs. Practically, our data merger judges whether a page is low-merging-benefit with regard to the feature by looking up the $KV_{Cnt}$ in the feature table. After deciding the victim pages, our data merger reads out all victim pages from SSDs and merges KV-items belonging to victim features <span class="text-blue-500">(❷ & ❸)</span>. Our data merger then writes the new merged pages to the SSDs, and updates both tables in the metadata manager <span class="text-blue-500">(❹ & ❺)</span>.
+
+As shown in Figure 4, there are two main stages of our data merger: (1) select victim features <span class="text-blue-500">(❶)</span>, and (2) merge KV-items <span class="text-blue-500">(❷ - ❺)</span>.
+
+
+(Recall)
+```cpp
+FeatureTable = {
+  F0 : LinkedList({ LP_id, KV_Cnt } -> { LP_id, KV_Cnt } -> { LP_id, KV_Cnt }),
+  F1 : LinkedList({ LP_id, KV_Cnt } -> { LP_id, KV_Cnt }),
+}
+LogicalPageTable = {
+  LP_id0 : LinkedList({F0 -> F2 -> F5}),
+  LP_id1 : LinkedList({F1 -> F2 -> F3 -> F4}),
+}
+```
+
+To select a suitable victim feature, our data merger looks up the feature table and picks the updated features whose feature-fragmentation degree is higher than a threshold.  The feature-fragmentation degree indicates the ratio between the overall size of flash pages occupied by all KV-items corresponding to the feature and the total size of these KV-items.
+
+
+<Note>
+Feature-Fragmentation Degree：為了讀取一個 feature 的所有 KV items，需要讀取多少 pages。這個數值代表讀取放大率。
+$$
+\text{Feature-Fragmentation Degree} = \frac{\text{Total Size of Occupied Flash Pages}}{\text{Total Size of Valid KV Items}}
+$$
+當一個 feature 的 fragmentation degree 超過一定標準時，標記為 victim。這就表示這個 feature 的 KV items 太散亂了，需要進行 compaction。
+</Note>
+
+![Figure 4](/img/content/thesis-0206/fig4.png#50)
+
+To avoid hurting SSD lifetime, instead of merging all KV-items belonging to victim features, our data merger will not merge KV-items located in the low-merging-benefit pages. <Mark>A low-merging-benefit page indicates a page containing a lot of KV-items belonging to the victim feature</Mark>.
+
+<Note>
+原論文這裡提到的標準是超過一半。檢查方法是去看 `FeatureTable[F]` 這個 linked list 的 node 的 `KV_Cnt`。
+</Note>
+
+Merging KV-items in the low-merging-benefit page has very limited improvement on read performance, but the merge traffics may degrade the lifetime of SSDs. Practically, our data merger judges whether a page is low-merging-benefit with regard to the feature by looking up the $KV_{Cnt}$ in the feature table.
+
+
+After deciding the victim pages, our data merger reads out all victim pages from SSDs and merges KV-items belonging to victim features <span class="text-blue-500">(❷ & ❸)</span>. Our data merger then writes the new merged pages to the SSDs, and updates both tables in the metadata manager <span class="text-blue-500">(❹ & ❺)</span>.
+
+<Note>
+SSD 裡面一開始有 5 個 pages，分別是左排的 3 個（假設由上至下依序編號為 M, N, O）與右排的上兩個（假設由上至下依序編號為 P, Q）。
+
+假設 Merger 已經判斷出 feature A 的 fragmentation degree 過大（按照論文的公式我認為是 $4 / 2 = 200\%$，因為 feature A 實際有效的 KV items 只有 6 個，最優需要讀取 $ceil(6 / 3) = 2$ 個 pages，然而現在卻有 $4$ 個 pages (M, N, P, Q) 包含 feature A 的資料）
+
+那麼合併方式是：
+
+1. 抓出所有 high-merging benefit 的 pages，也就是 M, N, Q，這幾個 page 包含 A 的資料比都只有 33%，然後讀進 write buffer。
+
+2. iterate 所有 victim pages，取出所有 valid 的 feature A 的 KV items，batch 綁在一起寫回 SSD，過程中同時更新：
+    - feature table：把被 compact 的 page 從 `FeatureTable[A]` 拔掉，對於寫回 SSD 的新 page 宣告一個 node 之後 append 到 `FeatureTable[A]`。
+    - logical page table：對於被 compact 的 page，把 A 從 `LogicalPageTable[該 page]` 拔掉。
+
+3. 如果過程中發現一個 page 扣除掉 invalid KV items 與屬於 A 的 KV items 之後已經是空的了（也就是這個 page 不會再被其他 feature 需要，對應到 page M, N），那把這個 page 的編號通知 SSD 的 FTL 請它之後透過排程處理後續的 garbage collection。（SSD 雖然不知道哪些 KV item 是 invalid 的但應該要可以知道哪些 flash page 是 invalid 的吧）
+</Note>
 
 
 ### 3.4 Rec-aware Data Pinner
 
-Gathered KV-items may be gradually mixed with other items belonging to different features until our data merger merges the feature again. We propose a rec-aware data pinner to avoid easily mixing KV-items belonging to different features during appending updated KV-items to SSDs. Our rec-aware data pinner pins (or locks) updated KV-items belonging to a feature in the write buffer and unpins items when the size of pinned items belonging to a feature reaches a threshold (e.g., a quarter of flash page size). With this design, items belonging to the same feature have higher probability to be stored in a same flash page so as to minimize reading unused data and improve the utilization of SSD's bandwidth.
+Gathered KV-items may be gradually mixed with other items belonging to different features until our data merger merges the feature again. We propose a rec-aware data pinner to avoid easily mixing KV-items belonging to different features during appending updated KV-items to SSDs. Our rec-aware data pinner:
+- pins (or locks) updated KV-items belonging to a feature in the write buffer
+- unpins items when the size of pinned items belonging to a feature reaches a threshold (e.g., 1/4 of flash page size).
 
-Specifically, our rec-aware data pinner pins updated KV-items belonging to features which have more KV-items in the write buffer. Practically, modern Linux kernel provides `pin_user_pages()` and `unpin_user_pages()` functions to pin and unpin user pages in the memory. Our data pinner maintains a rec-aware pin structure (as shown in Figure 5), which is a max-heap data structure, to keep track of new updated KV-items. Each node in the rec-aware pin structure contains two elements, the identification of a feature ($Feature_{id}$) and the number of corresponding KV-items (#Items) in the write buffer. The number of KV-items belonging to a feature is set as the key of the max heap structure.
+With this design, items belonging to the same feature have higher probability to be stored in a same flash page so as to minimize reading unused data and improve the utilization of SSD's bandwidth.
 
-![Figure 5](/img/content/thesis-0206/fig5.png#50)
+Specifically, our rec-aware data pinner pins updated KV-items belonging to features which have more KV-items in the write buffer. Practically, modern Linux kernel provides `pin_user_pages()` and `unpin_user_pages()` functions to pin and unpin user pages in the memory. Our data pinner maintains a rec-aware pin structure (as shown in `Figure 5`), which is a max-heap data structure, to keep track of new updated KV-items. Each node in the rec-aware pin structure contains two elements, the identification of a feature ($Feature_{id}$) and the number of corresponding KV-items (#Items) in the write buffer. The number of KV-items belonging to a feature is set as the key of the max heap structure.
 
-Figure 5 provides an example to show the interaction between our rec-aware data pinner and rec-aware pin structure. The rec-aware pin structure will be updated when an updated KV-item is added to the write buffer or appended to an SSD. Our rec-aware data pinner will select to pin KV-items belonging to the top-n features in the pin structure ($F_A$ in this example). After that, our data pinner calls the kernel function to pin KV-items (i.e., $\{F_A I_3 : V_{A3}\}$, $\{F_A I_1 : V'_{A1}\}$ and $\{F_A I_2 : V'_{A2}\}$) related to selected features. Other non-pinned KV-items will than be appended to SSDs. Please note that, pinning too much items shrinks the available buffer size for new coming updated KV-items, and thus non-pinned KV-items belonging to different features will be mixed together easier. Based on our testing, to decide n for top-n, we suggest to limit the overall pinning size to no more than 5% of the overall write buffer size.
+![Figure 5](/img/content/thesis-0206/fig5.png#60)
+
+`Figure 5` provides an example to show the interaction between our rec-aware data pinner and rec-aware pin structure. The rec-aware pin structure will be updated when an updated KV-item is added to the write buffer or appended to an SSD. Our rec-aware data pinner will select to pin KV-items belonging to the top-n features in the pin structure ($F_A$ in this example). After that, our data pinner calls the kernel function to pin KV-items (i.e., $\{F_A I_3 : V'_{A3}\}$, $\{F_A I_1 : V'_{A1}\}$ and $\{F_A I_2 : V'_{A2}\}$) related to selected features. Other non-pinned KV-items will than be appended to SSDs. Please note that, pinning too much items shrinks the available buffer size for new coming updated KV-items, and thus non-pinned KV-items belonging to different features will be mixed together easier. Based on our testing, to decide $n$ for top-$n$ features, we suggest to <Mark>limit the overall pinning size to no more than 5% of the overall write buffer size</Mark>.
+
+```mermaid
+graph LR
+    A[新 KV item 進 buffer] --> B{屬於熱門 feature 嗎?}
+    
+    B -- "是" --> C[Pin 該 KV item]
+    
+    C --> D{湊滿閾值了嗎?}
+    D -- 沒滿 --> C
+    D -- 滿了 --> E[unpin 該 feature 所有 pages]
+    
+    B -- "否 (cold feature)" --> F[直接通過]
+    
+    E --> G[Merger 接手]
+    F --> G
+    
+    G --> H[執行 Rec-aware Merge]
+    H --> I[寫入 SSD]
+```
 
 
 
@@ -241,13 +415,54 @@ Figure 5 provides an example to show the interaction between our rec-aware data 
 
 ### 4.1 Evaluation Setup and Performance Metrics
 
-This section evaluates the effectiveness of the proposed middleware for improving the feature reading performance of recommendation model training over SSDs, in terms of the overall read time and the SSD throughput. We evaluate both metrics by comparing the proposed rec-aware SSD data arranger (denoted as "READER") with two baseline approaches. That is, the LSM-based strategy (denoted as "LSM"), which is adopted in Baidu's recommendation systems, and the optimal read strategy (denoted as "OPT"). In contrast to append updated data to SSDs, the optimal read strategy runs RMW operations to avoid mixing items belonging to different features in the same page. Modern computer systems adopt write buffer to optimize the write operations. To provide further optimization for all approaches, all KV-items belonging to the same feature in the write buffer will be gathered and written to SSDs in a batch.
+This section evaluates the effectiveness of the proposed middleware for improving the feature reading performance of recommendation model training over SSDs, in terms of <Mark>the overall read time</Mark> and <Mark>the SSD throughput</Mark>.
+
+<Note>
+Recall：Pinner 和 Merger 的目的，其實就是想「保留 Append 的寫入優勢，但同時盡量逼近 RMW 的讀取優勢」(透過延遲湊團來達成)。我猜這裡提到的 SSD throughput 是指 read throughput。
+</Note>
+
+We evaluate both metrics by comparing the proposed rec-aware SSD data arranger (denoted as "READER") with two baseline approaches. That is, the LSM-based strategy (denoted as "LSM"), which is adopted in Baidu's recommendation systems, and the optimal read strategy (denoted as "OPT"). In contrast to append updated data to SSDs, the optimal read strategy runs RMW operations to avoid mixing items belonging to different features in the same page.
+
+<Note>
+Optimal read throughput 就是不管其他成本，想辦法都要讓 read amplification 維持在 1，使用的方式是 RMW，每次更新一個 feature 的 KV item 都要把該 KV item 所在的 page 完整讀出來，然後寫一個完整的新的 page 回去，這樣的 write amplification 是 $\frac{\text{page size}}{\text{KV size}}$，對 SSD 的壽命非常非常不利而且還會佔用 read throughput（但這篇論文的結果似乎是假設 OPT 的 throughput 仍然是 100%）。
+</Note>
+
+Modern computer systems adopt write buffer to optimize the write operations. To provide further optimization for all approaches, all KV-items belonging to the same feature in the write buffer will be gathered and written to SSDs in a batch.
 
 
 ![Table 1](/img/content/thesis-0206/table1.png#50)
 
 
-As shown in Table 1, we build six larger synthetic datasets by collecting multiple datasets from Kaggle (e.g., Goodreads-books, Top Games on Google Play Store, Hotel Recommendation, etc.). The extra extra large (XXL), extra large (XL), large (L), medium (M), small (S) and extra small (XS) datasets have around 1.6, 0.8, 0.51, 0.31, 0.16 and 0.08 billions of KV-items, respectively. During the initialization of the experiments, KV-items belonging to the same feature are written to the SSD in a batch. Besides, a suitable memory size (i.e., around 2.5% of the size of each dataset) is configured as a write buffer. For example, the write buffer can buffer around 2 millions of the updated KV-items for the large dataset. Please note that, we also provide results under smaller write buffer in Section 4.2.2. After the initialization, with following the setting of previous works to update data uniformly, our emulator uniformly selects and updates KV-items in a dataset. Without loss of generality, the overall update counts are set to 800 millions to simulate that the systems have run for an enough long time. After that, our experiments will read out features from the SSD to train different models required by various web services, where the experiments totally read out around 60 thousands of features from the SSD. Due to the fact that the same feature will be selected to train different models, the total features read from SSDs are more than the feature in each dataset. For the testbed, we run the emulator on the HPE server with Intel® Xeon® Gold 6252n CPU, around 380 GB of DRAM and one Intel DC S4500 SSD. Based on our testing, the maximum throughput of Intel DC S4500 SSD is around 540MB/s. The operating system is Ubuntu 20.04.4. With following the configuration provided by previous works, we use "FIO" (version 3.16) with 64 queue depths to sent requests to the SSD for measuring the overall read time and throughput.
+As shown in Table 1, we build six larger synthetic datasets by collecting multiple datasets from Kaggle (e.g., Goodreads-books, Top Games on Google Play Store, Hotel Recommendation, etc.). The extra extra large (XXL), extra large (XL), large (L), medium (M), small (S) and extra small (XS) datasets have around 1.6, 0.8, 0.51, 0.31, 0.16 and 0.08 billions of KV-items, respectively.
+
+
+#### Experiment:
+1. KV-items belonging to the same feature are written to the SSD in a batch.
+2. Virtual write buffer: A suitable memory size (i.e., around 2.5% of the size of each dataset) is configured as a write buffer.
+    - For example, the write buffer can buffer around 2 millions of the updated KV-items for the large dataset.
+    - Please note that, we also provide results under smaller write buffer in Section 4.2.2.
+3. The emulator uniformly selects and updates KV-items in a dataset.
+    - Without loss of generality, the overall update counts are set to 800 millions to simulate that the systems have run for an enough long time.
+4. Read out features from the SSD to train different models required by various web services
+    - Totally read out around 60 thousands of features from the SSD.
+    - Due to the fact that the same feature will be selected to train different models, the total features read from SSDs are more than the feature in each dataset.
+
+#### Testbed of the Experiment
+- Emulator runs on HPE server.
+    - **OS**: Ubuntu `20.04.4`
+- **CPU**: Intel® Xeon® Gold 6252n
+- **DRAM**: around 380 GB
+- **SSD**: Intel DC S4500
+    - Maximum Throughput: <Mark>540 MB/s</Mark>
+    - Use "FIO" (version 3.16) with 64 queue depths to sent requests to the SSD for measuring the overall read time and throughput.
+    
+{/* For the testbed, we run the emulator on the HPE server with  CPU, around 380 GB of DRAM and one Intel DC S4500 SSD.  */}
+
+{/* Based on our testing, the maximum throughput of Intel DC S4500 SSD is around 540MB/s. */}
+
+{/* The operating system is Ubuntu 20.04.4.  */}
+
+{/* With following the configuration provided by previous works, we use "FIO" (version 3.16) with 64 queue depths to sent requests to the SSD for measuring the overall read time and throughput. */}
 
 
 ### 4.2 Evaluation Results
@@ -256,9 +471,16 @@ As shown in Table 1, we build six larger synthetic datasets by collecting multip
 
 ![Figure 6](/img/content/thesis-0206/fig6.png#90)
 
-Figure 6 provides the results of the read performance and SSD lifetime under running READER against the LSM-based strategy and optimal read strategy. Figure 6a shows the evaluation of the overall read time, where the x-axis indicates six datasets and the y-axis shows the overall SSD read time caused by reading required features. The results show that READER can save 20%~38% of overall read time compared with the LSM-based strategy. The reason is that READER manages the arrangement of KV-items in SSDs by considering the recommendation model training behavior. That is, READER gathers KV-items belonging to the same feature in a flash page. With running READER, systems read out fewer unused data during recommendation model training compared with systems running the LSM-based strategy.
+`Figure 6` provides the results of the read performance and SSD lifetime under running READER against the LSM-based strategy and optimal read strategy.
 
-Figure 6b shows the throughput evaluation where the y-axis shows the throughput of reading the required features from the SSD. The result shows that systems with running READER can reach 1.16X ~ 1.33X higher read throughput than the LSM-based strategy. The results imply that running READER has better utilization of SSD throughput than that of the LSM-based strategy. Moreover, with running READER, the throughput results are within 12% of the optimal read strategy. Although the optimal read strategy can provide the optimal read performance, it may seriously hurt the lifetime of SSDs. Figure 6c shows the lifetime evaluation, where the y-axis shows the update amplification. The definition of update amplification is that how much of extra data will be written to SSDs for updating a KV-item in average. The results show that the optimal read strategy requires around 400 times of extra writes for updating an item, and both READER and the LSM-based strategy only need 1 extra writes for updating each item. The results imply that running READER can improve around 400 times of SSD lifetime compared with using the optimal read strategy.
+`Figure 6a` shows the evaluation of the overall read time, where the x-axis indicates six datasets and the y-axis shows the overall SSD read time caused by reading required features. The results show that <Mark>READER can save 20%~38% of overall read time compared with the LSM-based strategy</Mark>. The reason is that READER manages the arrangement of KV-items in SSDs by considering the recommendation model training behavior. That is, READER gathers KV-items belonging to the same feature in a flash page. With running READER, systems read out fewer unused data during recommendation model training compared with systems running the LSM-based strategy.
+
+`Figure 6b` shows the throughput evaluation where the y-axis shows the throughput of reading the required features from the SSD. The result shows that systems with running <Mark>READER can reach 1.16X ~ 1.33X higher read throughput than the LSM-based strategy</Mark>. The results imply that running READER has better utilization of SSD throughput than that of the LSM-based strategy. Moreover, <Mark>with running READER, the throughput results are within 12% of the optimal read strategy</Mark>.
+
+Although the optimal read strategy can provide the optimal read performance, it may seriously hurt the lifetime of SSDs. `Figure 6c` shows the lifetime evaluation, where the y-axis shows the update amplification.
+- Definition of update amplification: Amount of extra data written to SSDs for updating per KV-item in average.
+
+The results show that the optimal read strategy requires around 400 times of extra writes for updating an item, and <Mark>both READER and the LSM-based strategy only need 1 extra writes for updating each item</Mark>. The results imply that running READER can improve around 400 times of SSD lifetime compared with using the optimal read strategy.
 
 
 
@@ -266,8 +488,7 @@ Figure 6b shows the throughput evaluation where the y-axis shows the throughput 
 
 ![Figure 7](/img/content/thesis-0206/fig7.png#50)
 
-
-Figure 7 shows that READER is also effective and stable compared with the LSM-based strategy on systems with smaller write buffer. With considering the deployment costs, small and medium-sized enterprises or even personal customers may tolerate fewer performance degradation by shrinking the size of write buffer. Figure 7a shows the evaluation of overall read time on the XL dataset, where the x-axis shows the relative size of the write buffer compared with the size used by training the XL dataset and the y-axis shows the normalized overall read time. The results show that READER can save 24% ~ 47% of overall read time compared with the LSM-based strategy. Moreover, the design of the LSM-based strategy is not aware of the behavior of recommendation model training so that the overall read time seriously fluctuates. Figure 7b shows the throughput evaluation, where the y-axis shows the read throughput. The results show that READER can reach 1.19X ~ 1.51X higher read throughput than the LSM-based strategy.
+`Figure 7` shows that READER is also effective and stable compared with the LSM-based strategy on systems with smaller write buffer. With considering the deployment costs, small and medium-sized enterprises or even personal customers may tolerate fewer performance degradation by shrinking the size of write buffer. `Figure 7a` shows the evaluation of overall read time on the <Mark>XL dataset</Mark>, where the x-axis shows the relative size of the write buffer compared with the size used by training the XL dataset and the y-axis shows the normalized overall read time. The results show that <Mark>READER can save 24% ~ 47% of overall read time compared with the LSM-based strategy</Mark>. Moreover, the design of the <Mark>LSM-based strategy is not aware of the behavior of recommendation model training so that the overall read time seriously fluctuates</Mark>. `Figure 7b` shows the throughput evaluation, where the y-axis shows the read throughput. The results show that <Mark>READER can reach 1.19X ~ 1.51X higher read throughput than the LSM-based strategy</Mark>.
 
 
 
