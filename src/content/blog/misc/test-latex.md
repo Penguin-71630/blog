@@ -4,7 +4,7 @@ link: test-latex
 catalog: true
 date: 2026-02-06 13:21:00
 categories:
-  - 工具
+  - 雜項
 ---
 
 ## 1. 行內公式 (Inline Math)

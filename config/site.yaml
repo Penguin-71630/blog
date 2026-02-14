@@ -43,12 +43,15 @@ site:
 # =============================================================================
 categoryMap:
   # Primary categories
-  随笔: life
-  笔记: note
+  課業筆記: coursenote
   工具: tools
-  周刊: weekly
+  音遊: rhythmgame
+  競程: cp
+  攝影: photo
+  札記: life
   # Secondary categories (for nested paths)
-  前端: front-end
+  雜項: misc
+  周刊: weekly
   # Add more as needed:
   # 书摘: reading
   # 后端: back-end
@@ -66,22 +69,35 @@ categoryMap:
 #   description: 分类描述文字，显示在卡片上
 # -----------------------------------------------------------------------------
 featuredCategories:
-  - link: life # 对应 categoryMap 中 随笔: life
-    label: 隨筆
-    image: /img/cover/2.webp
-    description: 生活札記
-  - link: note # 对应 categoryMap 中 笔记: note
-    label: 筆記
+  - link: coursenote # 对应 categoryMap 中 笔记: note
+    label: 課業筆記
     image: /img/cover/4.webp
-    description: 學東西的筆記
-  - link: note/front-end # 嵌套分类：笔记/前端
-    label: 前端
-    image: /img/cover/1.webp
-    description: 前端技術相關
+    description: 大學課程的筆記
+
   - link: tools # 对应 categoryMap 中 工具: tools
     label: 工具
     image: /img/cover/11.webp
-    description: 工具使用、效率提升
+    description: 工具使用方法
+
+  - link: rhythmgame
+    label: 音遊
+    image: /img/cover/1.webp
+    description: 音遊記錄
+
+  - link: cp
+    label: 競程
+    image: /img/cover/3.webp
+    description: 競程解題記錄、演算法學習筆記
+
+  - link: photo
+    label: 攝影
+    image: /img/cover/5.webp
+    description: 放一些自己拍的照片
+
+  - link: life # 对应 categoryMap 中 随笔: life
+    label: 札記
+    image: /img/cover/2.webp
+    description: 生活札記
 
 # =============================================================================
 # Featured Series
@@ -341,15 +357,15 @@ navigation:
   - name: 文章 # 有子菜单时，path 可省略
     icon: ri:quill-pen-ai-fill
     children: # 子菜单列表
+      - name: 歸檔
+        path: /archives
+        icon: ri:archive-2-fill
       - name: 分類
         path: /categories
         icon: ri:grid-fill
       - name: 標籤
         path: /tags
         icon: fa6-solid:tags
-      - name: 歸檔
-        path: /archives
-        icon: ri:archive-2-fill
   - name: 友站
     path: /friends
     icon: ri:links-line

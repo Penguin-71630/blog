@@ -4,10 +4,10 @@ link: hello-world
 catalog: true
 date: 2024-01-05 00:00:00
 tags:
-  - 随笔
+  - 隨筆
   - 生活
 categories:
-  - 随笔
+  - 札記
 ---
 
 你好，世界！这是我的第一篇随笔。
