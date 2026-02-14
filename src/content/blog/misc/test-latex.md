@@ -7,6 +7,11 @@ categories:
   - 雜項
 ---
 
+
+:::info
+owo
+:::
+
 ## 1. 行內公式 (Inline Math)
 這是一個行內公式 $a^2 + b^2 = c^2$。
 

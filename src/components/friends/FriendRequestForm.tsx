@@ -138,7 +138,7 @@ color: "${formData.color || '#d9d9d9'}"`;
                     htmlFor="friend-image"
                     className="mb-1.5 block font-bold text-gray-400 text-xs uppercase tracking-wide"
                   >
-                    大頭貼連結
+                    頭貼連結
                   </label>
                   <input
                     id="friend-image"

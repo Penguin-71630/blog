@@ -11,7 +11,10 @@ import mermaid from 'astro-mermaid';
 import pagefind from 'astro-pagefind';
 import robotsTxt from 'astro-robots-txt';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+import rehypeKatex from 'rehype-katex';
 import rehypeSlug from 'rehype-slug';
+import remarkDirective from 'remark-directive';
+import remarkMath from 'remark-math';
 import Sonda from 'sonda/astro';
 import { loadEnv } from 'vite';
 import svgr from 'vite-plugin-svgr';
@@ -20,16 +23,16 @@ import { rehypeImagePlaceholder } from './src/lib/markdown/rehype-image-placehol
 import { remarkLinkEmbed } from './src/lib/markdown/remark-link-embed.ts';
 import { normalizeUrl } from './src/lib/utils.ts';
 
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-
 import mdx from '@astrojs/mdx';
 
-
-
-/* For InfoBox */
-import remarkDirective from 'remark-directive'; // 引入插件
-import { visit } from 'unist-util-visit'; // 需要安裝: pnpm add -D unist-util-visit
+import { rehypeEncryptedBlock } from './src/lib/markdown/rehype-encrypted-block.ts';
+import { rehypeShokaAttrs } from './src/lib/markdown/rehype-shoka-attrs.ts';
+import { remarkEncryptedDirective } from './src/lib/markdown/remark-encrypted-directive.ts';
+import { remarkIns, remarkMark } from './src/lib/markdown/remark-shoka-effects.ts';
+import { remarkShokaPreprocess } from './src/lib/markdown/remark-shoka-preprocess.ts';
+import { remarkShokaRuby } from './src/lib/markdown/remark-shoka-ruby.ts';
+import { remarkShokaSpoiler } from './src/lib/markdown/remark-shoka-spoiler.ts';
+import { shokaMetaTransformer } from './src/lib/markdown/shiki-meta-transformer.ts';
 
 // Load YAML config directly with Node.js (before Vite plugins are available)
 // This is only used in astro.config.mjs - other files use @rollup/plugin-yaml
@@ -84,31 +87,77 @@ function conditionalSnowfall() {
   };
 }
 
-// 自定義轉換函式：把 :::type 轉成 <div class="admonition type">
-function remarkAdmonitions() {
-  return (tree) => {
-    visit(tree, (node) => {
-      if (
-        node.type === 'containerDirective' ||
-        node.type === 'leafDirective' ||
-        node.type === 'textDirective'
-      ) {
-        const data = node.data || (node.data = {});
-        const type = node.name; // 這裡就是 ::: 後面的字 (info, success...)
+// Build conditional plugin lists based on content config
+const contentConfig = yamlConfig.content || {};
 
-        // 只有當它是我們定義的類型時才處理
-        if (['info', 'success', 'warning', 'danger', 'tip'].includes(type)) {
-          data.hName = 'div';
-          data.hProperties = { class: `admonition ${type}` };
-
-          // 如果使用者沒有寫標題，自動產生預設標題
-          // 這裡邏輯稍微簡化，通常可以直接用內容
-          // 為了簡單，我們假設結構是 :::type [標題]
-        }
-      }
-    });
-  };
+// Remark plugins — order matters
+// remarkShokaPreprocess MUST be first: it re-parses raw text to fix GFM/remark conflicts
+// (+++, ~sub~, {% links %} YAML etc.) before any AST-level plugin runs.
+const remarkPlugins = [];
+{
+  const needsPreprocess =
+    contentConfig.enableShokaContainers !== false ||
+    contentConfig.enableShokaHexoTags !== false ||
+    contentConfig.enableShokaEffects !== false;
+  if (needsPreprocess) {
+    remarkPlugins.push([
+      remarkShokaPreprocess,
+      {
+        enableContainers: contentConfig.enableShokaContainers !== false,
+        enableHexoTags: contentConfig.enableShokaHexoTags !== false,
+        enableSuperSub: contentConfig.enableShokaEffects !== false,
+        enableMath: contentConfig.enableMath !== false,
+        enableEncryptedBlock: contentConfig.enableEncryptedBlock ?? false,
+      },
+    ]);
+  }
 }
+// remarkMath must run BEFORE ruby/spoiler/effects so that $...$ content
+// is already parsed into inlineMath/math nodes and won't be touched by text-scanning plugins.
+if (contentConfig.enableMath !== false) remarkPlugins.push(remarkMath);
+if (contentConfig.enableShokaSpoiler !== false) remarkPlugins.push(remarkShokaSpoiler);
+if (contentConfig.enableShokaRuby !== false) remarkPlugins.push(remarkShokaRuby);
+if (contentConfig.enableShokaEffects !== false) {
+  remarkPlugins.push(remarkIns, remarkMark);
+}
+// Encrypted block: remarkDirective is registered in BOTH places —
+// here for the main Astro pipeline (when remarkShokaPreprocess skips re-parse),
+// and inside remarkShokaPreprocess's re-parse pipeline (when it does re-parse).
+if (contentConfig.enableEncryptedBlock) {
+  remarkPlugins.push(remarkDirective, remarkEncryptedDirective);
+}
+// Link embed is always on (existing feature)
+remarkPlugins.push([
+  remarkLinkEmbed,
+  {
+    enableTweetEmbed: contentConfig.enableTweetEmbed ?? true,
+    enableOGPreview: contentConfig.enableOGPreview ?? true,
+  },
+]);
+
+// Rehype plugins — order matters
+const rehypePlugins = [
+  rehypeSlug,
+  [
+    rehypeAutolinkHeadings,
+    {
+      behavior: 'append',
+      properties: {
+        className: ['anchor-link'],
+        ariaLabel: 'Link to this section',
+      },
+    },
+  ],
+];
+if (contentConfig.enableShokaAttrs !== false) rehypePlugins.push(rehypeShokaAttrs);
+rehypePlugins.push(rehypeImagePlaceholder);
+if (contentConfig.enableMath !== false) rehypePlugins.push(rehypeKatex);
+// Encrypted block MUST be last rehype plugin — encrypts fully-rendered children
+if (contentConfig.enableEncryptedBlock) rehypePlugins.push(rehypeEncryptedBlock);
+
+// Shiki transformers
+const shikiTransformers = [];
+if (contentConfig.enableCodeMeta !== false) shikiTransformers.push(shokaMetaTransformer());
 
 // https://astro.build/config
 export default defineConfig({
@@ -118,34 +167,8 @@ export default defineConfig({
     // Enable GitHub Flavored Markdown
     gfm: true,
     // Configure remark plugins 
-    remarkPlugins: [
-      [
-        remarkLinkEmbed,   // for link embedding
-        {
-          enableTweetEmbed: yamlConfig.content?.enableTweetEmbed ?? true,
-          enableOGPreview: yamlConfig.content?.enableOGPreview ?? true,
-        },
-      ],
-      remarkDirective,     // for InfoBox
-      remarkAdmonitions,   // for InfoBox
-      remarkMath,  // LaTeX
-    ],
-    // Configure rehype plugins for automatic heading IDs and anchor links
-    rehypePlugins: [
-      rehypeSlug,
-      [
-        rehypeAutolinkHeadings,
-        {
-          behavior: 'append',
-          properties: {
-            className: ['anchor-link'],
-            ariaLabel: 'Link to this section',
-          },
-        },
-      ],
-      rehypeImagePlaceholder,
-      rehypeKatex,  // LaTeX
-    ],
+    remarkPlugins: remarkPlugins,
+    rehypePlugins: rehypePlugins,
     syntaxHighlight: {
       type: 'shiki',
       excludeLangs: ['mermaid'],
@@ -155,6 +178,7 @@ export default defineConfig({
         light: 'github-light',
         dark: 'github-dark',
       },
+      transformers: shikiTransformers,
     },
   },
   integrations: [

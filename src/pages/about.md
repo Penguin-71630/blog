@@ -53,7 +53,7 @@ https://github.com/benson0402
 | 大一 | 交大校內選拔賽 | 第 5 名 | 解出一題二分搜套差分約束系統 | 
 | 大一 | 交大新生個人賽 | 第 2 名 | - |
 | 高三 | APCS（2021 年 11 月場） | 實作 5 級分（原始分數 370） | 該次實作 2734 人報考，僅 5 人 5 級分 |
-| 高三 | 資訊學科競賽 台北市市賽 | 第 16 名 / 三等獎 | pC 80分 (位元 DP) |
+| 高三 | 資訊學科競賽 台北市市賽 | 第 16 名 / 三等獎 | pC 80 分 (位元 DP) |
 | 高三 | YTP 少年圖靈計畫 決賽 | 第 7 名 | - |
 | 高三 | 成大高中生程式設計邀請賽 | 第 2 名 | - |
 | 高三 | NPSC | 第 17 名 / 佳作 | - |
@@ -71,13 +71,13 @@ https://github.com/benson0402
 | --- | --- | --- |
 | 大一 | 交大 PCCA 寒訓 | [莫隊算法、CDQ 分治、Parallel Binary Search](https://www.youtube.com/watch?v=ym6_szBFoqk) |
 | 大一 | 資訊之芽竹區算法班 | [分治](https://www.csie.ntu.edu.tw/~sprout/algo2023/ppt_pdf/week06/divide_and_conquer_inclass(hc).pdf) |
-| 高三 | 附中x延平競程讀書會 | [根號算法 I（分塊、根號複雜度 Trade-off）](https://hackmd.io/@penguin71630/sqrt1#/) |
-| 高三 | 附中x延平競程讀書會 | [根號算法 II（操作分塊）](https://hackmd.io/@penguin71630/sqrt2#/) |
-| 高三 | 附中x延平競程讀書會 | [基礎 DP 複習（LIS 與背包問題）](https://hackmd.io/@penguin71630/DPpractice1#/) |
+| 高三 | 附中 x 延平競程讀書會 | [根號算法 I（分塊、根號複雜度 Trade-off）](https://hackmd.io/@penguin71630/sqrt1#/) |
+| 高三 | 附中 x 延平競程讀書會 | [根號算法 II（操作分塊）](https://hackmd.io/@penguin71630/sqrt2#/) |
+| 高三 | 附中 x 延平競程讀書會 | [基礎 DP 複習（LIS 與背包問題）](https://hackmd.io/@penguin71630/DPpractice1#/) |
 | 高三 | 附中資訊校隊培訓 | [字串演算法（Rolling Hash、KMP、Z-Value、Suffix Array/LCP）](https://slides.com/penguin71630/string) |
 | 高三 | 附中資訊暑期培訓 | [基礎計算幾何（向量基本知識、極角掃描線、Convex Hull、旋轉卡尺）](https://drive.google.com/file/d/11UBQ_4fGO8BSZIXReTIQH5UQZLBXXugy/view) |
 | 高三 | 附中資訊暑期培訓 | [基礎資料結構（PBDS、Sparse Table、Fenwick Tree、懶標線段樹）](https://drive.google.com/file/d/1FPmwB58dJ-0mmJS570frGKEHEVOLhj35/view) |
-| 高三 | 薇閣x嘉義x新化x附中 四校暑訓 | [分治（Master Theorem、Karatsuba's Algorithm、平面最近點對）](https://github.com/HHSH-CYSH-WGSH-HSNU-Summer-Camp/Divide-and-Conquer/blob/main/Divide%20and%20Conquer.pdf) |
+| 高三 | 薇閣 x 嘉義 x 新化 x 附中 四校暑訓 | [分治（Master Theorem、Karatsuba's Algorithm、平面最近點對）](https://github.com/HHSH-CYSH-WGSH-HSNU-Summer-Camp/Divide-and-Conquer/blob/main/Divide%20and%20Conquer.pdf) |
 
 
 
@@ -101,7 +101,7 @@ osu!mania 4k 有摸一點，能打 4 星左右的譜。最近想入坑太鼓達�
 
 右手 CPS 為 `9.7`（30 秒測試），左手為 `7.5`，我的手速使我面對高難譜非常吃力，碰到子彈或硬扛的鍵型我完全沒辦法把精度壓進 25ms 內。然而我最不缺的是研究譜面的耐心，因此對於一些節奏複雜的下位譜我能夠有不錯的成績，比如 Memory Forest 1 小、BLRINK 1 小。
 
-以前會[在 B 站發手元](https://space.bilibili.com/2021454142/upload/video)，但復學之後就忙到完全沒空剪手元了QQ。
+以前會[在 B 站發手元](https://space.bilibili.com/2021454142/upload/video)，但復學之後就忙到完全沒空剪手元了 QQ。
 
 
 ## <i class="ri-headphone-fill"></i> 喜歡的曲師

@@ -330,6 +330,18 @@ content:
   previewCacheTime: 3600 # 预览缓存时间(秒)
   lazyLoadEmbeds: true # 延迟加载嵌入
   postCardImagePosition: alternating # 文章卡片封面图位置在首页的显示控制 alternating 默认交替显示 left 封面图始终在左侧 right 封面图始终在右侧
+  enableShokaContainers: true   # :::提醒块 ;;;标签卡 +++折叠块
+  enableShokaAttrs: true        # [text]{.class} 属性语法
+  enableShokaEffects: true      # ++下划线++ ==高亮== ~下标~ ^上标^
+  enableShokaSpoiler: true      # !!隐藏文字!!
+  enableShokaRuby: true         # {文字^注音} 注音标注
+  enableShokaHexoTags: true     # {% links %} {% media %} Hexo标签
+  enableMath: true              # $数学公式$ KaTeX渲染
+  enableCodeMeta: true          # 代码块增强 (title, mark, command)
+  enableQuiz: true              # 练习题交互功能
+  enableEncryptedBlock: true    # :::encrypted{password="..."} 加密内容块
+
+
 
 # =============================================================================
 # Navigation Routes
@@ -372,6 +384,20 @@ navigation:
   - name: 關於
     path: /about
     icon: fa6-regular:circle-user
+  - name: 歌單
+    path: /music
+    icon: ri:music-2-fill
+
+
+bgm:
+  enabled: true  # (有 audio 时自动启用，显式 false 可禁用)
+  audio:
+    - title: 最爱山山
+      list:
+        - https://music.163.com/playlist?id=8676645748
+    - title: Love Vocaloid
+      list:
+        - https://music.163.com/playlist?id=8882890045
 
 # =============================================================================
 # Christmas/Seasonal Features
