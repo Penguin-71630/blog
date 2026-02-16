@@ -94,6 +94,11 @@ export function rehypeShokaAttrs() {
         if (child.type === 'text') {
           textNode = child;
         } else if (child.type === 'element' && child.children.length > 0) {
+          // ✨ 防火牆 1：如果這是數學公式 (<code class="math">)，絕對不要進去剝它的大括號！
+          // ✨ 升級 Pass 2 防火牆
+          const className = child.properties?.className;
+          if (Array.isArray(className) && className.some((c) => String(c).includes('math'))) continue;
+
           const last = child.children[child.children.length - 1];
           if (last?.type === 'text') textNode = last as Text;
         }
@@ -103,6 +108,9 @@ export function rehypeShokaAttrs() {
         const match = textNode.value.match(/\{([^}]+)\}\s*$/);
         if (match) {
           const attrs = parseAttrs(match[1]);
+          // ✨ 防火牆 2：如果大括號內根本不是合法的 CSS class/id (例如只有數字 18)，就放過它
+          if (Object.keys(attrs).length === 0) continue;
+
           textNode.value = textNode.value.slice(0, match.index).trimEnd();
           applyAttrs(node, attrs);
           return;
@@ -151,6 +159,17 @@ export function rehypeShokaAttrs() {
     visit(tree, 'text', (node: Text, index, parent) => {
       if (index === undefined || !parent) return;
       if (!('children' in parent)) return;
+
+      // ✨ 防火牆：保護數學公式不被當成屬性標籤拆解
+      // remark-math 會把公式預先包裝在 <code class="math"> 裡
+      // ✨ 終極防火牆：只要 class 裡面有 'math' 字眼就絕對不准動它！
+      if (parent.type === 'element') {
+        const className = parent.properties?.className;
+        // 使用 .some 和 String().includes 來做模糊匹配
+        if (Array.isArray(className) && className.some((c) => String(c).includes('math'))) {
+          return;
+        }
+      }
 
       const text = node.value;
       if (!text.includes(']{')) return;

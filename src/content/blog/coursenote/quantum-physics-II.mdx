@@ -1,0 +1,249 @@
+---
+title: 普物筆記：量子力學正篇（李威儀）
+date: 2023-04-13
+categories: 
+  - 課業筆記
+---
+
+這篇是交大李威儀的普物 (二) 的課程筆記，第一次學量子力學想說概念頗多就隨手整理一下。寫得很隨興，內容如有誤請不吝賜教！
+
+:::success
+此篇筆記是接續上一篇：[量子力學前傳：黑體輻射、普朗克常數、光電效應、波耳氫原子模型](/post/coursenote/quantum-physics)\
+但仍可獨立閱讀。
+:::
+
+
+## Ch.19 量子力學的基本定理
+
+### 德布羅伊假設 (De Broglie Hypothesis)
+
+繼愛因斯坦提出光電效應，證實光具有粒子的特性後，德布羅伊於 1925 年提出粒子也同樣具有波動性質，稱為物質波。
+
+設 $p$ 為動量，$E$ 為能量，則物質波波長與頻率：
+
+$$
+\lambda = \frac{h}{p}, \nu = \frac{E}{h}
+$$
+
+例：一顆 0.1kg，速度 1000 m/s 的子彈物質波波長 $\lambda = \frac{h}{p} = \frac{6.63 \times 10^{-34}}{0.1 \times 10^3} = 6.63 \times 10^{-36}(m) = 6.63 \times 10^{-26}(\text{\AA})$。
+
+要利用干涉或繞射觀察到物質波，物質波波長必須至少要有 $\text{\AA}$ 的量級，然而我們平常觀察不到是因為波長太小。
+
+### 電子繞射實驗 (Davisson–Germer Experiment)
+
+此實驗證實了德布羅伊假設的正確性。
+
+仿照布拉格晶體繞射實驗，實驗分成兩階段。
+
+第一階段：將 X 光照射晶體，量測第一次出現繞射條紋時的晶格間距 $d$ 與反射偏轉角度 $\Phi$。
+
+![]( /img/content/quantum-physics/fig7.png )
+
+測得 $\theta = 65^\circ$，推得 $\Phi = 180^\circ - 2\theta = 50^\circ$。
+
+由公式 $n\lambda = 2d \sin\theta$ 代入 $n = 1, \lambda, \theta$ 得到 $d = 0.91\text{\AA}$。
+
+第二階段：固定 $\Phi = 50^\circ$ 並將 X 光換成電子槍，電子能量由電壓大小決定。調整電壓大小讓電子產生繞射條紋。
+
+![]( /img/content/quantum-physics/fig8.png )
+
+由繞射公式：$\lambda_n = \frac{2d \sin\theta}{n} = \frac{1.67}{n} (\text{\AA})$
+
+利用德布羅伊假設，得到 $\lambda_n = \frac{h}{p} = \frac{h}{\sqrt{2mE_k}} = \frac{h}{\sqrt{2meV_n}}$。
+
+第一加速電壓為 54V，代入後解 $\lambda_1 = 1.67\text{\AA}$，正好和 X 光波長相同！
+
+而因為 $\lambda_n \propto \frac{1}{n} \propto \frac{1}{\sqrt{V_n}} \implies V_n \propto n^2$，故 $V_n = 54n^2$。
+
+### 電子干涉實驗與哥本哈根詮釋
+
+電子在不被觀測的情況下，通過雙狹縫會隨機分布在屏幕上，分布情形與波干涉條紋相同。
+
+哥本哈根詮釋：物質波的本質其實是粒子出現的機率波。以此為基礎，波函數的概念被引入，量子力學的大門正式開啟。
+
+### 海森堡不確定性原理 (Heisenberg Uncertainty Principle)
+
+海森堡不確定性原理：一個物質的位置與動量無法被同時確定，其誤差乘積為定值。
+
+$$
+\Delta p \cdot \Delta x \geq \hbar
+$$
+
+其中 $\Delta p, \Delta x$ 分別為動量與位置的不確定度（標準差）。其實更好的下界應該是 $\frac{\hbar}{2}$，是後來由 Earl Kennard 證明出來。
+
+![]( /img/content/quantum-physics/fig9.png )
+
+以電子單狹縫繞射實驗來解釋不確定性原理：電子進入單狹縫前，動量已經被確定 ($\Delta p = 0$)，但在縱向上電子皆有可能出現 ($\Delta x = \infty$)。
+
+而在通過狹縫後，$\Delta x \approx d$，$\Delta p > p \sin\theta$，代入 $p = \frac{h}{\lambda}, \sin\theta = \frac{\lambda}{d} \approx \frac{\lambda}{\Delta x}$ 得到：
+
+$$
+\Delta p > p \sin\theta \approx \frac{h}{\lambda} \frac{\lambda}{\Delta x} = \frac{h}{\Delta x} \implies \Delta p \cdot \Delta x > h
+$$
+
+這只是大略的估算，但從繞射實驗中可以感覺得出來海森堡的不確定性原理。
+
+以波函數來解釋不確定性原理：座標空間和動量空間互為傅立葉變換。而傅立葉變換有個特點，以動量、位置為常態分布函數的粒子為例，如果峰值附近較「窄」則變換後的函數會較「平緩」，反之如果原函數較「平緩」則變換後的函數會較「窄」，兩者的不確定性恰好互補。
+
+<Reference>
+
+參考資料：[https://www.zhihu.com/tardis/zm/ans/362337625?source_id=1003](https://www.zhihu.com/tardis/zm/ans/362337625?source_id=1003)
+
+</Reference>
+
+
+![]( /img/content/quantum-physics/fig10.png#50 )
+
+### 波耳互補原則 (Bohr Principle of Complementary)
+
+波動模型與粒子模型為互補。不存在任何一種量測方式可以同時顯現物質的波動性與粒子性。
+
+
+
+
+----
+
+
+## Ch 19 + 20 波函數與薛丁格方程式
+
+### 波函數
+
+波函數：$\Psi(x, t)$
+
+一維等速度運動的自由粒子波函數：$\Psi = Ae^{i(kx-\omega t)}$
+
+動量 $p = \frac{h}{\lambda} = \frac{h}{(2\pi/k)} = \hbar k$
+
+能量 $E = h\nu = h\frac{\omega}{2\pi} = \hbar\omega$
+
+### 薛丁格方程式
+
+動量算子：$-i\hbar \frac{\partial}{\partial x} \Psi = p\Psi$
+
+能量算子：$i\hbar \frac{\partial}{\partial t} \Psi = E\Psi$
+
+以上算子可以重複迭代至波函數，迭代 $n$ 次會得到 $p^n$ 與 $E^n$。
+
+:::default
+**One Dimensional Time-dependent Schrödinger Equation**
+
+$$
+\begin{aligned}
+E_k + E_p &= E \\
+\frac{p^2}{2m} + E_p &= E \\
+\frac{p^2 \Psi}{2m} + E_p \Psi &= E \Psi \\
+\frac{1}{2m}(-i\hbar)^2 \frac{\partial^2}{\partial x^2}\Psi + E_p\Psi &= i\hbar \frac{\partial}{\partial t}\Psi \\
+\frac{-\hbar^2}{2m} \frac{\partial^2\Psi}{\partial x^2} + E_p\Psi &= i\hbar\frac{\partial\Psi}{\partial t}
+\end{aligned}
+$$
+:::
+
+自由粒子：$E_p = 0$
+
+:::default
+**One Dimensional Time-independent Schrödinger Equation**
+
+$$
+\begin{aligned}
+\Psi(x, t) = \chi(x)\Gamma(t) &\Rightarrow \Psi = \chi\Gamma \\
+\frac{-\hbar^2 \Gamma}{2m} \frac{\partial^2 \chi}{\partial x^2} + E_p \chi\Gamma &= i\hbar \chi \frac{\partial \Gamma}{\partial t} \\
+\frac{-\hbar^2}{2m \chi} \frac{\partial^2 \chi}{\partial x^2} + E_p &= \frac{i\hbar}{\Gamma} \frac{\partial \Gamma}{\partial t}
+\end{aligned}
+$$
+
+等式兩邊都只和一個變數有關！故可以解聯立：
+
+第 1 式：$ \frac{-\hbar^2}{2m \chi} \frac{d^2 \chi}{dx^2} + E_p = G $
+
+第 2 式：$ \frac{i\hbar}{\Gamma} \frac{d \Gamma}{dt} = G $
+
+解第 2 式之後會得到 $G = E$，也就是系統總能量，並且 $\Gamma = k e^{-i\frac{E}{\hbar}t}$，對於所有系統 $\Gamma$ 的解皆相同。
+
+第一式已經不包含了時間這個因素，故稱為 **Time-independent Schrödinger Equation**：
+
+$$
+\frac{-\hbar^2}{2m} \frac{d^2 \chi}{dx^2} + E_p \chi = E \chi
+$$
+
+$\chi$ 稱為 Eigenfunction，$E$ 稱為 Eigenvalue。只有特定的 $\chi, E$ 才能符合方程式的解並具有物理意義。
+:::
+
+$\chi$ 和 $\frac{d\chi}{dx}$ 必須滿足以下條件才具有物理意義：
+
+1. 必須是有限值，否則動量、能量期望值會是 $\infty$。
+2. 必須在所有位置都只有唯一值。
+3. 必須在所有位置上都連續，否則 $\frac{d\chi}{dx}$ 或 $\frac{d^2\chi}{dx^2}$ 有可能出現 $\infty$ 的狀況。
+
+### 期望值
+
+$|\Psi|^2 = \Psi^* \Psi$，$ \Psi^* $ 是 $\Psi$ 的共軛。
+
+機率密度函數：$P = |\Psi|^2$，$ \int_{-\infty}^{\infty} |\Psi|^2 dx = \int_{-\infty}^{\infty} \Psi^* \Psi dx = 1 $
+
+位置期望值：$ \bar{x} = \int_{-\infty}^{\infty} \Psi^* x \Psi dx $
+
+動量期望值：$ \bar{p} = \int_{-\infty}^{\infty} \Psi^* p \Psi dx = \int_{-\infty}^{\infty} \Psi^* (-i\hbar \frac{\partial \Psi}{\partial x}) dx $
+
+能量期望值：$ \bar{E} = \int_{-\infty}^{\infty} \Psi^* E \Psi dx = \int_{-\infty}^{\infty} \Psi^* (i\hbar \frac{\partial \Psi}{\partial t}) dx $
+
+### 無限高位能井
+
+位能為 0 的區間：$(0, r)$
+
+General Solution: $\chi = A e^{ikx} + B e^{-ikx} = A \cos kx + B \sin kx$
+
+$\chi$ 要在 $x = 0, r$ 連續，故 $\chi = B \sin kx$ 且 $\sin kr = 0 \implies k = \frac{n\pi}{r}, n = 1, 2, 3, \dots$
+
+Eigenfunction: $\chi_n = B \sin(\frac{n\pi}{r} x)$
+
+Eigenvalue: $E_n = \frac{(\hbar k)^2}{2m} = n^2 \frac{\pi^2 \hbar^2}{2mr^2} = n^2 E_0$
+
+---
+
+## Ch 21 量子力學應用於原子結構
+
+主量子數：$n = 1, 2, 3, \dots$，主量子數決定了軌道能量大小。$E_n \propto \frac{1}{n^2}, Z^2$
+
+角量子數：$l = 0, 1, 2, \dots, n-1$，角量子數決定了電子角動量大小 $L = \sqrt{l(l+1)}\hbar$。
+
+磁量子數：$m_l = 0, \pm 1, \dots, \pm l$，磁量子數決定了 $z$ 軸方向上的角動量分量大小與合法的軌道方向的個數 $L_z = m_l \hbar$ (Zeeman Effect)。
+
+自旋：$m_s = \pm 1/2$ (Stern-Gerlach 實驗)，決定了電子自旋的角動量。
+
+![]( /img/content/quantum-physics/fig11.png#40 )
+
+---
+
+## Ch 22 鍵結與晶體結構
+
+Amorphous：無固定形狀、非秩序排列的固體
+
+Crystal：晶體
+
+### 離子鍵
+
+$NaCl$ 是 FCC，碳、矽、鍺、錫等晶體也是 FCC。
+
+計算單一離子在晶體內的鍵結能，必須統計所有離子對它造成的影響，可以寫成無窮級數。
+
+$E_b = \alpha \frac{1}{2} \frac{-ke^2}{r}$，$\alpha$ 是 Madelung Constant，由不同晶體決定。以 $NaCl$ 為例，$\alpha = -1.7476$。
+
+### 共價鍵 (Covalent Bond)
+
+![]( /img/content/quantum-physics/fig12.png#80 )
+
+形成原因：解完薛丁格方程式後，會發現電子出現在兩質子中間的機率特別高，待在中間的時間很久，同時會把兩邊的原子核吸引過來，形成共價鍵。
+
+### 分子鍵 / 凡得瓦鍵
+
+成因：分子可分為極性與非極性。而分子之間的鍵結可分為永久電偶極—永久電偶極 (極性對極性)、永久電偶極—誘發電偶極 (極性對非極性)、瞬時電偶極 / 倫敦分散力 (非極性對非極性)。
+
+### 總覽
+
+![]( /img/content/quantum-physics/fig13.png )
+
+
+:::success
+此篇筆記的上一篇：[量子力學前傳：黑體輻射、普朗克常數、光電效應、波耳氫原子模型](/post/coursenote/quantum-physics)
+:::
+

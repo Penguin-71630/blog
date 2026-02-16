@@ -24,6 +24,11 @@ interface CategoryWithPosts {
 
 const { categories } = await getCategoryList();
 
+console.log(
+  '🔍 系統實際生成的所有分類:',
+  categories.map((c) => ({ name: c.name })),
+);
+
 const categoryPosts: CategoryWithPosts[] = await Promise.all(
   siteConfig.featuredCategories?.map(async (category) => {
     const categoryInfo = getCategoryByLink(categories, category?.link);

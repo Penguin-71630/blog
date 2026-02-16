@@ -24,6 +24,7 @@ import { remarkLinkEmbed } from './src/lib/markdown/remark-link-embed.ts';
 import { normalizeUrl } from './src/lib/utils.ts';
 
 import mdx from '@astrojs/mdx';
+import { visit } from 'unist-util-visit';
 
 import { rehypeEncryptedBlock } from './src/lib/markdown/rehype-encrypted-block.ts';
 import { rehypeShokaAttrs } from './src/lib/markdown/rehype-shoka-attrs.ts';
@@ -41,6 +42,8 @@ function loadConfigForAstro() {
   const content = fs.readFileSync(configPath, 'utf8');
   return YAML.parse(content);
 }
+
+
 
 const yamlConfig = loadConfigForAstro();
 

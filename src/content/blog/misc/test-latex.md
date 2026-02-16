@@ -2,15 +2,13 @@
 title: Markdown 數學公式測試
 link: test-latex
 catalog: true
-date: 2026-02-06 13:21:00
+date: 1970-01-01
 categories:
   - 雜項
 ---
 
 
-:::info
-owo
-:::
+[这段文字会有彩虹渐变效果]{.rainbow}
 
 ## 1. 行內公式 (Inline Math)
 這是一個行內公式 $a^2 + b^2 = c^2$。
