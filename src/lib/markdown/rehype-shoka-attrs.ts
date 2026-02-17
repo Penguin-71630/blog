@@ -94,8 +94,11 @@ export function rehypeShokaAttrs() {
         if (child.type === 'text') {
           textNode = child;
         } else if (child.type === 'element' && child.children.length > 0) {
-          // ✨ 防火牆 1：如果這是數學公式 (<code class="math">)，絕對不要進去剝它的大括號！
-          // ✨ 升級 Pass 2 防火牆
+          // ✨ 防火牆：絕對不要進入 <code> 標籤偷大括號！
+          if (child.tagName === 'code') continue;
+
+          // ✨ 防火牆：如果這是數學公式 (<code class="math">)，絕對不要進去剝它的大括號！
+          // ✨ 升級版 Pass 2 防火牆
           const className = child.properties?.className;
           if (Array.isArray(className) && className.some((c) => String(c).includes('math'))) continue;
 
@@ -123,6 +126,9 @@ export function rehypeShokaAttrs() {
     const TRAILING_ATTR_REGEX = /^\{([^}]+)\}/;
 
     visit(tree, 'element', (node: Element) => {
+      // ✨ 升級防火牆 2：保護程式碼區塊
+      if (node.tagName === 'code') return;
+
       const { children } = node;
       for (let i = children.length - 1; i >= 0; i--) {
         const child = children[i];
@@ -169,6 +175,8 @@ export function rehypeShokaAttrs() {
         if (Array.isArray(className) && className.some((c) => String(c).includes('math'))) {
           return;
         }
+        // ✨ 升級防火牆：保護程式碼區塊 <code> 不被拆解
+        if (parent.tagName === 'code') return;
       }
 
       const text = node.value;

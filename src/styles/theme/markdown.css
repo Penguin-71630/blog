@@ -102,7 +102,7 @@
     font-size: 0.75rem;
     font-weight: 400;
     color: hsl(var(--muted-foreground));
-    opacity: 0.5;
+    opacity: 0;
 
     /* 等宽字体 */
     font-family: ui-monospace, SFMono-Regular, monospace;
@@ -116,7 +116,7 @@
   h4:hover::before,
   h5:hover::before,
   h6:hover::before {
-    opacity: 0.8;
+    opacity: 0;
   }
 
   /* 调整锚点链接居中对齐 */

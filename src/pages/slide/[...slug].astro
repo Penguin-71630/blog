@@ -1,0 +1,128 @@
+---
+// src/pages/slide/[...slug].astro
+import { getCollection } from 'astro:content';
+
+// 1. 引入 Reveal.js 核心樣式與主題
+import 'reveal.js/dist/reveal.css';
+import 'reveal.js/dist/theme/night.css'; // 你可以改成 'black', 'white', 'dracula' 等
+
+// 2. 引入你的全域 CSS (讓 Shoka 的 class 可以在簡報裡生效)
+// 請根據你專案的實際路徑調整，通常在 @styles/ 或 src/styles/
+import '@/styles/index.css';
+import { siteConfig } from '@constants/site-config';
+
+export async function getStaticPaths() {
+  // 取得所有簡報 (對應 config.ts 裡的 slideCollection)
+  const slideEntries = await getCollection('slide');
+
+  return slideEntries.map((post) => {
+    // 支援自訂網址 link，否則使用預設的 slug
+    const link = post.data?.link ?? post.slug;
+    return {
+      params: { slug: link },
+      props: { post },
+    };
+  });
+}
+
+const { post } = Astro.props;
+const { title, description } = post.data;
+---
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>{title} | 簡報 | {siteConfig.title}</title>
+  {description && <meta name="description" content={description} />}
+
+    <!-- Async load Chinese fonts to avoid render-blocking -->
+  <link rel="stylesheet" href="/fonts/SourceHanSerifTC-Medium/result.css" media="print" onload="this.setAttribute('media','all')" />
+  <link rel="stylesheet" href="/fonts/SourceHanSerifTC-Bold/result.css" media="print" onload="this.setAttribute('media','all')" />
+  
+<style>
+    body { margin: 0; padding: 0; }
+
+    /* 定義本地的 Linux Biolinum - Regular (400) */
+    @font-face {
+      font-family: 'Linux Biolinum';
+      src: url('/fonts/LinuxBiolinum-Regular.woff2') format('woff2');
+      font-display: swap;
+    }
+
+    /* 定義本地的 Linux Biolinum - Bold (700) */
+    @font-face {
+      font-family: 'Linux Biolinum Bold';
+      src: url('/fonts/LinuxBiolinum-Bold.woff2') format('woff2');
+      font-display: swap;
+    }
+
+    /* 1. 確保字體正確載入 */
+    .reveal {
+      font-family: 'Linux Biolinum', 'Source Han Serif TC', sans-serif;
+      font-size: 18px !important; /* 把預設的超大字體縮小 */
+    }
+
+    /* 2. 拔掉強制置中，改成靠左上角，並加入安全的留白邊距 */
+    .reveal .slides section,
+    .reveal .slides section > section {
+      text-align: left !important;
+      padding-top: 5vh !important;
+      padding-left: 5vw !important;
+      width: 90% !important; /* 避免文字太貼右邊緣 */
+    }
+
+    /* 3. 標題設定：靠左、取消強制大寫 */
+    .reveal h1, .reveal h2, .reveal h3 {
+      text-align: left !important;
+      text-transform: none !important;
+      font-family: 'Linux Biolinum Bold', 'Source Han Serif TC Bold', sans-serif;
+      margin-bottom: 40px !important;
+    }
+
+    /* 4. 數學公式設定：靠左對齊，並往右縮排一點點 */
+    .reveal .katex-display {
+      text-align: left !important;
+      margin-left: 2rem !important;
+      margin-top: 1.5rem !important;
+      margin-bottom: 1.5rem !important;
+    }
+
+    /* 5. 你的高亮重點色 */
+    .reveal .yellow-hl {
+      color: #F8D24E;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+      
+      <section data-markdown>
+        <textarea data-template>
+          {post.body}
+        </textarea>
+      </section>
+
+    </div>
+  </div>
+
+  <script>
+    import Reveal from 'reveal.js';
+    import Markdown from 'reveal.js/plugin/markdown/markdown.esm.js';
+    import MathReveal from 'reveal.js/plugin/math/math.esm.js';
+
+    // 初始化簡報引擎
+    Reveal.initialize({
+      controls: true,     // 顯示右下角控制箭頭
+      progress: true,     // 顯示底部進度條
+      center: false,       // 內容垂直置中
+      hash: true,         // 將頁碼同步到網址列 (例如 #/1)
+      transition: 'slide',// 切換動畫: none/fade/slide/convex/concave/zoom
+      plugins: [ Markdown, MathReveal.KaTeX ] // 啟動 Markdown 與數學公式支援
+    });
+  </script>
+</body>
+</html>
