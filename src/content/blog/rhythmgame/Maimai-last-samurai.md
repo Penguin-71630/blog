@@ -1,0 +1,122 @@
+---
+title: Maimai 拆譜筆記：Last Samurai
+date: 2023-08-31
+categories:
+  - 音遊
+---
+
+
+
+
+:::default
+定數：13.9\
+SSS 難度：13.3 ~ 13.9\
+SSS+ 難度：13.7 ~ 13.9
+:::
+
+個人差非常大的譜，很適合滑星玩家推分。建議把 Transcend Lights 打到鳥+後再來攻略這首。
+
+SSS 難度不高，但 SSS+ 要注意滿多細節，特別是中段的繞圈一筆畫。
+
+
+## Part I
+
+![](/img/content/Maimai-last-samurai/1.png#40)
+
+開頭這幾顆節奏很複雜，查 maidata 後發現長這樣：
+
+![](/img/content/Maimai-last-samurai/2.png#100)
+
+直接記前兩顆打慢一點，後面目壓就好。
+
+## Part II
+
+![](/img/content/Maimai-last-samurai/3.png#40)
+
+中間 touch hold 換手記得右上先壓上去再把左手抬起來，不然會粉掉／綠掉。我被坑了好幾次...
+
+## Part III
+
+![](/img/content/Maimai-last-samurai/4.png#40)
+
+接下來是連續四段 Hold + 滑星的配置，不用刻意記手順，自動選擇要分業、全換（左右手輪流打）或是隨機應變。如果分業打法怕 Hold 放太早那就全換。這裡的配置反手完全不會彆扭（想像自己的手是透明的能穿模）。
+
+## Part IV
+
+![](/img/content/Maimai-last-samurai/5.png#40)
+
+進入第一圈迴轉一筆畫，這裡的星星是**越滑越慢**，滑的時候分一些注意力給星星的軌跡，手不要超過滑動中的星星就不會 FAST GREAT。
+
+
+
+## Part V
+
+![](/img/content/Maimai-last-samurai/6.png#40)
+
+進入第二圈迴轉一筆畫，這裡個人認為是本曲最難段之一。首先是第二圈的星頭會在第一圈結束前出現，所以**不要看到第二圈星頭出現就把第一圈結尾太早滑掉**。
+
+![](/img/content/Maimai-last-samurai/7.png#80)
+
+
+第二圈第 1 條滑星 (紅色) 是 8 號鍵起到 2 號鍵，滑的過程中第 3 條滑星 (黃色) 會出現。
+
+如果跟著星星軌跡走，非常容易把第 3 條提前滑掉導致綠掉。
+
+解法：紅色星星先快速滑到 3 號鍵 → 此時左手停住不要動 → 右手繞過左手去接黃色星星頭 → 等紅色星星跟上後，左手再繼續移動
+
+另外注意第二圈後半段星星速度會越來越慢，且會比第一圈後半慢，是很容易粉掉的地方，一樣注意星星軌跡不要滑快。
+
+## Part VI
+
+![](/img/content/Maimai-last-samurai/8.png#40)
+
+黃色雙押是星星啟動拍，然後畫三角形。這段很簡單，不會打的去練 <span class="mas">Transcend Lights</span>
+
+
+## Part VII
+
+
+![](/img/content/Maimai-last-samurai/9.png#40)
+
+這段星星的啟動拍是 7 號鍵那顆。
+
+## Part VIII
+
+![](/img/content/Maimai-last-samurai/10.png#40)
+
+從畫三角形改成畫傘，一樣有雙押當啟動拍提示所以這段非常簡單。
+
+## Part IX
+
+![](/img/content/Maimai-last-samurai/11.png#40)
+
+接下來是一堆 :white_check_mark: 狀滑星，這裡是整首歌最難的地方。
+
+第二條 :white_check_mark:（圖上那條 4 號鍵啟動的星星）較卡手。雙押啟動拍可以分成**左手上右手下**或**右手上左手下**，取決於個人習慣。
+
+我自己是左手在上（處理 TAP），右手在下（處理星星）。這樣處理的時候**身體要右傾**才不會卡手。
+
+
+![](/img/content/Maimai-last-samurai/12.png#40)
+
+這裡較難，第一條星星先左手起往上再往下。
+
+第二條星星前半條會被蹭掉，導致不少人讀譜出現障礙：
+
+![](/img/content/Maimai-last-samurai/13.png#40)
+
+背譜，把星星軌跡自動補上，左手滑星星右手接底下的 TAP，身體順勢右傾。
+
+![](/img/content/Maimai-last-samurai/14.png#40)
+
+最後把 Wi-Fi 星星滑掉。
+
+## Part X
+
+![](/img/content/Maimai-last-samurai/15.png#40)
+
+這邊的六爪／八爪星有個規律，都是先滑掉相距 90 度的，多打幾次順序就記起來了，有邪道解法但我覺得沒必要。
+
+另外星星用指尖滑，小心誤觸其他星星。
+
+如果不熟悉這種配置的話，~~非常推薦去練四月の雨~~
