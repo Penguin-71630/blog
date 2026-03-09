@@ -142,9 +142,13 @@ function processContainers(text: string, opts: ContainerOptions = {}, _depth = 0
         innerLines.push(lines[i]);
         i++;
       }
-      const noIconClass = noIcon ? ' no-icon' : '';
       output.push('');
-      output.push(`<div class="note-block note-${style}${noIconClass}">`);
+      if (noIcon) {
+        output.push(`<div class="note-block note-${style} no-icon">`);
+      } else {
+        output.push(`<div class="note-block note-${style}" data-react-enhanced="true">`);
+        output.push(`<span class="note-icon-mount" aria-hidden="true"></span>`);
+      }
       output.push('');
       output.push(processContainers(innerLines.join('\n'), opts, _depth + 1));
       output.push('');

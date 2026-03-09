@@ -1,0 +1,13 @@
+---
+export interface PageTitleProps {
+  title: string;
+}
+
+const { title } = Astro.props as PageTitleProps;
+---
+
+<div class="my-8">
+  <h1 class="text-3xl font-bold tracking-widest text-center md:text-2xl">
+    {title}
+  </h1>
+</div>

@@ -86,9 +86,7 @@ export default function PostFooterLists({ allPosts, relatedPosts, leftCount, rig
                   如果有相關文章 -> 這裡是隨機文章的第一批 -> index + 1
                   如果沒相關文章 -> 這裡是隨機文章的第二批 (接續左邊) -> index + leftCount + 1
               */}
-              <span className="shrink-0 font-mono text-foreground/30">
-                {index + (hasRelatedPosts ? 1 : leftCount + 1)}
-              </span>
+              <span className="shrink-0 font-mono text-foreground/30">{index + (hasRelatedPosts ? 1 : leftCount + 1)}</span>
               <div className="flex min-w-0 flex-col gap-0.5">
                 {post.categoryName && <div className="truncate text-foreground/50 text-xs">{post.categoryName}</div>}
                 <div className="line-clamp-2 text-foreground/80 transition-colors group-hover:text-primary">{post.title}</div>

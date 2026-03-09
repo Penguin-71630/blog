@@ -11,18 +11,17 @@
 
 /* 定義本地的 Linux Biolinum - Regular (400) */
 @font-face {
-  font-family: 'Linux Biolinum';
-  src: url('/fonts/LinuxBiolinum-Regular.woff2') format('woff2');
+  font-family: "Linux Biolinum";
+  src: url("/fonts/LinuxBiolinum-Regular.woff2") format("woff2");
   font-display: swap;
 }
 
 /* 定義本地的 Linux Biolinum - Bold (700) */
 @font-face {
-  font-family: 'Linux Biolinum Bold';
-  src: url('/fonts/LinuxBiolinum-Bold.woff2') format('woff2');
+  font-family: "Linux Biolinum Bold";
+  src: url("/fonts/LinuxBiolinum-Bold.woff2") format("woff2");
   font-display: swap;
 }
-
 
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
@@ -42,7 +41,7 @@
 
   body {
     overscroll-behavior-y: none;
-    background: linear-gradient(to top, var(--gradient-bg-end) 0, var(--gradient-bg-start) 30%) no-repeat bottom;
+    background: transparent;
     scroll-behavior: smooth;
     letter-spacing: 0.02em;
     color: var(--color-foreground);
@@ -54,13 +53,15 @@
   h4,
   h5,
   h6 {
-    font-family: "Linux Biolinum Bold", "Source Han Serif TC Bold", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family:
+      "Linux Biolinum Bold", "Source Han Serif TC Bold", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+      sans-serif;
     letter-spacing: 0.04em;
   }
 
   html {
     scrollbar-gutter: stable;
-    background: linear-gradient(to top, var(--gradient-bg-end) 0, var(--gradient-bg-start) 30%) no-repeat bottom;
+    background: linear-gradient(to top, var(--gradient-bg-end) 0, var(--gradient-bg-start) 30%);
     overflow: auto;
   }
 
@@ -106,7 +107,7 @@
 
     button,
     a {
-      @apply shadow-text;
+      @apply dark:shadow-text;
       &::after {
         transition-duration: 400ms;
         @apply bg-white;

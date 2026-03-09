@@ -1,0 +1,183 @@
+---
+// src/components/markdown/ImageCarousel.astro
+interface Props {
+  images: string[];
+  ratio?: string;
+}
+
+const { images, ratio = '16/10' } = Astro.props;
+// 產生唯一 ID 以防同一個頁面有多個輪播圖互相干擾
+const carouselId = `carousel-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<div class="relative w-full my-8 not-prose" data-custom-carousel={carouselId}>
+  {/* 輪播圖主要容器 */}
+  <div
+    class="relative w-full overflow-hidden rounded-base bg-muted/10"
+    style={`aspect-ratio: ${ratio};`}
+  >
+    {
+      images.map((src, index) => (
+        <div
+          class={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === 0 ? "opacity-100 z-20" : "opacity-0 z-10"}`}
+          data-slide={index}
+        >
+          {/* 👇 關鍵 1: 加上 cursor-zoom-in 讓游標變成放大鏡，提示使用者可以點擊 */}
+          <img
+            src={src}
+            class="absolute block w-full h-full object-cover cursor-zoom-in"
+            alt={`Slide ${index + 1}`}
+          />
+        </div>
+      ))
+    }
+  </div>
+
+  {/* 下方指示器 (Indicators) */}
+  <div class="absolute z-30 flex -translate-x-1/2 space-x-3 bottom-5 left-1/2">
+    {
+      images.map((_, index) => (
+        <button
+          type="button"
+          class={`w-2 h-2 rounded-base transition-colors ${index === 0 ? "bg-white" : "bg-white/50 hover:bg-white/80"}`}
+          aria-label={`Slide ${index + 1}`}
+          data-indicator={index}
+        />
+      ))
+    }
+  </div>
+
+  {/* 左右控制按鈕 */}
+  <button
+    type="button"
+    class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+    data-prev
+  >
+    <span
+      class="inline-flex items-center justify-center w-10 h-10 rounded-base bg-white/30 dark:bg-gray-800/50 group-hover:bg-white/50 dark:group-hover:bg-gray-800/70 transition-colors"
+    >
+      <svg
+        class="w-5 h-5 text-white"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="m15 19-7-7 7-7"></path>
+      </svg>
+      <span class="sr-only">Previous</span>
+    </span>
+  </button>
+  <button
+    type="button"
+    class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+    data-next
+  >
+    <span
+      class="inline-flex items-center justify-center w-10 h-10 rounded-base bg-white/30 dark:bg-gray-800/50 group-hover:bg-white/50 dark:group-hover:bg-gray-800/70 transition-colors"
+    >
+      <svg
+        class="w-5 h-5 text-white"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="m9 5 7 7-7 7"></path>
+      </svg>
+      <span class="sr-only">Next</span>
+    </span>
+  </button>
+</div>
+
+<script>
+  function initFlowbiteCarousels() {
+    document.querySelectorAll("[data-custom-carousel]").forEach((carousel) => {
+      // 避免重複綁定事件
+      if (carousel.hasAttribute("data-initialized")) return;
+      carousel.setAttribute("data-initialized", "true");
+
+      const slides = carousel.querySelectorAll("[data-slide]");
+      const indicators = carousel.querySelectorAll("[data-indicator]");
+      const prevBtn = carousel.querySelector("[data-prev]");
+      const nextBtn = carousel.querySelector("[data-next]");
+      let currentIndex = 0;
+      const total = slides.length;
+
+      if (total === 0) return;
+
+      // 👇 關鍵 2: 整合 Lightbox 功能
+      // 收集這個輪播圖內所有的圖片資料，讓 Lightbox 可以左右切換
+      const lightboxImages = Array.from(slides).map((slide) => {
+        const img = slide.querySelector("img");
+        return {
+          src: img?.getAttribute("src") || "",
+          alt: img?.getAttribute("alt") || "Carousel Image",
+        };
+      });
+
+      // 為每一張圖片綁定點擊事件，發送事件給 ImageLightbox.tsx
+      slides.forEach((slide, idx) => {
+        const img = slide.querySelector("img");
+        if (img) {
+          img.addEventListener("click", () => {
+            window.dispatchEvent(
+              new CustomEvent("open-image-lightbox", {
+                detail: {
+                  src: img.getAttribute("src") || "",
+                  alt: img.getAttribute("alt") || "",
+                  images: lightboxImages,
+                  currentIndex: idx,
+                },
+              }),
+            );
+          });
+        }
+      });
+      // 👆 整合 Lightbox 結束
+
+      function updateCarousel(newIndex: number) {
+        // 1. 移除當前圖片的 active 狀態
+        slides[currentIndex].classList.remove("opacity-100", "z-20");
+        slides[currentIndex].classList.add("opacity-0", "z-10");
+        indicators[currentIndex].classList.remove("bg-white");
+        indicators[currentIndex].classList.add("bg-white/50");
+
+        // 2. 計算新索引 (支援循環)
+        currentIndex = (newIndex + total) % total;
+
+        // 3. 套用新圖片的 active 狀態
+        slides[currentIndex].classList.remove("opacity-0", "z-10");
+        slides[currentIndex].classList.add("opacity-100", "z-20");
+        indicators[currentIndex].classList.remove("bg-white/50");
+        indicators[currentIndex].classList.add("bg-white");
+      }
+
+      // 綁定點擊事件
+      prevBtn?.addEventListener("click", () =>
+        updateCarousel(currentIndex - 1),
+      );
+      nextBtn?.addEventListener("click", () =>
+        updateCarousel(currentIndex + 1),
+      );
+      indicators.forEach((ind, idx) => {
+        ind.addEventListener("click", () => updateCarousel(idx));
+      });
+    });
+  }
+
+  // 確保在 Astro 頁面切換與首次載入時都會正確執行
+  if (document.readyState !== "loading") initFlowbiteCarousels();
+  else document.addEventListener("DOMContentLoaded", initFlowbiteCarousels);
+  document.addEventListener("astro:page-load", initFlowbiteCarousels);
+</script>

@@ -14,12 +14,14 @@
  * Colors automatically adapt to light/dark theme via CSS variables.
  */
 
-export const primaryColor = '#a088d4'; // Arcaea Fuchsia
+// Primary colors from site background images
+export const primaryColor = '#9C79EC'; // Light theme: juvenile-light
+export const primaryColorDark = '#8080B6'; // Dark theme: juvenile-dark
 
 export const colors = {
   // Primary brand colors
   primary: {
-    DEFAULT: primaryColor, 
+    DEFAULT: primaryColor,
     foreground: '#ffffff',
   },
 
@@ -82,7 +84,7 @@ export const colors = {
   badge: {
     primary: {
       // WCAG
-      DEFAULT: primaryColor, 
+      DEFAULT: primaryColor,
     },
   },
 

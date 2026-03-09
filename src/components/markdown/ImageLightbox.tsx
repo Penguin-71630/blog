@@ -303,8 +303,8 @@ function ZoomHint() {
       animate={{ opacity: visible ? 1 : 0 }}
       transition={{ duration: 0.3 }}
     >
-      <span className="hidden touch-none sm:inline">双击放大 · 滚轮/双指缩放</span>
-      <span className="sm:hidden">双击放大 · 双指缩放</span>
+      <span className="hidden touch-none sm:inline">點兩下放大 · 滾輪/雙指縮放，ESC 退出</span>
+      <span className="sm:hidden">點兩下放大 · 雙指縮放</span>
     </motion.div>
   );
 }

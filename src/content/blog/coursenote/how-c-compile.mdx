@@ -1,0 +1,183 @@
+---
+title: C/C++ 怎麼編譯的
+date: 2026-02-26
+categories: 
+  - 課業筆記
+draft: true
+---
+
+
+
+## Object File 解讀
+
+<Tabs gid="g1" tabs={['basic.c', 'basic.o', 'basic.o 解說']}>
+<div slot="panel-0"> <div class="h-5"></div>
+```c
+int main() {
+    int a = 0x11111111;
+    int b = 0x22222222;
+    int c = a + b;
+    return 0;
+}
+```
+</div>
+<div slot="panel-1"> <div class="h-5"></div>
+```asm
+; objdump -d basic.o
+basic.o:        file format mach-o arm64
+
+Disassembly of section __TEXT,__text:
+
+0000000000000000 <ltmp0>:
+
+
+
+
+
+
+       0: d10043ff      sub     sp, sp, #0x10
+       4: 52800000      mov     w0, #0x0
+       8: b9000fff      str     wzr, [sp, #0xc]
+
+
+       c: 3200e3e8      mov     w8, #0x11111111
+      10: b9000be8      str     w8, [sp, #0x8]
+      14: 3203e3e8      mov     w8, #0x22222222
+      18: b90007e8      str     w8, [sp, #0x4]
+      1c: b9400be8      ldr     w8, [sp, #0x8]
+      20: b94007e9      ldr     w9, [sp, #0x4]
+      24: 0b090108      add     w8, w8, w9
+      28: b90003e8      str     w8, [sp]
+
+
+      2c: 910043ff      add     sp, sp, #0x10
+      30: d65f03c0      ret
+```
+</div>
+<div slot="panel-2"> <div class="h-5"></div>
+```asm
+; objdump -d basic.o
+basic.o:        file format mach-o arm64
+
+Disassembly of section __TEXT,__text:
+
+0000000000000000 <ltmp0>:
+
+; register sp  := stack pointer
+; register w0  := AArch64 的整數/指標 return register
+; register wzr := zero
+
+; prologue of main()
+       0: d10043ff      sub     sp, sp, #0x10   ; sp (stack pointer) 往下開出 0x10 (=16) bytes 的空間
+       4: 52800000      mov     w0, #0x0        ; 設定函式 return value (=0) 存到 register w0
+       8: b9000fff      str     wzr, [sp, #0xc] ;
+
+; body of main()
+       c: 3200e3e8      mov     w8, #0x11111111 ; 把 a 的值存到 register w8
+      10: b9000be8      str     w8, [sp, #0x8]  ; 變數 a 存在 [sp+8]
+      14: 3203e3e8      mov     w8, #0x22222222 ; 把 b 的值存到 register w8
+      18: b90007e8      str     w8, [sp, #0x4]  ; 變數 b 存在 [sp+4]
+      1c: b9400be8      ldr     w8, [sp, #0x8]  ; 讀出變數 a 存到 register w8
+      20: b94007e9      ldr     w9, [sp, #0x4]  ; 讀出變數 b 存到 register w9
+      24: 0b090108      add     w8, w8, w9      ; w8 := w8 + w9
+      28: b90003e8      str     w8, [sp]        ; 運算結果（變數 c）存到 [sp+0]
+
+; epilogue of main()
+      2c: 910043ff      add     sp, sp, #0x10   ; 釋放原本的堆疊空間
+      30: d65f03c0      ret                     ; 用 w0 當 return value，回到 caller
+```
+</div>
+</Tabs>
+
+
+
+## 筆記
+
+
+- `#include` 只是複製貼上，不會動用到 linker。
+- static 且 unused 的函式會被編譯器優化掉（使用 `objdump -r` 會看不到該函式的 entry）。
+- `nm` 可以列出 `.o` 檔的 symbol table。
+
+
+## 實驗一
+
+<Tabs gid="source codes 1" tabs={['myLib.c', 'test.c']} >
+<div slot="panel-0"> <div class="h-5"></div>
+
+```c
+int myAddFunc(int a, int b) {
+    return a + b;
+}
+```
+
+</div>
+<div slot="panel-1"> <div class="h-5"></div>
+
+```c
+int myAddFunc(int a, int b);
+
+int main() {
+    int a = 0x11111111;
+    int b = 0x22222222;
+    int c = myAddFunc(a, b);
+    return 0;
+}
+```
+
+</div>
+</Tabs>
+
+
+<Tabs gid="object files 1" tabs={['myLib.o', 'test.o']} >
+<div slot="panel-0"> <div class="h-5"></div>
+
+```asm
+; objdump -d myLib.o
+myLib.o:        file format mach-o arm64
+
+Disassembly of section __TEXT,__text:
+
+0000000000000000 <ltmp0>:
+       0: d10043ff      sub     sp, sp, #0x10
+       4: b9000fe0      str     w0, [sp, #0xc]
+       8: b9000be1      str     w1, [sp, #0x8]
+       c: b9400fe8      ldr     w8, [sp, #0xc]
+      10: b9400be9      ldr     w9, [sp, #0x8]
+      14: 0b090100      add     w0, w8, w9
+      18: 910043ff      add     sp, sp, #0x10
+      1c: d65f03c0      ret
+```
+
+</div>
+<div slot="panel-1"> <div class="h-5"></div>
+
+```asm
+; objdump -d test.o
+test.o: file format mach-o arm64
+
+Disassembly of section __TEXT,__text:
+
+0000000000000000 <ltmp0>:
+       0: d100c3ff      sub     sp, sp, #0x30
+       4: a9027bfd      stp     x29, x30, [sp, #0x20]
+       8: 910083fd      add     x29, sp, #0x20
+       c: 52800008      mov     w8, #0x0                ; =0
+      10: b9000fe8      str     w8, [sp, #0xc]
+      14: b81fc3bf      stur    wzr, [x29, #-0x4]
+      18: 3200e3e8      mov     w8, #0x11111111         ; =286331153
+      1c: b81f83a8      stur    w8, [x29, #-0x8]
+      20: 3203e3e8      mov     w8, #0x22222222         ; =572662306
+      24: b81f43a8      stur    w8, [x29, #-0xc]
+      28: b85f83a0      ldur    w0, [x29, #-0x8]
+      2c: b85f43a1      ldur    w1, [x29, #-0xc]
+      30: 94000000      bl      0x30 <ltmp0+0x30>
+      34: aa0003e8      mov     x8, x0
+      38: b9400fe0      ldr     w0, [sp, #0xc]
+      3c: b90013e8      str     w8, [sp, #0x10]
+      40: a9427bfd      ldp     x29, x30, [sp, #0x20]
+      44: 9100c3ff      add     sp, sp, #0x30
+      48: d65f03c0      ret
+```
+
+</div>
+</Tabs>

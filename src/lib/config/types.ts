@@ -25,7 +25,13 @@ export interface SiteBasicConfig {
   breadcrumbHome?: string;
   /** 时区配置 (IANA 格式) @default 'Asia/Shanghai' */
   timezone?: string;
-  siteImageFileBaseName?: string;
+  /** 站点横幅图片配置 - 支持字符串（单图）或对象（light/dark 双图） */
+  siteImageFileBaseName?:
+    | string
+    | {
+        light: string;
+        dark: string;
+      };
 }
 
 // =============================================================================

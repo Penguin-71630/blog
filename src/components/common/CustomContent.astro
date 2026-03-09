@@ -1,14 +1,23 @@
 ---
 import { EmbedHydrator } from '@components/embed/EmbedHydrator';
 import ContentEnhancer from '@components/markdown/ContentEnhancer';
-// 👇 新增：引入你剛剛寫好的自定義組件
+import ItemCard from '@components/markdown/ItemCard.astro';
+import Link from '@components/markdown/Link.astro';
+// My own components
 import Mark from '@components/markdown/Mark.astro';
 import Note from '@components/markdown/Note.astro';
 import Reference from '@components/markdown/Reference.astro';
+import Splitter from '@components/markdown/Splitter.astro';
 import type { ContentConfig } from '@constants/content-config';
 import { defaultContentConfig } from '@constants/content-config';
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
 import { christmasConfig } from '@/constants/site-config';
+import ImageCarousel from '../markdown/ImageCarousel.astro';
+import InfoBox from '../markdown/InfoBox.astro';
+import ItemCards from '../markdown/ItemCards.astro';
+import People from '../markdown/People.astro';
+import Person from '../markdown/Person.astro';
+import Tabs from '../markdown/Tabs.astro';
 
 const globalComponents = {
   Mark,
@@ -17,6 +26,24 @@ const globalComponents = {
   note: Note,
   Reference,
   reference: Reference,
+  ItemCard,
+  itemcard: ItemCard,
+  ItemCards,
+  itemcards: ItemCards,
+  Splitter,
+  splitter: Splitter,
+  Link,
+  link: Link,
+  InfoBox,
+  infobox: InfoBox,
+  Tabs,
+  tabs: Tabs,
+  Person,
+  person: Person,
+  People,
+  people: People,
+  ImageCarousel,
+  imagecarousel: ImageCarousel,
 };
 
 interface Props {
@@ -28,87 +55,105 @@ const { Content, config = {} } = Astro.props;
 const finalConfig = { ...defaultContentConfig, ...config };
 ---
 
-
 <!-- Remixicon -->
 <head>
-  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+  <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+    rel="stylesheet"
+  />
 </head>
 
-
 <div
-  class:list={['custom-content', { 'relative z-5': christmasConfig.enabled && christmasConfig.features.snowfall }]}
+  class:list={[
+    "custom-content",
+    {
+      "relative z-5":
+        christmasConfig.enabled && christmasConfig.features.snowfall,
+    },
+  ]}
   data-config={JSON.stringify(finalConfig)}
 >
   {Content ? <Content components={globalComponents} /> : <slot />}
 </div>
 
-{/* React-based content enhancement (code blocks, mermaid, infographic toolbars) */}
-{finalConfig.enhanceCodeBlock && (
-  <ContentEnhancer
-    client:idle
-    enableCopy={finalConfig.enableCodeCopy}
-    enableFullscreen={finalConfig.enableCodeFullscreen}
-    enableQuiz={finalConfig.enableQuiz ?? true}
-    enableEncryptedBlock={finalConfig.enableEncryptedBlock ?? false}
-  />
-)}
+{
+  /* React-based content enhancement (code blocks, mermaid, infographic toolbars) */
+}
+{
+  finalConfig.enhanceCodeBlock && (
+    <ContentEnhancer
+      client:idle
+      enableCopy={finalConfig.enableCodeCopy}
+      enableFullscreen={finalConfig.enableCodeFullscreen}
+      enableQuiz={finalConfig.enableQuiz ?? true}
+      enableEncryptedBlock={finalConfig.enableEncryptedBlock ?? false}
+    />
+  )
+}
 
-{/* Only load EmbedHydrator if tweet embeds are enabled (link previews are now server-rendered) */}
+{
+  /* Only load EmbedHydrator if tweet embeds are enabled (link previews are now server-rendered) */
+}
 {finalConfig.enableTweetEmbed && <EmbedHydrator client:load />}
 
 <script>
-  import { enhanceImages } from '@lib/image-enhancer';
-  import { enhanceLinkPreviews } from '@lib/link-preview-enhancer';
+  import { enhanceImages } from "@lib/image-enhancer";
+  import { enhanceLinkPreviews } from "@lib/link-preview-enhancer";
 
   let spoilerJsLoaded = false;
 
   // Content enhancement script - handles non-React enhancements
   function enhanceContent() {
-    const contentContainer = document.querySelector('.custom-content');
+    const contentContainer = document.querySelector(".custom-content");
     if (!contentContainer) return;
 
     // Avoid re-enhancing
-    if (contentContainer.getAttribute('data-enhanced') === 'true') return;
+    if (contentContainer.getAttribute("data-enhanced") === "true") return;
 
     // Dynamically load spoilerjs when <spoiler-span> elements are present
-    if (!spoilerJsLoaded && contentContainer.querySelector('spoiler-span')) {
+    if (!spoilerJsLoaded && contentContainer.querySelector("spoiler-span")) {
       spoilerJsLoaded = true;
-      import('spoilerjs/spoiler-span').catch(() => {
+      import("spoilerjs/spoiler-span").catch(() => {
         spoilerJsLoaded = false;
       });
     }
 
     // Get configuration from data attribute
-    const configData = contentContainer.getAttribute('data-config');
+    const configData = contentContainer.getAttribute("data-config");
     const config = configData
       ? JSON.parse(configData)
       : { addBlankTarget: true, smoothScroll: true, addHeadingLevel: true };
 
     // Add target="_blank" to external links
     if (config.addBlankTarget) {
-      const links = contentContainer.querySelectorAll('a[href]');
+      const links = contentContainer.querySelectorAll("a[href]");
       links.forEach((link: Element) => {
         const anchor = link as HTMLAnchorElement;
-        const href = anchor.getAttribute('href') || '';
-        if (href.startsWith('http') || href.startsWith('//')) {
-          anchor.setAttribute('target', '_blank');
+        const href = anchor.getAttribute("href") || "";
+        if (href.startsWith("http") || href.startsWith("//")) {
+          anchor.setAttribute("target", "_blank");
         }
       });
     }
 
     // Add smooth scroll to anchor links
     if (config.smoothScroll) {
-      const anchorLinks = contentContainer.querySelectorAll('a.anchor-link[href^="#"]');
+      const anchorLinks = contentContainer.querySelectorAll(
+        'a.anchor-link[href^="#"]',
+      );
       anchorLinks.forEach((link: Element) => {
         const anchor = link as HTMLAnchorElement;
-        anchor.addEventListener('click', (e) => {
+        anchor.addEventListener("click", (e) => {
           e.preventDefault();
-          const targetId = anchor.getAttribute('href')?.substring(1);
+          const targetId = anchor.getAttribute("href")?.substring(1);
           if (!targetId) return;
           const targetElement = document.getElementById(targetId);
           if (targetElement) {
-            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            history.pushState(null, '', `#${targetId}`);
+            targetElement.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+            history.pushState(null, "", `#${targetId}`);
           }
         });
       });
@@ -116,10 +161,12 @@ const finalConfig = { ...defaultContentConfig, ...config };
 
     // Add heading level labels (H1, H2, etc.)
     if (config.addHeadingLevel) {
-      const headings = contentContainer.querySelectorAll('h1, h2, h3, h4, h5, h6');
+      const headings = contentContainer.querySelectorAll(
+        "h1, h2, h3, h4, h5, h6",
+      );
       headings.forEach((heading: Element) => {
         const level = heading.tagName[1]; // Extract number from H1, H2, etc.
-        heading.setAttribute('data-level', `H${level}`);
+        heading.setAttribute("data-level", `H${level}`);
       });
     }
 
@@ -130,50 +177,60 @@ const finalConfig = { ...defaultContentConfig, ...config };
     enhanceLinkPreviews(contentContainer);
 
     // Tab group switching logic
-    const tabHeaders = contentContainer.querySelectorAll<HTMLElement>('.tab-header[role="tab"]');
+    const tabHeaders = contentContainer.querySelectorAll<HTMLElement>(
+      '.tab-header[role="tab"]',
+    );
     tabHeaders.forEach((header) => {
-      header.addEventListener('click', () => {
+      header.addEventListener("click", () => {
         const groupId = header.dataset.tabGroup;
         const tabIndex = header.dataset.tabIndex;
         if (!groupId || tabIndex === undefined) return;
 
-        const group = contentContainer.querySelector(`.tab-group[data-tab-group="${groupId}"]`);
+        const group = contentContainer.querySelector(
+          `.tab-group[data-tab-group="${groupId}"]`,
+        );
         if (!group) return;
 
         // Update headers
-        group.querySelectorAll<HTMLElement>('.tab-header').forEach((h) => {
-          h.setAttribute('aria-selected', String(h.dataset.tabIndex === tabIndex));
+        group.querySelectorAll<HTMLElement>(".tab-header").forEach((h) => {
+          h.setAttribute(
+            "aria-selected",
+            String(h.dataset.tabIndex === tabIndex),
+          );
         });
 
         // Update panels
-        group.querySelectorAll<HTMLElement>('.tab-panel').forEach((panel) => {
-          panel.classList.toggle('active', panel.dataset.tabIndex === tabIndex);
+        group.querySelectorAll<HTMLElement>(".tab-panel").forEach((panel) => {
+          panel.classList.toggle("active", panel.dataset.tabIndex === tabIndex);
         });
       });
     });
 
     // Blur spoiler click-to-reveal (default spoilers handled by spoilerjs)
-    const blurSpoilers = contentContainer.querySelectorAll<HTMLElement>('.spoiler.blur');
+    const blurSpoilers =
+      contentContainer.querySelectorAll<HTMLElement>(".spoiler.blur");
     blurSpoilers.forEach((spoiler) => {
-      spoiler.addEventListener('click', () => spoiler.classList.toggle('revealed'));
+      spoiler.addEventListener("click", () =>
+        spoiler.classList.toggle("revealed"),
+      );
     });
 
     // Mark as enhanced
-    contentContainer.setAttribute('data-enhanced', 'true');
+    contentContainer.setAttribute("data-enhanced", "true");
   }
 
   // Run on page load
-  document.addEventListener('astro:page-load', () => {
-    const contentContainer = document.querySelector('.custom-content');
+  document.addEventListener("astro:page-load", () => {
+    const contentContainer = document.querySelector(".custom-content");
     if (contentContainer) {
-      contentContainer.removeAttribute('data-enhanced');
+      contentContainer.removeAttribute("data-enhanced");
     }
     enhanceContent();
   });
 
   // Run immediately if already loaded
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', enhanceContent);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", enhanceContent);
   } else {
     enhanceContent();
   }

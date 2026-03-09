@@ -1,0 +1,103 @@
+---
+import type { FeaturedSeriesItem } from '@lib/config/types';
+import { getSanitizeHtml } from '@lib/sanitize';
+import { Icon } from 'astro-icon/components';
+import { marked } from 'marked';
+
+interface Props {
+  series: FeaturedSeriesItem;
+}
+
+const { series } = Astro.props;
+
+// Convert Markdown description to HTML and sanitize for XSS protection
+const rawHtml = series.description ? await marked.parse(series.description) : '';
+const descriptionHtml = getSanitizeHtml(rawHtml);
+---
+
+<header class="my-10 flex flex-col items-center text-center">
+  <!-- Title -->
+  <h1 class="mb-6 text-4xl font-bold leading-tight tracking-wide md:text-3xl">
+    {series.fullName ?? series.label ?? series.categoryName}
+  </h1>
+
+  <!-- Description -->
+  {
+    series.description && (
+      <div class="text-muted-foreground mb-4">
+        <div
+          class="prose dark:prose-invert mx-auto max-w-3xl text-sm leading-relaxed"
+          set:html={descriptionHtml}
+        />
+      </div>
+    )
+  }
+
+  <!-- Link buttons -->
+  {
+    series.links && (
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        {series.links.github && (
+          <a
+            href={series.links.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm font-medium transition-colors hover:bg-muted/80"
+          >
+            <Icon name="ri:github-fill" class="h-4 w-4" />
+            <span>GitHub</span>
+          </a>
+        )}
+        {series.links.rss && (
+          <a
+            href={series.links.rss}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-astro-reload
+            class="inline-flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm font-medium transition-colors hover:bg-muted/80"
+          >
+            <Icon name="ri:rss-line" class="h-4 w-4" />
+            <span>RSS 訂閱</span>
+          </a>
+        )}
+        {series.links.chrome && (
+          <a
+            href={series.links.chrome}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm font-medium transition-colors hover:bg-muted/80"
+          >
+            <Icon name="ri:chrome-fill" class="h-4 w-4" />
+            <span>Chrome 插件</span>
+          </a>
+        )}
+        {series.links.docs && (
+          <a
+            href={series.links.docs}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 rounded-lg bg-muted px-3 py-2 text-sm font-medium transition-colors hover:bg-muted/80"
+          >
+            <Icon name="ri:book-open-line" class="h-4 w-4" />
+            <span>插件文檔</span>
+          </a>
+        )}
+      </div>
+    )
+  }
+
+  <!-- Series cover image (optional, as a smaller banner) -->
+  {
+    series.cover && (
+      <div class="mt-4 overflow-hidden rounded-lg">
+        <img
+          src={series.cover}
+          alt={series.fullName ?? series.label}
+          class="h-48 w-full object-cover md:h-32"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    )
+  }
+</header>

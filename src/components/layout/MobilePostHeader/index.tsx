@@ -38,6 +38,8 @@ export function MobilePostHeader({
   enableNumbering = true,
 }: MobilePostHeaderProps) {
   return null;
+
+  /*
   const shouldReduceMotion = useReducedMotion();
 
   // Check if we're on mobile (tablet breakpoint: max-width 992px)
@@ -105,7 +107,6 @@ export function MobilePostHeader({
                   className="flex w-[calc(100vw-10.5rem)] items-center gap-2.5 rounded-full bg-foreground/10 py-1 pr-3 pl-1.5 backdrop-blur-sm transition-colors hover:bg-foreground/20"
                   aria-label="展开目录"
                 >
-                  {/* Progress circle - fixed size container */}
                   <div className="relative shrink-0">
                     <ProgressCircle size={32} strokeWidth={2.5} />
                   </div>
@@ -130,4 +131,5 @@ export function MobilePostHeader({
       </AnimatePresence>
     </div>
   );
+  */
 }

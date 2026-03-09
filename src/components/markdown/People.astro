@@ -1,0 +1,24 @@
+---
+interface Props {
+  gapx?: number;
+  gapy?: number;
+  mt?: number;
+  mb?: number;
+  center?: boolean;
+}
+
+const { gapx = 2, gapy = 6, mt = 8, mb = 8, center = false } = Astro.props;
+---
+
+{/* 把靜態的 class 留給 Tailwind，動態的數值交給原生 style */}
+<div
+  class={`flex flex-wrap ${center ? "justify-center" : ""}`}
+  style={`
+    column-gap: ${gapx * 0.25}rem; 
+    row-gap: ${gapy * 0.25}rem; 
+    margin-top: ${mt * 0.25}rem; 
+    margin-bottom: ${mb * 0.25}rem;
+  `}
+>
+  <slot />
+</div>

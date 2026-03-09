@@ -1,0 +1,306 @@
+---
+layout: ../layouts/AboutLayout.astro
+title: "About"
+date: 2026-02-05 23:11:33
+description: "自我介紹"
+---
+
+
+import ItemCard from '@components/markdown/ItemCard.astro';
+import ItemCards from '@components/markdown/ItemCards.astro';
+
+import Splitter from '@components/markdown/Splitter.astro';
+import SplitterCenter from '@components/markdown/SplitterCenter.astro';
+
+import InfoBox from '@components/markdown/InfoBox.astro';
+import Link from '@components/markdown/Link.astro';
+import CollapseBlock from '@components/markdown/CollapseBlock.astro';
+import Tabs from '@components/markdown/Tabs.astro';
+
+import Person from '@components/markdown/Person.astro';
+import People from '@components/markdown/People.astro';
+
+import Reference from '@components/markdown/Reference.astro';
+
+import Timeline from '@components/markdown/Timeline/Timeline.astro';
+import TimelineItem from '@components/markdown/Timeline/TimelineItem.astro';
+
+import Columns from '@components/markdown/Columns.astro';
+
+import ImageCarousel from '@components/markdown/ImageCarousel.astro';
+
+
+
+<InfoBox>
+## 關於部落格
+</InfoBox>
+
+這是新的部落格，使用的主題 [koharu](https://github.com/cosZone/astro-koharu?tab=readme-ov-file)，是由余弦 (cosine) 開發，覺得非常好看優化做得又好就抓下來使用了！[（她的 GitHub）](https://github.com/yusixian)
+
+新部落格於 2026 年 2 月 4 日開始開發，2021 ~ 2023 的文章是從之前的部落格遷移過來的。
+
+
+
+<InfoBox>
+## 關於站長
+</InfoBox>
+
+哈囉～ 我是 Gino
+
+目前是台灣的陽明交通大學資工系大三生，先前是演算法競賽選手（ICPC），最近重心在畢業專題跟考研。
+
+興趣是演算法競賽、音樂遊戲、研究一些前後端的東西，最近剛摸一點攝影跟日文。
+
+其實我目前還在摸索部落格的定位，不確定該以什麼領域作為主要產出，所以近期可能都是想到什麼就寫什麼，當作是蒐集靈感。有想法之後會撰寫類似週刊的系列文，請多指教！
+
+
+
+
+## <i class="ri-time-fill"></i> 學業軌跡
+
+<Timeline horizontal>
+  
+  <TimelineItem horizontal date="201909" title="就讀師大附中" icon="graduation-cap-line">
+    國中會考 35.8 分，其後考特招錄取 1510 資訊科學班
+  </TimelineItem>
+
+  <TimelineItem horizontal date="202209" title="就讀交大資工" icon="graduation-cap-line">
+    學測 57 級分校排 3%，其後繁星推薦錄取交大
+  </TimelineItem>
+
+  <TimelineItem horizontal date="202404" title="休學一年" icon="moon-line">
+    大二下因家中事務與個人規劃休學一年，期間於餐飲業（丸亀製麵）打工賺生活費以及體驗不同生活
+  </TimelineItem>
+
+  <TimelineItem horizontal date="202509" title="復學" icon="leaf-line">
+    復學，從大三開始讀
+  </TimelineItem>
+
+</Timeline>
+
+
+## <i class="ri-code-box-fill"></i> 資訊競賽經歷
+
+
+<div class="gino-table my-6 flex w-full justify-center">
+
+| <i class="ri-graduation-cap-line"></i> 年級 | <i class="ri-macbook-fill"></i> 競賽 | <i class="ri-medal-2-line"></i> 獎項 | <i class="ri-sparkling-2-line"></i> Remarks |
+| --- | --- | --- | --- |
+| 大三 | [2025 ICPC 台中站](https://www.icpc.tw/2025/) | 第 22 名 / Silver Medal | pI (Convex Hull 變形)、pK (複雜度可均攤的 DFS 搜尋) |
+| 大三 | [2025 NCPC 決賽](https://ncpc.nsysu.edu.tw/static/file/62/1062/img/ScoreboardNCPC2025_FINAL-DOMjudge.pdf) | 第 11 名 / 取得外站補助名額 | pH (字串 Gusfield's algorithm) |
+| 大三 | [2025 TOPC](https://topc.icpc.tw/scoreboard/) | 第 23 名 | pJ (二分搜答案套樹 DP) |
+| 大三 | [交大校內選拔賽](https://www.nycu.edu.tw/it/ch/app/news/view?module=headnews&id=4&serno=819866d7-2225-428c-ba24-00792fb96d0e) | 第 4 名 | 一題僅 3 隊 AC 的數論題（GCD 相關） |
+| 大一 | [2022 ICPC 桃園站](https://icpc.global/regionals/finder/Taipei-2023/standings) | 第 22 名 / Silver Award |  |
+| 大一 | 2022 NCPC 決賽 | 第 21 名 / 佳作第一名 |  |
+| 大一 | 交大校內選拔賽 | 第 5 名 | 一題二分搜套差分約束系統 | 
+| 大一 | 交大新生個人賽 | 第 2 名 |  |
+| 高三 | APCS（2021 年 11 月場） | 實作 5 級分（原始分數 370） | 該次實作 2734 人報考，僅 5 人 5 級分 |
+| 高三 | [資訊學科競賽 台北市市賽](https://sorahisa.github.io/OI/DumpedRanks/nhspc2021_tpe/ranking/Ranking.html) | 第 16 名 / 三等獎 | pC 80 分 (位元 DP) |
+| 高三 | YTP 少年圖靈計畫 決賽 | 第 7 名 |  |
+| 高三 | 成大高中生程式設計邀請賽 | 第 2 名 |  |
+| 高三 | NPSC | 第 17 名 / 佳作 |  |
+| 高二 | APCS（2021 年 1 月場）| 觀念 5 級分（原始分數 92）<br />實作 5 級分（原始分數 400） | 該次實作 2962 人報考，僅 27 人 5 級分 |
+| 高二 | 資訊之芽算法班 | 優秀結業 |  |
+| 高二 | TOI 初選 | 第 29 名 |  |
+| 高一 | APCS（2020 年 7 月場）| 觀念 4 級分（原始分數 88）<br />實作 4 級分（原始分數 295）|  |
+
+</div>
+
+
+
+## <i class="ri-group-2-fill"></i> ICPC 隊伍
+
+<SplitterCenter><i class="ri-team-fill"></i> 隊伍成員</SplitterCenter>
+<div class="flex items-center justify-center h-full w-full">
+  <People mt="0" mb="5">
+    <Person url="https://gitea.konchin.com/ytshih" title="Ian" />
+    <Person url="https://github.com/benson0402" title="Benson" />
+    <Person url="https://github.com/Penguin-71630" title="Gino" />
+  </People>
+</div>
+
+<SplitterCenter><i class="ri-pen-nib-fill"></i> 相關資料</SplitterCenter>
+<div class="flex items-center justify-center h-full w-full">
+  <ItemCards mt="0">
+    <ItemCard title="Codeforces ID" subtitle="polarbear03617" img="/img/content/about/codeforces.webp" url="https://codeforces.com/profile/polarbear03617" />
+    <ItemCard title="ICPC Codebook" subtitle="NYCU_LLLemonade_Jam" url="https://github.com/konchinshih/codebook" />
+  </ItemCards>
+</div>
+
+
+## <i class="ri-presentation-fill"></i> 資訊競賽教學
+
+<SplitterCenter><i class="ri-article-fill"></i> 上課簡報</SplitterCenter>
+
+<ItemCards gapx={6.5} center>
+  <ItemCard title="字串" subtitle="KMP / Z-Value / Suffix Array" url="https://slides.com/penguin71630/string" img="/img/content/about/string.webp" darkImg="/img/content/about/string-dark.webp" />
+  <ItemCard title="莫隊算法" subtitle="一般莫隊 / 回滾莫隊 / 帶修改莫隊" url="https://drive.google.com/file/d/1lbUAzupnsITTtQS9qLDhM0pNE2TUnbpn/view?usp=sharing" img="/img/content/about/mo.webp" darkImg="/img/content/about/mo-dark.webp" />
+  <ItemCard title="根號算法 I" subtitle="分塊 / 根號複雜度" url="https://hackmd.io/@penguin71630/sqrt1#/" img="/img/content/about/sqrt.webp" darkImg="/img/content/about/sqrt-dark.webp" />
+  <ItemCard title="根號算法 II" subtitle="操作分塊" url="https://hackmd.io/@penguin71630/sqrt2#/" img="/img/content/about/sqrt.webp" darkImg="/img/content/about/sqrt-dark.webp"/>
+  <ItemCard title="CDQ 分治" subtitle="三維偏序 / 操作分治" url="https://drive.google.com/file/d/1Ind7Kx3ck2ZGZBoJuXdfmIF0nOxq4GHg/view?usp=sharing" img="/img/content/about/dc.webp" darkImg="/img/content/about/dc-dark.webp" />
+  <ItemCard title="分治" subtitle="Master Theorem / 其他經典問題" url="https://drive.google.com/file/d/1HU_FEQtWdVAq6dG9DqzossMjytfgiVRi/view?usp=sharing" img="/img/content/about/dc.webp" darkImg="/img/content/about/dc-dark.webp" />
+  <ItemCard title="基礎 DP 複習" subtitle="LIS / 背包問題" url="https://hackmd.io/@penguin71630/DPpractice1#/" img="/img/content/about/dp.webp" darkImg="/img/content/about/dp-dark.webp"/>
+  <ItemCard title="平行二分搜" subtitle="CSES New Roads Queries" url="https://drive.google.com/file/d/1ZatluDxGYlMXbuZoUQyhauGxnRsLzKsF/view?usp=sharing" img="/img/content/about/parallel-bs.webp" darkImg="/img/content/about/parallel-bs-dark.webp"/>
+  <ItemCard title="計算幾何" subtitle="向量基礎 / Convex Hull / 旋轉卡尺" url="https://drive.google.com/file/d/11UBQ_4fGO8BSZIXReTIQH5UQZLBXXugy/view" img="/img/content/about/geometry.webp" darkImg="/img/content/about/geometry-dark.webp" />
+  <ItemCard title="資料結構" subtitle="稀疏表 / BIT / 懶標線段樹" url="https://drive.google.com/file/d/1FPmwB58dJ-0mmJS570frGKEHEVOLhj35/view" img="/img/content/about/ds.webp" darkImg="/img/content/about/ds-dark.webp" />
+</ItemCards>
+
+
+<SplitterCenter><i class="ri-time-fill"></i> 教學經歷</SplitterCenter>
+
+
+<div class="gino-table my-6 flex w-full justify-center">
+
+| 年級 | 活動 | 講授主題 |
+|:---:|:---:|:---:|
+| 大一 | 交大 PCCA 寒訓 | [莫隊算法、CDQ 分治、Parallel Binary Search](https://www.youtube.com/watch?v=ym6_szBFoqk) |
+| 大一 | 資訊之芽竹區算法班 | [分治](https://www.csie.ntu.edu.tw/~sprout/algo2023/ppt_pdf/week06/divide_and_conquer_inclass(hc).pdf) |
+| 高三 | 附中 x 延平競程讀書會 | [根號算法 I](https://hackmd.io/@penguin71630/sqrt1#/) |
+| 高三 | 附中 x 延平競程讀書會 | [根號算法 II](https://hackmd.io/@penguin71630/sqrt2#/) |
+| 高三 | 附中 x 延平競程讀書會 | [基礎 DP 複習](https://hackmd.io/@penguin71630/DPpractice1#/) |
+| 高三 | 附中資訊校隊培訓 | [字串演算法](https://slides.com/penguin71630/string) |
+| 高三 | 附中資訊暑期培訓 | [基礎計算幾何](https://drive.google.com/file/d/11UBQ_4fGO8BSZIXReTIQH5UQZLBXXugy/view) |
+| 高三 | 附中資訊暑期培訓 | [基礎資料結構](https://drive.google.com/file/d/1FPmwB58dJ-0mmJS570frGKEHEVOLhj35/view) |
+| 高三 | 薇閣 x 嘉義 x 新化 x 附中 四校暑訓 | [基礎分治](https://github.com/HHSH-CYSH-WGSH-HSNU-Summer-Camp/Divide-and-Conquer/blob/main/Divide%20and%20Conquer.pdf) |
+
+</div>
+
+
+
+
+
+## <i class="ri-disc-fill"></i> 音樂遊戲
+
+主要玩 Arcaea 跟 Maimai，Arcaea 玩了 4 年目前 potential `13.23` 並加入了 Lgd 戰隊。這個遊戲剩下 Tempestissimo 尾殺跟 Designant 中間慢速段尚未 PM 過，目前是想聽歌才會回來玩。最喜歡 Paradox Palette、Lost in the Abyss 和 Waltz for Lorelei，退坑前的心願是理論這幾張譜。
+
+右手 CPS 為 `9.7`（30 秒測試），左手為 `7.5`，我的手速使我面對高難譜非常吃力，碰到子彈或硬扛的鍵型我完全沒辦法把精度壓進 25ms 內。然而我最不缺的是研究譜面的耐心，因此對於一些節奏複雜的下位譜我能夠有不錯的成績，比如 Memory Forest 1 小、BLRINK 1 小。
+
+
+
+<div class="mt-[-20px]"></div>
+<Columns noline ratio="584fr 285fr">
+
+<div class="w-full">
+  <SplitterCenter gradient={false}><i class="ri-gamepad-fill"></i> Arcaea</SplitterCenter><div class="mt-[-20px]"></div>
+  <ImageCarousel ratio="16/10" images={[
+      "/img/content/about/arcaea/faint-light.webp",
+      "/img/content/about/arcaea/testify-byd.webp",
+      "/img/content/about/arcaea/11-all-pm-1.webp",
+      "/img/content/about/arcaea/11-all-pm-2.webp",
+      "/img/content/about/arcaea/lament-rain.webp",
+      "/img/content/about/arcaea/1f1e33.webp",
+      "/img/content/about/arcaea/testify-ftr.webp",
+      "/img/content/about/arcaea/infinite-strife.webp",
+      "/img/content/about/arcaea/straight-into-the-lights.webp",
+      "/img/content/about/arcaea/neo-kosmo.webp",
+      // "/img/content/about/arcaea/aterlbus.webp",
+      // "/img/content/about/arcaea/izana.webp",
+      "/img/content/about/arcaea/memory-forest.webp",
+      "/img/content/about/arcaea/blrink.webp",
+      // "/img/content/about/arcaea/supernova.webp",
+    ]} />
+</div>
+<div class="w-full">
+<SplitterCenter gradient={false}><i class="ri-gamepad-fill"></i> Maimai</SplitterCenter><div class="mt-[-20px]"></div>
+  <ImageCarousel ratio="57/73" images={[
+      "/img/content/about/maimai/maimai-b50.webp",
+      "/img/content/about/maimai/our-wrenally.webp",
+      "/img/content/about/maimai/regulus.webp",
+      "/img/content/about/maimai/southern-cross.webp",
+      "/img/content/about/maimai/wanderschaffen-law.webp",
+    ]} />
+</div>
+</Columns>
+
+
+Maimai 的話玩了 3 年，297 道上彩，認真練到大概 600 道拿了紫將之後就開始隨性玩了。目前將牌已攻略紫代、爽代、桃代、煌代。非常非常喜歡紫代，開歌時不時會選紫代的譜（conflict 除外）如天火明命、四月の雨、Selector、Panopticon。針對 Maimai 有寫過一些經驗分享文，[感興趣的話可以看看](/categories/rhythmgame)。
+
+
+4k 音遊也有接觸一點，Malody 目前是常規三段（考的是 v3 段位）最近正好要考常規四段。osu!mania 的話約 3200pp，能打 4 星左右的譜。
+
+![](/img/content/about/osu-mania-4k.webp)
+
+
+{/* 以前會[在 B 站發手元](https://space.bilibili.com/2021454142/upload/video)，但復學之後就忙到完全沒空剪手元了 QQ。 */}
+
+
+
+## <i class="ri-headphone-fill"></i> 平時聽的歌
+
+<Splitter><i class="ri-headphone-fill"></i> 喜歡的歌曲</Splitter>
+<Reference>
+  [完整歌單在此](/music)
+</Reference>
+
+<ItemCards center>
+  <ItemCard img="/img/music/songs/Wonder.webp" title="ワンダー" subtitle="tayori" />
+  <ItemCard img="/img/music/songs/雪は何色.webp" title="雪は何色" subtitle="堀江晶太 / Kotoha" />
+  <ItemCard img="/img/music/songs/花たちに希望を.webp" title="花たちに希望を" subtitle="Sound piercer / DAZBEE" />
+  <ItemCard img="/img/music/songs/Juvenile.webp" title="Juvenile" subtitle="technoplanet" />
+  <ItemCard img="/img/music/songs/Inverted World.webp" title="Inverted World" subtitle="ARForest" />
+  {/* <ItemCard url="https://www.youtube.com/watch?v=QcSH6SgSBUs" title="紫陽花 -hydrangea-" subtitle="yourmythos" /> */}
+</ItemCards>
+
+
+
+
+<Splitter><i class="ri-headphone-fill"></i> 喜歡的曲師與樂團</Splitter>
+
+
+
+<People center>
+  <Person ogUrl="https://www.youtube.com/@Aethoro" url="https://www.youtube.com/@Aethoro" title="Aethoro" />
+  <Person ogUrl="https://www.youtube.com/@tayori_tri" url="https://www.youtube.com/@tayori_tri" title="tayori" />
+  <Person ogUrl="https://www.youtube.com/@ARForest" url="https://www.youtube.com/@ARForest" title="ARForest" />
+  <Person ogUrl="https://www.youtube.com/@ElliotHsu" url="https://www.youtube.com/@ElliotHsu" title="Elliot Hsu" />
+  <Person ogUrl="https://www.youtube.com/@yourmythos/videos" url="https://www.youtube.com/@yourmythos/videos" title="yourmythos" />
+  {/* <Person ogUrl="https://www.youtube.com/@porterrobinson" url="https://www.youtube.com/@porterrobinson" title="Porter Robinson" /> */}
+  <Person ogUrl="https://www.youtube.com/@BlackY_official" url="https://www.youtube.com/@BlackY_official" title="BlackY" />
+  <Person ogUrl="https://onoken.bandcamp.com/" url="https://www.youtube.com/@ax_onoken" title="onoken" />
+  <Person ogUrl="https://www.youtube.com/@PrettyPatterns" url="https://www.youtube.com/@PrettyPatterns" title="Pretty Patterns" />
+  <Person ogUrl="https://www.youtube.com/@Nanatsukaze_" url="https://www.youtube.com/@Nanatsukaze_" title="ナナツカゼ" />
+  <Person img="/img/content/about/sakuzyo.webp" url="https://www.youtube.com/@SakuzyoOfficial" title="Sakuzyo" />
+  <Person ogUrl="https://www.youtube.com/@ProjectMili/videos" url="https://www.youtube.com/@ProjectMili" title="Mili" />
+  <Person ogUrl="https://www.youtube.com/@mamomo4026" url="https://www.youtube.com/@mamomo4026" title="mamomo" />
+  <Person ogUrl="https://www.youtube.com/@Rig%C3%ABlTheatre" url="https://www.youtube.com/@Rig%C3%ABlTheatre" title="Rigël Theatre" />
+  <Person ogUrl="https://www.youtube.com/@djokawariofficial5774" url="https://www.youtube.com/@djokawariofficial5774" title="Dj Okawari" />
+  <Person img="/img/content/about/lime-kankitsu.webp" url="https://soundcloud.com/kanki2" title="Lime" />
+</People>
+
+
+
+
+<Splitter><i class="ri-headphone-fill"></i> 喜歡的歌手</Splitter>
+
+<People center>
+  <Person ogUrl="https://www.youtube.com/@Kotoha_ktnh" title="Kotoha" />
+  <Person ogUrl="https://www.youtube.com/@isui" title="倚水" />
+  <Person ogUrl="https://www.youtube.com/@nayuta7uta" title="nayuta / AZKi" />
+  <Person ogUrl="https://www.youtube.com/@Dazbeeee" title="DAZBEE" />
+  <Person ogUrl="https://www.youtube.com/c/RisaYuzuki" url="https://www.yuzu-risa.com/" title="Risa Yuzuki" />
+  <Person ogUrl="https://www.youtube.com/@AitsukiNakuru" title="藍月なくる" />
+  <Person ogUrl="https://www.youtube.com/@vallyexe" title="vally.exe" />
+
+  {/* <Person url="https://www.youtube.com/@okuhanakochannel" title="奥華子" /> */}
+  {/* <Person url="https://www.youtube.com/@NatsukawaRimi_official" title="夏川りみ" /> */}
+</People>
+
+
+
+{/* ### <i class="ri-camera-lens-fill"></i> 攝影 */}
+
+
+{/* 
+• 一些寫過的文章：
+Maimai 上彩攻略，12000 ~ 15000 之間過渡的玩家可以參考看看
+https://hackmd.io/@penguin71630/maimai-guide
+🙂
+https://hackmd.io/@penguin71630/SyWpJWExkl
+• 一些玩具：
+https://github.com/Penguin-71630/Arcaea-beautify
+https://github.com/Penguin-71630/Arcaea-Auto-Hitsound */}
+
+
+{/* [![GitHub State](https://git-stats.cosine.ren/api?username=yusixian&theme=dark&show_icons=true&hide_border=true)](https://github.com/anuraghazra/github-readme-stats) */}
+
+{/* [![GitHub Streak](https://github-readme-streak-stats-rust-tau.vercel.app?user=yusixian&theme=dark&date_format=%5BY%20%5DM%20&hide_border=true)](https://git.io/streak-stats) */}

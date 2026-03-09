@@ -1,4 +1,5 @@
 ---
+import CustomContent from '@components/common/CustomContent.astro';
 import HomeSider from '@components/layout/HomeSider.astro';
 import Cover from '@components/ui/cover/Cover.astro';
 import { CONTENT_PADDING } from '@constants/layout';
@@ -18,39 +19,30 @@ const { frontmatter } = Astro.props;
 ---
 
 <Layout title={`${frontmatter.title} | ${seoConfig.title}`}>
+  <link slot="head" href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+
   <TwoColumnLayout>
-    <Cover slot="cover" title="關於我" />
     <HomeSider slot="sider" />
-    <div class={`shadow-box bg-gradient-start mx-0 flex w-full flex-col gap-8 ${CONTENT_PADDING.standard}`}>
-      <div class=`prose md:prose-sm dark:prose-invert`>
-        <slot />
+    <div class="floating-content shadow-box rounded-lg px-8 py-6">
+      <div class="prose md:prose-sm dark:prose-invert">
+        <CustomContent>
+          <slot />
+        </CustomContent>
       </div>
       <Comment />
     </div>
   </TwoColumnLayout>
 </Layout>
 
-
-<!-- /Users/polarbear03617/Documents/blog/src/lib/infographic-enhancer.ts -->
 <script>
-  // 請確認這個路徑指向你之前修改的那個 .ts 檔案
-  // 假設你的 infographic-enhancer.ts 在 src/utils/ 或 src/scripts/
-  // 請根據實際位置調整 import路徑，例如 '../../utils/infographic-enhancer'
-  import { initInfographicEnhancer } from '../lib/infographic-enhancer';
+  // 請確認這個路徑指向你正確的 infographic-enhancer 檔案
+  import { initInfographicEnhancer } from '@lib/infographic-enhancer';
 
   // 立即執行渲染
   initInfographicEnhancer();
 
-  // 支援 Astro View Transitions (如果你有點擊連結跳轉過來的情況)
+  // 支援 Astro View Transitions
   document.addEventListener('astro:page-load', () => {
     initInfographicEnhancer();
   });
 </script>
-
-
-
-
-<!-- Remixicon -->
-<head>
-  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
-</head>

@@ -136,7 +136,7 @@ export default function SearchDialog() {
                       >
                         <p>輸入關鍵字搜尋部落格文章</p>
                         <p className="mt-1 text-xs">
-                          按 <kbd className="rounded bg-black/10 px-1.5 py-0.5 font-mono dark:bg-white/10">ESC</kbd> 关闭
+                          按 <kbd className="rounded bg-black/10 px-1.5 py-0.5 font-mono dark:bg-white/10">ESC</kbd> 關閉
                         </p>
                       </div>
 

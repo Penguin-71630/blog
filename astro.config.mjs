@@ -1,10 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import yaml from '@rollup/plugin-yaml';
 import tailwindcss from '@tailwindcss/vite';
-import umami from '@yeskunall/astro-umami';
+// import umami from '@yeskunall/astro-umami';
 import { defineConfig } from 'astro/config';
 import icon from 'astro-icon';
 import mermaid from 'astro-mermaid';
@@ -16,24 +17,21 @@ import rehypeSlug from 'rehype-slug';
 import remarkDirective from 'remark-directive';
 import remarkMath from 'remark-math';
 import Sonda from 'sonda/astro';
+import { visit } from 'unist-util-visit';
 import { loadEnv } from 'vite';
 import svgr from 'vite-plugin-svgr';
 import YAML from 'yaml';
-import { rehypeImagePlaceholder } from './src/lib/markdown/rehype-image-placeholder.ts';
-import { remarkLinkEmbed } from './src/lib/markdown/remark-link-embed.ts';
-import { normalizeUrl } from './src/lib/utils.ts';
-
-import mdx from '@astrojs/mdx';
-import { visit } from 'unist-util-visit';
-
 import { rehypeEncryptedBlock } from './src/lib/markdown/rehype-encrypted-block.ts';
+import { rehypeImagePlaceholder } from './src/lib/markdown/rehype-image-placeholder.ts';
 import { rehypeShokaAttrs } from './src/lib/markdown/rehype-shoka-attrs.ts';
 import { remarkEncryptedDirective } from './src/lib/markdown/remark-encrypted-directive.ts';
+import { remarkLinkEmbed } from './src/lib/markdown/remark-link-embed.ts';
 import { remarkIns, remarkMark } from './src/lib/markdown/remark-shoka-effects.ts';
 import { remarkShokaPreprocess } from './src/lib/markdown/remark-shoka-preprocess.ts';
 import { remarkShokaRuby } from './src/lib/markdown/remark-shoka-ruby.ts';
 import { remarkShokaSpoiler } from './src/lib/markdown/remark-shoka-spoiler.ts';
 import { shokaMetaTransformer } from './src/lib/markdown/shiki-meta-transformer.ts';
+import { normalizeUrl } from './src/lib/utils.ts';
 
 // Load YAML config directly with Node.js (before Vite plugins are available)
 // This is only used in astro.config.mjs - other files use @rollup/plugin-yaml
@@ -42,8 +40,6 @@ function loadConfigForAstro() {
   const content = fs.readFileSync(configPath, 'utf8');
   return YAML.parse(content);
 }
-
-
 
 const yamlConfig = loadConfigForAstro();
 
@@ -60,6 +56,31 @@ const umamiEndpoint = normalizeUrl(umamiConfig?.endpoint);
 
 // Get robots.txt config from YAML
 const robotsConfig = yamlConfig.seo?.robots;
+
+/**
+ * Vite plugin to suppress React hook warnings during development
+ */
+function suppressReactWarnings() {
+  return {
+    name: 'suppress-react-warnings',
+    configureServer(server) {
+      const originalWarn = console.warn;
+      const originalError = console.error;
+
+      console.warn = (...args) => {
+        const msg = args[0]?.toString() || '';
+        if (msg.includes('Invalid hook call')) return;
+        originalWarn(...args);
+      };
+
+      console.error = (...args) => {
+        const msg = args[0]?.toString() || '';
+        if (msg.includes('Invalid hook call')) return;
+        originalError(...args);
+      };
+    },
+  };
+}
 
 /**
  * Vite plugin for conditional Three.js bundling
@@ -169,7 +190,7 @@ export default defineConfig({
   markdown: {
     // Enable GitHub Flavored Markdown
     gfm: true,
-    // Configure remark plugins 
+    // Configure remark plugins
     remarkPlugins: remarkPlugins,
     rehypePlugins: rehypePlugins,
     syntaxHighlight: {
@@ -197,15 +218,15 @@ export default defineConfig({
       },
     }),
     // Umami analytics - configured via config/site.yaml
-    ...(umamiEnabled && umamiId
-      ? [
-          umami({
-            id: umamiId,
-            endpointUrl: umamiEndpoint,
-            hostUrl: umamiEndpoint,
-          }),
-        ]
-      : []),
+    // ...(umamiEnabled && umamiId
+    //   ? [
+    //       umami({
+    //         id: umamiId,
+    //         endpointUrl: umamiEndpoint,
+    //         hostUrl: umamiEndpoint,
+    //       }),
+    //     ]
+    //   : []),
     pagefind(),
     mermaid({
       autoTheme: true,
@@ -221,9 +242,18 @@ export default defineConfig({
       // Enable sourcemap for Sonda bundle analysis
       sourcemap: isAnalyze,
     },
-    plugins: [yaml(), conditionalSnowfall(), svgr(), tailwindcss()],
+    plugins: [suppressReactWarnings(), yaml(), conditionalSnowfall(), svgr(), tailwindcss()],
+    resolve: {
+      dedupe: ['react', 'react-dom'],
+    },
     ssr: {
       noExternal: ['react-tweet'],
+      external: ['react', 'react-dom'],
+    },
+    server: {
+      hmr: {
+        overlay: false,
+      },
     },
     optimizeDeps: {
       include: ['@antv/infographic'],

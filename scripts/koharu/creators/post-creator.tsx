@@ -21,7 +21,7 @@ const STEP_CONFIGS: StepConfig[] = [
   { id: 'description', label: '描述' },
   { id: 'category', label: '分类' },
   { id: 'tags', label: '标签' },
-  { id: 'draft', label: '草稿' },
+  { id: 'draft', label: '未公開草稿' },
 ];
 
 export function PostCreator({ onComplete, showReturnHint = false }: CreatorProps) {

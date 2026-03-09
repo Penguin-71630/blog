@@ -1,0 +1,84 @@
+/**
+ * Floating Layout Theme
+ * 實現背景圖常駐、內容浮動且半透明的效果
+ */
+
+#site-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--site-bg-image, none), linear-gradient(to top, var(--gradient-bg-end) 0, var(--gradient-bg-start) 30%);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+/* * 修正重點：利用 linear-gradient 將 --bg-overlay 變數疊加在圖片最上層 
+ */
+.floating-content::before,
+.floating-sider::before,
+.floating-card::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  background: 
+    linear-gradient(var(--bg-overlay, transparent), var(--bg-overlay, transparent)),
+    var(--site-bg-image, none), 
+    linear-gradient(to top, var(--gradient-bg-end) 0, var(--gradient-bg-start) 30%);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  pointer-events: none;
+}
+
+/* 浮動內容區塊的半透明背景效果 */
+.floating-content {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  /* 原本的 background 換成設定 --bg-overlay 變數 */
+  --bg-overlay: hsl(var(--background) / 0.78);
+  border: 1px solid hsl(var(--border) / 0.2);
+  box-shadow: 0 8px 32px hsl(var(--foreground) / 0.04);
+}
+
+.floating-content::before {
+  inset: -20px;
+  filter: blur(20px) saturate(120%);
+}
+
+/* 側邊欄的半透明背景效果 */
+.floating-sider {
+  isolation: isolate;
+  /* 原本的 background 換成設定 --bg-overlay 變數 */
+  --bg-overlay: hsl(var(--background) / 0.78);
+  border: 1px solid hsl(var(--border) / 0.2);
+  box-shadow: 0 8px 32px hsl(var(--foreground) / 0.04);
+}
+
+.floating-sider::before {
+  inset: -24px;
+  filter: blur(24px) saturate(120%);
+}
+
+/* 卡片的半透明背景效果 */
+.floating-card {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  /* 原本的 background 換成設定 --bg-overlay 變數 */
+  --bg-overlay: hsl(var(--card) / 0.78);
+}
+
+.floating-card::before {
+  inset: -10px;
+  filter: blur(8px);
+}
+
+/* Header 維持原樣 */
+.floating-header {
+  background: hsl(var(--background) / 0.78);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid hsl(var(--border) / 0.1);
+}

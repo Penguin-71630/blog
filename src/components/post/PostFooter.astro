@@ -35,13 +35,15 @@ const rightPool = totalPosts <= 10 ? allPostItems : allPostItems.slice(Math.floo
 const relatedPosts = hasData && post ? getRelatedPosts(post, allPosts, 5).map(toPostRefWithCategory) : [];
 ---
 
-<div class="tablet:grid-cols-1 grid grid-cols-2 gap-4 px-10 md:px-6">
-  {totalPosts <= 10 ? (
-    <PostFooterLists client:only="react" allPosts={allPostItems} relatedPosts={relatedPosts} leftCount={leftCount} rightCount={rightCount} />
-  ) : (
-    <>
-      <RandomPostList client:only="react" postsPool={leftPool} count={leftCount} />
-      {(hasData || totalPosts <= 10) && <RelatedPostList client:only="react" posts={relatedPosts} fallbackPool={rightPool} fallbackCount={rightCount} startIndex={leftCount + 1} />}
-    </>
-  )}
+<div class="floating-content rounded-lg shadow-lg">
+  <div class="tablet:grid-cols-1 grid grid-cols-2 gap-4 px-10 md:px-6 mt-8 mb-8">
+    {totalPosts <= 10 ? (
+      <PostFooterLists client:only="react" allPosts={allPostItems} relatedPosts={relatedPosts} leftCount={leftCount} rightCount={rightCount} />
+    ) : (
+      <>
+        <RandomPostList client:only="react" postsPool={leftPool} count={leftCount} />
+        {(hasData || totalPosts <= 10) && <RelatedPostList client:only="react" posts={relatedPosts} fallbackPool={rightPool} fallbackCount={rightCount} startIndex={leftCount + 1} />}
+      </>
+    )}
+  </div>
 </div>

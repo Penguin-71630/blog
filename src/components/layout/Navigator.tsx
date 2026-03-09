@@ -44,6 +44,7 @@ function ButtonLink({ url, label, isActive, children }: ButtonLinkProps) {
       className={cn(
         'relative flex items-center px-3 py-2 text-base tracking-wider',
         'after:absolute after:bottom-1 after:left-1/2 after:block after:h-0.5 after:w-0 after:-translate-x-1/2 after:transition-all after:duration-300',
+        'after:bg-foreground',
         'hover:after:w-9/12',
         isActive && 'after:w-9/12',
       )}
@@ -66,11 +67,6 @@ const Navigator = memo(function Navigator({ currentPath }: NavigatorProps) {
   const isScrollingRef = useRef(false);
   const firstScrollRef = useRef(true);
 
-  // Apply with-background class based on scroll position
-  useEffect(() => {
-    document.getElementById('site-header')?.classList.toggle('with-background', isBeyond);
-  }, [isBeyond]);
-
   // Handle header visibility based on scroll
   useEffect(() => {
     const siteHeader = document.getElementById('site-header');
@@ -79,6 +75,13 @@ const Navigator = memo(function Navigator({ currentPath }: NavigatorProps) {
     // Skip first scroll
     if (firstScrollRef.current) {
       firstScrollRef.current = false;
+      return;
+    }
+
+    // Desktop: always keep header visible
+    if (!isTablet) {
+      siteHeader?.classList.remove('-translate-y-full');
+      mobileMenuContainer?.classList.remove('-translate-y-full');
       return;
     }
 
@@ -99,7 +102,7 @@ const Navigator = memo(function Navigator({ currentPath }: NavigatorProps) {
       return;
     }
 
-    // Normal behavior: hide on scroll down, show on scroll up
+    // Mobile/tablet behavior: hide on scroll down, show on scroll up
     if (direction === 'down') {
       siteHeader?.classList.add('-translate-y-full');
       mobileMenuContainer?.classList.add('-translate-y-full');
@@ -107,7 +110,7 @@ const Navigator = memo(function Navigator({ currentPath }: NavigatorProps) {
       siteHeader?.classList.remove('-translate-y-full');
       mobileMenuContainer?.classList.remove('-translate-y-full');
     }
-  }, [direction, isPostPageMobile]);
+  }, [direction, isPostPageMobile, isTablet]);
 
   // Cleanup timer on unmount
   useEffect(() => {

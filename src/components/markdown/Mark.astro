@@ -1,14 +1,79 @@
 ---
 interface Props {
-  text?: string; // 加上問號，因為你可能是用 <slot />
-  bg_color?: string;
-  color?: string;
+  color?: 'default' | 'red' | 'yellow' | 'green' | 'blue';
 }
 
-const { bg_color = '#f1ecf8', color = '#8669b0' } = Astro.props;
+const { color = 'default' } = Astro.props;
+
+// Color variants with consistent saturation and luminosity
+// Light theme: bg HSL(hue, 38%, 95%), text HSL(hue, 31%, 55%)
+// Dark theme: bg HSL(hue, 25%, 25%), text HSL(hue, 40%, 75%)
+const colorClasses = {
+  default: 'mark-default',
+  red: 'mark-red',
+  yellow: 'mark-yellow',
+  green: 'mark-green',
+  blue: 'mark-blue',
+};
+
+const markClass = colorClasses[color];
 ---
 
-<span 
-  class="custom-mark"
-  style={`background-color: ${bg_color} !important; padding: 0.1em 0.25em; border-radius: 0.25em; color: ${color} !important;`}
-><slot /></span>
+<span class={`custom-mark ${markClass}`}><slot /></span>
+
+<style>
+  .custom-mark {
+    padding: 0.1em 0.25em;
+    border-radius: 0.25em;
+  }
+
+  /* Default (Purple) */
+  .mark-default {
+    background-color: hsl(270, 38%, 95%);
+    color: hsl(265, 31%, 55%);
+  }
+  :global(.dark) .mark-default {
+    background-color: hsl(270, 25%, 25%);
+    color: hsl(270, 40%, 75%);
+  }
+
+  /* Red */
+  .mark-red {
+    background-color: hsl(0, 38%, 95%);
+    color: hsl(0, 50%, 50%);
+  }
+  :global(.dark) .mark-red {
+    background-color: hsl(0, 25%, 25%);
+    color: hsl(0, 50%, 70%);
+  }
+
+  /* Yellow */
+  .mark-yellow {
+    background-color: hsl(45, 38%, 95%);
+    color: hsl(45, 50%, 45%);
+  }
+  :global(.dark) .mark-yellow {
+    background-color: hsl(45, 25%, 25%);
+    color: hsl(45, 60%, 70%);
+  }
+
+  /* Green */
+  .mark-green {
+    background-color: hsl(140, 38%, 95%);
+    color: hsl(140, 45%, 40%);
+  }
+  :global(.dark) .mark-green {
+    background-color: hsl(140, 25%, 25%);
+    color: hsl(140, 45%, 65%);
+  }
+
+  /* Blue */
+  .mark-blue {
+    background-color: hsl(210, 38%, 95%);
+    color: hsl(210, 50%, 45%);
+  }
+  :global(.dark) .mark-blue {
+    background-color: hsl(210, 25%, 25%);
+    color: hsl(210, 50%, 70%);
+  }
+</style>

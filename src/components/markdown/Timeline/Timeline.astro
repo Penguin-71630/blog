@@ -1,0 +1,17 @@
+---
+// src/components/markdown/Timeline.astro
+// Credit: Flowbite (https://flowbite.com/docs/components/timeline/)
+interface Props {
+  horizontal?: boolean; // 改為可選的布林值
+}
+
+const { horizontal = false } = Astro.props; // 預設為 false (垂直)
+
+const wrapperClass = horizontal
+  ? 'relative border-s border-border ml-3 sm:border-s-0 sm:ml-0 items-start sm:flex sm:gap-4'
+  : 'relative border-s border-border ml-3';
+---
+
+<div class={`not-prose my-8 ${wrapperClass}`} role="list">
+  <slot />
+</div>

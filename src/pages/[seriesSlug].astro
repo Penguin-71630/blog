@@ -1,7 +1,7 @@
 ---
 import HomeSider from '@components/layout/HomeSider.astro';
 import PostList from '@components/post/PostList.astro';
-import SeriesCover from '@components/ui/cover/SeriesCover.astro';
+import SeriesHeader from '@components/post/SeriesHeader.astro';
 import { CONTENT_PADDING } from '@constants/layout';
 import { siteConfig } from '@constants/site-config';
 import Layout from '@layouts/Layout.astro';
@@ -34,13 +34,24 @@ const seriesPosts = series.categoryName ? toPostCardDataList(await getPostsByCat
 const pageTitle = series.fullName ?? series.label ?? series.categoryName;
 ---
 
-<Layout title={`${pageTitle} | ${siteConfig.title}`} description={series.description?.slice(0, 160)}>
+<Layout
+  title={`${pageTitle} | ${siteConfig.title}`}
+  description={series.description?.slice(0, 160)}
+>
   <TwoColumnLayout>
-    <SeriesCover slot="cover" series={series} />
     <HomeSider slot="sider" />
-    <div class={`shadow-box bg-gradient-start mx-0 flex w-full flex-col ${CONTENT_PADDING.standard}`}>
-      <h2 class="shoka-decoration-circle group relative h-19 px-6 py-5 text-2xl/9 font-bold md:text-xl/9">
-        <a href="/" class="dashed-border text-muted-foreground group-hover:border-blue group-hover:text-blue border-b">首頁</a>
+    <div
+      class={`floating-content shadow-box rounded-lg mx-0 flex w-full flex-col ${CONTENT_PADDING.standard}`}
+    >
+      <SeriesHeader series={series} />
+      <h2
+        class="shoka-decoration-circle group relative h-19 px-6 py-5 text-2xl/9 font-bold md:text-xl/9"
+      >
+        <a
+          href="/"
+          class="dashed-border text-muted-foreground group-hover:border-blue group-hover:text-blue border-b"
+          >首頁</a
+        >
         <span class="text-muted-foreground text-lg md:text-base"> / </span>
         共 {seriesPosts.length} 篇文章
       </h2>

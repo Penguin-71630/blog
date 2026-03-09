@@ -1,0 +1,26 @@
+---
+// src/components/markdown/SplitterCenter.astro
+
+interface Props {
+  gradient?: boolean;
+  decorator?: boolean;
+}
+
+const { gradient = true, decorator = false } = Astro.props;
+
+const leftLineClass = gradient ? 'bg-gradient-to-r from-transparent to-[#8e8e8e]/50' : 'bg-[#8e8e8e]/30';
+
+const rightLineClass = gradient ? 'bg-gradient-to-r from-[#8e8e8e]/50 to-transparent' : 'bg-[#8e8e8e]/30';
+---
+
+<div class="flex items-center justify-center w-full my-6 not-prose gap-3">
+
+  {decorator && <i class="ri-shining-2-fill text-xs opacity-50"></i>}
+  <div class={`flex-1 h-[1.3px] rounded-full ${leftLineClass}`}></div>
+  
+  <div class="text-xs leading-relaxed font-bold text-[#8e8e8e] select-none whitespace-nowrap"><slot /></div>
+  
+  <div class={`flex-1 h-[1.3px] rounded-full ${rightLineClass}`}></div>
+  {decorator && <i class="ri-shining-2-fill text-xs opacity-50"></i>}
+
+</div>

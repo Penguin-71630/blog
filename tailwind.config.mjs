@@ -2,7 +2,6 @@ import { animation as animationTokens, borderRadius, colors, shadows } from './s
 
 /** @type {import('tailwindcss').Config} */
 
-
 /*
 export default {
   darkMode: ['class'],
@@ -142,7 +141,6 @@ export default {
 };
 */
 
-
 export default {
   darkMode: ['class'],
   theme: {
@@ -163,8 +161,8 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#d946ef', 
-          foreground: '#ffffff',
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
         },
         // Design token colors
         ...colors,
@@ -180,8 +178,8 @@ export default {
           400: 'hsl(var(--grey-4))',
         },
         // 🔹 修改 1: Logo 改為新的主色 (紫粉色)
-        logo: '#d946ef', 
-        
+        logo: '#d946ef',
+
         // 🔹 修改 2: 徹底重製 mandy 色盤 (從紅色系改為紫粉色系)
         // 這是為了配合 Arcaea 風格生成的 Fuchsia 色階
         mandy: {
@@ -260,7 +258,17 @@ export default {
         '5.5xl': '3.5rem',
       },
       fontFamily: {
-        sans: ['Linux Biolinum', 'Source Han Serif TC', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: [
+          'Linux Biolinum',
+          'Source Han Serif TC',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'Segoe UI',
+          'Roboto',
+          'Helvetica',
+          'Arial',
+          'sans-serif',
+        ],
         bold: ['Linux Biolinum Bold', 'Source Han Serif TC Bold'],
         'chill-round': ['Linux Biolinum', 'Source Han Serif TC', 'sans-serif'],
       },

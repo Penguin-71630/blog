@@ -1,0 +1,145 @@
+---
+// src/components/markdown/Link.astro
+import fs from 'node:fs';
+import path from 'node:path';
+import metascraper from 'metascraper';
+import metascraperDescription from 'metascraper-description';
+import metascraperImage from 'metascraper-image';
+import metascraperLogo from 'metascraper-logo';
+import metascraperLogoFavicon from 'metascraper-logo-favicon';
+import metascraperTitle from 'metascraper-title';
+import metascraperUrl from 'metascraper-url';
+import { HiRefresh } from 'react-icons/hi';
+
+interface Props {
+  url: string;
+}
+
+const { url } = Astro.props;
+
+// 1. 初始化爬蟲 (與 remark-link-embed 相同的配置)
+const scraper = metascraper([
+  metascraperDescription(),
+  metascraperImage(),
+  metascraperLogo(),
+  metascraperTitle(),
+  metascraperUrl(),
+  metascraperLogoFavicon(),
+]);
+
+// 2. 嘗試從既有的快取讀取 (直接讀取 remark 外掛建立的快取，加速編譯)
+const CACHE_FILE = path.join(process.cwd(), '.cache', 'og-data.json');
+let cachedData = null;
+try {
+  if (fs.existsSync(CACHE_FILE)) {
+    const cacheContent = fs.readFileSync(CACHE_FILE, 'utf-8');
+    const cache = JSON.parse(cacheContent);
+    // 檢查快取是否存在且未過期 (7天)
+    if (cache[url] && Date.now() - cache[url].timestamp < 7 * 24 * 60 * 60 * 1000) {
+      cachedData = cache[url].data;
+    }
+  }
+} catch (e) {
+  console.warn('[Link Component] Cache read error:', e);
+}
+
+// 3. 如果沒有快取，就在 Build 時即時抓取
+let ogData = cachedData;
+if (!ogData) {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+      },
+      signal: AbortSignal.timeout(5000), // 5秒 timeout 防止編譯卡死
+    });
+
+    if (response.ok) {
+      const html = await response.text();
+      const metadata = await scraper({ html, url: url });
+
+      ogData = {
+        title: metadata.title,
+        description: metadata.description,
+        image: metadata.image,
+        logo: metadata.logo || metadata.favicon,
+        url: metadata.url || url,
+      };
+      // 註：為了簡化邏輯，我們只負責抓取，不強制寫入快取檔
+    } else {
+      throw new Error(`Status ${response.status}`);
+    }
+  } catch (error) {
+    console.warn(`[Link Component] Failed to fetch OG data for ${url}:`, error);
+    ogData = { title: null, url: url };
+  }
+}
+
+// 4. 解析最終要顯示的變數
+let domain = url;
+try {
+  domain = new URL(url).hostname.replace(/^www\./, '');
+} catch (e) {
+  /* ignore */
+}
+
+const title = ogData?.title || domain;
+const description = ogData?.description || '';
+const logo = ogData?.logo || '';
+const image = ogData?.image || '/img/default/link.webp';
+---
+
+
+{/* 最外層：使用 div + onclick 徹底免疫 MDX 劫持 */}
+<div class="link-preview-block not-prose my-6" data-state={ogData?.title ? "success" : "error"}>
+  <a
+    href=`${url}`
+    target="_blank"
+    class="group block overflow-hidden rounded-lg border border-border transition-all hover:border-primary/50 hover:shadow-md"
+    aria-label={`${title} - ${domain}`}
+  >
+    <div class="bg-card flex md:flex-col flex-row">
+      <div class="flex-1 p-4">
+        <div class="mb-2 flex items-center gap-2">
+          
+          {logo && (
+            <div 
+              class="h-4 w-4 shrink-0 bg-contain bg-center bg-no-repeat" 
+              style={`background-image: url('${logo}')`} 
+              aria-hidden="true"
+            ></div>
+          )}
+          
+          <span class="text-muted-foreground truncate text-xs font-medium">{domain}</span>
+        </div>
+
+        <h3 class="text-foreground mb-2 line-clamp-2 font-semibold leading-tight">{title}</h3>
+
+        {description && (
+          <p class="text-muted-foreground mb-3 line-clamp-2 text-sm leading-relaxed">
+            {description}
+          </p>
+        )}
+
+        <div class="text-primary flex items-center gap-1 text-xs">
+          <span class="truncate">{url}</span>
+          <svg class="h-3 w-3 shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden="true" viewBox="0 0 12 12"><path fill="currentColor" d="M4 3.5a.5.5 0 0 0-.5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-.25a.75.75 0 0 1 1.5 0V8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h.25a.75.75 0 0 1 0 1.5zm2.75 0a.75.75 0 0 1 0-1.5h2.5a.75.75 0 0 1 .75.75v2.5a.75.75 0 0 1-1.5 0v-.69L7.28 5.78a.75.75 0 0 1-1.06-1.06L7.44 3.5z"/></svg> 
+        </div>
+      </div>
+
+      {image && (
+        <div class="bg-muted relative md:w-full shrink-0 aspect-1200/630 w-80">
+          <img
+            src={image}
+            alt={title}
+            class="link-preview-image h-full md:h-full w-full object-cover" loading="lazy"
+            referrerpolicy="no-referrer"
+            data-fallback-title={title}
+          />
+        </div>
+      )}
+
+    </div>
+  </a>
+</div>

@@ -100,7 +100,7 @@ const MenuIcon = ({ className, id }: MenuIconProps) => {
             initial={false}
             animate={isOpen ? 'opened' : 'closed'}
             custom={1}
-            style={{ originX: 0.5, originY: 0.25 }}
+            style={{ transformOrigin: '12px 12px' }}
           >
             <line x1="3" y1="6" x2="21" y2="6" />
           </motion.g>
@@ -109,7 +109,7 @@ const MenuIcon = ({ className, id }: MenuIconProps) => {
             initial={false}
             animate={isOpen ? 'opened' : 'closed'}
             custom={2}
-            style={{ originX: 0.5, originY: 0.5 }}
+            style={{ transformOrigin: '12px 12px' }}
           >
             <line x1="3" y1="12" x2="21" y2="12" />
           </motion.g>
@@ -118,7 +118,7 @@ const MenuIcon = ({ className, id }: MenuIconProps) => {
             initial={false}
             animate={isOpen ? 'opened' : 'closed'}
             custom={3}
-            style={{ originX: 0.5, originY: 0.75 }}
+            style={{ transformOrigin: '12px 12px' }}
           >
             <line x1="3" y1="18" x2="21" y2="18" />
           </motion.g>

@@ -24,7 +24,7 @@
   text-shadow: 0 0.2rem 0.3rem rgba(0, 0, 0, 0.5);
 }
 @utility dashed-border {
-  border-bottom: 0.0625rem dashed hsl(var(--grey-4));
+  border-bottom: 0.0625rem dashed hsl(var(--primary));
   @apply hover:border-blue group-hover:border-blue group-hover:text-blue;
 }
 @utility with-background {

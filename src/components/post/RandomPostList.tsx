@@ -18,7 +18,7 @@ export default function RandomPostList({ postsPool, count }: Props) {
   }, [postsPool, count]);
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="font-semibold text-2xl text-foreground/80">随机文章</h2>
+      <h2 className="font-semibold text-2xl text-foreground/80">隨機文章</h2>
       <div className="flex flex-col gap-2">
         {posts.map((post, index) => (
           <a

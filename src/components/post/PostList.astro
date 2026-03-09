@@ -50,6 +50,9 @@ function getLeftClip(index: number): boolean {
 {
   posts && posts?.length > 0 && (
     <>
+      {showPaginator && page && (
+        <Paginator page={page} baseUrl={baseUrl} isHomePage={isHomePage} />
+      )}
       <div class="flex flex-col gap-4">
         {posts.map((post, index) => (
           <PostItemCard
@@ -64,7 +67,9 @@ function getLeftClip(index: number): boolean {
           />
         ))}
       </div>
-      {showPaginator && page && <Paginator page={page} baseUrl={baseUrl} isHomePage={isHomePage} />}
+      {showPaginator && page && (
+        <Paginator page={page} baseUrl={baseUrl} isHomePage={isHomePage} />
+      )}
     </>
   )
 }

@@ -20,25 +20,33 @@ const { date, updated, title: dataTitle, draft } = data?.data ?? {};
 const readState = readingTime(data?.body ?? '');
 const isDraft = import.meta.env.DEV && draft === true;
 
-// 获取横幅图片的 LQIP 样式
-const bannerLqipStyle = getLqipStyle(`/img/site_headers/${siteConfig?.siteImageFileBaseName}.webp`);
+// 处理 light/dark 主题图片配置
+const siteImageConfig = siteConfig?.siteImageFileBaseName;
+const isThemeAware = typeof siteImageConfig === 'object' && siteImageConfig?.light && siteImageConfig?.dark;
+const lightImageBase = isThemeAware ? siteImageConfig.light : (siteImageConfig as string);
+const darkImageBase = isThemeAware ? siteImageConfig.dark : (siteImageConfig as string);
+
+// 获取横幅图片的 LQIP 样式（使用 light 主题图片）
+const bannerLqipStyle = getLqipStyle(`/img/site_headers/${lightImageBase}.webp`);
 ---
 
-<div class="relative flex h-[60dvh] z-0 max-h-200 overflow-hidden">
-  <div class="absolute inset-0 h-full bg-black/40"></div>
-  <div class="absolute inset-0 bottom-[8dvh] flex flex-col items-center justify-center px-5 text-white">
+<div class="relative flex h-[60dvh] z-0 max-h-200 overflow-hidden -mb-14">
+  <div class="absolute inset-0 h-full bg-gradient-to-b from-black/10 via-black/10 via-50% to-transparent dark:from-black/15 dark:via-black/15 dark:to-transparent"></div>
+  <div
+    class="absolute inset-0 flex flex-col items-center justify-center px-5 text-white"
+  >
     {
       title ? (
         <h1
           class={`shadow-text word-break flex items-center gap-2 text-center text-5xl/[1.2] font-bold tracking-widest ${MAX_WIDTH.content}`}
         >
           {title}
-          <Icon
+          {/* <Icon
             name="ri:link"
             title="复制链接"
             class="hover:text-primary cursor-pointer transition-colors duration-300"
             onclick="navigator.clipboard.writeText(window.location.href)"
-          />
+          /> */}
         </h1>
       ) : data ? (
         <>
@@ -48,8 +56,11 @@ const bannerLqipStyle = getLqipStyle(`/img/site_headers/${siteConfig?.siteImageF
             {dataTitle ?? title}
             {isDraft && (
               <span class="inline-flex items-center gap-1.5 rounded-full bg-yellow-500 px-3 py-1.5 text-base font-semibold text-white shadow-lg backdrop-blur-sm text-shadow-none hover:bg-yellow-500 md:px-2.5 md:py-1 md:text-sm">
-                <Icon name="fa6-solid:file-pen" class="h-4 w-4 md:h-3.5 md:w-3.5" />
-                草稿
+                <Icon
+                  name="fa6-solid:file-pen"
+                  class="h-4 w-4 md:h-3.5 md:w-3.5"
+                />
+                未公開
               </span>
             )}
           </h1>
@@ -77,32 +88,62 @@ const bannerLqipStyle = getLqipStyle(`/img/site_headers/${siteConfig?.siteImageF
         </>
       ) : (
         <>
-          <h2 class="shadow-text text-5xl/[1.2]">{siteConfig?.alternate}</h2>
-          <h1 class="shadow-text mt-3 text-5xl/[1.2] tracking-widest">{siteConfig?.title}</h1>
-          <p class="shadow-text mt-5 text-sm">{siteConfig?.subtitle}</p>
+          <h1 class="text-5xl/[1.2] tracking-widest drop-shadow-[0_2px_5px_rgba(0,0,0,0.85)]">
+            {siteConfig?.title}
+          </h1>
+          <p class="mt-5 text-sm drop-shadow-[0_1px_5px_rgba(0,0,0,0.7)]">
+            {siteConfig?.subtitle}
+          </p>
         </>
       )
     }
   </div>
-  <div
+  <!-- Background image disabled - using global background only -->
+  <!-- <div
     class="relative -z-10 h-full min-h-60 w-full"
     transition:persist="page-cover-banner"
     id="banner-box"
     style={bannerLqipStyle}
   >
-    <img
-      src={"/img/site_headers/" + siteConfig?.siteImageFileBaseName + "_1920.webp"}
-      alt="cover"
-      class="h-full w-full object-cover"
-      sizes="50vw"
-      srcset={
-        "/img/site_headers/" + siteConfig?.siteImageFileBaseName + "_800.webp 800w, " +
-        "/img/site_headers/" + siteConfig?.siteImageFileBaseName + "_1920.webp 1200w"
-      }
-      loading="eager"
-      fetchpriority="high"
-      decoding="async"
-    />
-  </div>
-  <WaveSvg />
+    {
+      isThemeAware ? (
+        <>
+          {/* Light theme image */}
+          <img
+            src={`/img/site_headers/${lightImageBase}_1920.webp`}
+            alt="cover"
+            class="h-full w-full object-cover block dark:hidden"
+            sizes="50vw"
+            srcset={`/img/site_headers/${lightImageBase}_800.webp 800w, /img/site_headers/${lightImageBase}_1920.webp 1200w`}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+          {/* Dark theme image */}
+          <img
+            src={`/img/site_headers/${darkImageBase}_1920.webp`}
+            alt="cover"
+            class="h-full w-full object-cover hidden dark:block"
+            sizes="50vw"
+            srcset={`/img/site_headers/${darkImageBase}_800.webp 800w, /img/site_headers/${darkImageBase}_1920.webp 1200w`}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </>
+      ) : (
+        <img
+          src={`/img/site_headers/${lightImageBase}_1920.webp`}
+          alt="cover"
+          class="h-full w-full object-cover"
+          sizes="50vw"
+          srcset={`/img/site_headers/${lightImageBase}_800.webp 800w, /img/site_headers/${lightImageBase}_1920.webp 1200w`}
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+      )
+    }
+  </div> -->
+  <!-- <WaveSvg /> -->
 </div>

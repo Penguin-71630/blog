@@ -1,0 +1,13 @@
+---
+// src/components/markdown/Category.astro
+---
+
+<div class="category-container my-4 not-prose">
+  {/* 👇 1. 將 mb-1 改成 mb-2 來增加距離 */}
+  <div class="font-bold select-none text-sm text-[#8e8e8e] mb-[1.25px]">
+    <slot />
+  </div>
+
+  {/* 👇 2. 將 border-t 改成 border-t-2 來增加粗細 */}
+  <div class="w-full border-t-[1.3px] border-[#8e8e8e]/30"></div>
+</div>

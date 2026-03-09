@@ -2,7 +2,7 @@
 import FriendRequestForm from '@components/friends/FriendRequestForm';
 import FriendsGrid from '@components/friends/FriendsGrid';
 import HomeSider from '@components/layout/HomeSider.astro';
-import Cover from '@components/ui/cover/Cover.astro';
+import PageTitle from '@components/ui/PageTitle.astro';
 import { CONTENT_PADDING } from '@constants/layout';
 import { siteConfig } from '@constants/site-config';
 import Layout from '@layouts/Layout.astro';
@@ -15,17 +15,17 @@ const description = '歡迎互相加友～';
 
 <Layout title={title} description={description}>
   <TwoColumnLayout>
-    <Cover slot="cover" title="友站網址" />
     <HomeSider slot="sider" />
-    <div
-      class={`bg-gradient-start shadow-box tablet:shadow-none flex flex-col gap-10 overflow-hidden ${CONTENT_PADDING.standard}`}
-    >
-      <div class="mt-4">
-        <FriendsGrid client:load />
-      </div>
-      <div class="mb-4">
-        <FriendRequestForm client:visible />
-        <Comment />
+    <div class="floating-content shadow-box rounded-lg px-8 py-6">
+      <PageTitle title="友站網址" />
+      <div class="flex flex-col gap-10">
+        <div class="mt-4">
+          <FriendsGrid client:load />
+        </div>
+        <div class="mb-4">
+          <FriendRequestForm client:visible />
+          <Comment />
+        </div>
       </div>
     </div>
   </TwoColumnLayout>

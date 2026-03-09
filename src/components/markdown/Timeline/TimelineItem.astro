@@ -1,0 +1,120 @@
+---
+// src/components/markdown/TimelineItem.astro
+// Credit: Flowbite (https://flowbite.com/docs/components/timeline/)
+
+interface Props {
+  horizontal?: boolean; // 改為可選的布林值
+  date: string; // 時間/日期 (支援 "2026", "202605", "20260513" 或自訂字串)
+  title: string; // 標題
+  badge?: string; // 標題旁邊的小標籤 (選填，如 "Latest")
+  icon?: string; // Remixicon 的 class name
+}
+
+const { horizontal = false, date, title, badge, icon } = Astro.props;
+
+// 📅 日期格式化小工具
+function formatTimelineDate(dateStr: string): string {
+  // 如果不是純數字（長度不符合 4, 6, 8），就直接回傳原字串
+  if (!/^\d+$/.test(dateStr)) return dateStr;
+
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  // 取得英文序數後綴 (st, nd, rd, th)
+  const getOrdinalSuffix = (n: number) => {
+    const s = ['th', 'st', 'nd', 'rd'];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  };
+
+  if (dateStr.length === 4) {
+    // 格式：2026 -> 2026
+    return dateStr;
+  }
+
+  if (dateStr.length === 6) {
+    // 格式：202605 -> May, 2026
+    const year = dateStr.slice(0, 4);
+    const month = parseInt(dateStr.slice(4, 6), 10);
+    if (month >= 1 && month <= 12) {
+      return `${months[month - 1]}, ${year}`;
+    }
+  }
+
+  if (dateStr.length === 8) {
+    // 格式：20260513 -> May 13th, 2026
+    const year = dateStr.slice(0, 4);
+    const month = parseInt(dateStr.slice(4, 6), 10);
+    const day = parseInt(dateStr.slice(6, 8), 10);
+    if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+      return `${months[month - 1]} ${getOrdinalSuffix(day)}, ${year}`;
+    }
+  }
+
+  // 如果純數字解析失敗（例如 202699），回傳原字串防呆
+  return dateStr;
+}
+
+// 取得格式化後的日期
+const displayDate = formatTimelineDate(date);
+---
+
+
+
+{/* 👇 桌面版水平排版 - 只在有 horizontal 屬性且螢幕大於 sm 時顯示 (hidden sm:block) */}
+{horizontal && (
+  <div class="hidden sm:block relative mb-6 sm:mb-0 flex-1" role="listitem">
+    <div class="flex items-center h-6 mt-1">
+      <div class="z-10 flex items-center justify-center w-6 h-6 rounded-full shrink-0 relative">
+        <span class="absolute w-full h-full rounded-full bg-primary/20"></span>
+        <svg class="relative z-10 w-3 h-3 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z"/></svg>
+      </div>
+      <div class="hidden sm:flex w-full bg-border h-px ml-3"></div>
+    </div>
+    <div class="mt-3 sm:pe-8">
+      <time class="bg-muted border border-border text-foreground text-xs font-medium px-1.5 py-0.5 rounded">{displayDate}</time>
+      <h3 class="flex items-center text-lg font-semibold text-foreground mt-2 mb-1">
+        {icon && <i class={`ri-${icon} mr-1.5 mt-[-3px]`}></i>}
+        {title}
+        {badge && <span class="ms-2 bg-primary/10 border border-primary/20 text-primary text-xs font-medium px-1.5 py-0.5 rounded">{badge}</span>}
+      </h3>
+      <div class="text-muted-foreground text-sm leading-relaxed mb-4"><slot /></div>
+    </div>
+  </div>
+)}
+
+{/* 👇 預設垂直排版 - 如果是 horizontal，就在桌面版隱藏 (sm:hidden)，如果是預設，就永遠顯示 */}
+<div class={`${horizontal ? 'sm:hidden' : ''} mb-10 ms-6 last:mb-0`} role="listitem">
+  <div class="flex items-center h-6">
+    <span class="absolute flex items-center justify-center w-6 h-6 rounded-full -start-3">
+      <span class="absolute w-full h-full rounded-full bg-primary/20"></span>
+      <svg class="relative z-10 w-3 h-3 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z"/></svg>
+    </span>
+    <time class="bg-muted border border-border text-foreground text-xs font-medium px-1.5 py-0.5 rounded">{displayDate}</time>
+  </div>
+  <h3 class="flex items-center text-lg font-semibold text-foreground mt-1">
+    {icon && <i class={`ri-${icon} mr-1.5 mt-1`}></i>}
+    <span class="mt-1">{title}</span>
+    {badge && <span class="ms-2 bg-primary/10 border border-primary/20 text-primary text-xs font-medium px-1.5 py-0.5 rounded">{badge}</span>}
+  </h3>
+  <div class="text-muted-foreground text-sm leading-relaxed mb-4"><slot /></div>
+</div>
+
+
+
+{/* 你甚至可以在這裡面放其他 HTML 標籤或自訂的按鈕 */}
+<!-- <a href="#" class="inline-flex items-center text-foreground bg-muted border border-border hover:bg-secondary transition-colors font-medium rounded-lg text-sm px-4 py-2 mt-2">
+  Download ZIP
+</a> -->

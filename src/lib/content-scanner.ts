@@ -149,11 +149,14 @@ export function scanNoteBlocks(container: Element): ToolbarEntry[] {
   const noteBlocks = container.querySelectorAll<HTMLElement>('.note-block:not(.no-icon)');
 
   noteBlocks.forEach((noteBlock, nIndex) => {
-    if (noteBlock.dataset.reactEnhanced === 'true') return;
-    const mount = document.createElement('span');
-    mount.className = 'note-icon-mount';
-    noteBlock.insertBefore(mount, noteBlock.firstChild);
-    noteBlock.dataset.reactEnhanced = 'true';
+    let mount = noteBlock.querySelector<HTMLElement>(':scope > .note-icon-mount');
+    if (!mount) {
+      if (noteBlock.dataset.reactEnhanced === 'true') return;
+      mount = document.createElement('span');
+      mount.className = 'note-icon-mount';
+      noteBlock.insertBefore(mount, noteBlock.firstChild);
+      noteBlock.dataset.reactEnhanced = 'true';
+    }
     entries.push({ id: `note-${nIndex}`, type: 'note', mountPoint: mount, preElement: noteBlock });
   });
 

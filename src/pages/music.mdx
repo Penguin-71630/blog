@@ -1,0 +1,186 @@
+---
+layout: ../layouts/PageLayout.astro
+title: "歌單"
+description: "我喜歡的音樂"
+---
+
+import ItemCard from '@components/markdown/ItemCard.astro';
+import ItemCards from '@components/markdown/ItemCards.astro';
+import Splitter from '@components/markdown/Splitter.astro';
+
+
+<Splitter>
+  <i class="ri-sun-fill"></i> 適合早上聽的歌
+</Splitter>
+
+<ItemCards mb="17" center>
+  <ItemCard img="/img/music/songs/Everything Goes On.webp" title="Everything Goes On" subtitle="Porter Robinson" />
+  <ItemCard img="/img/music/songs/Wonder.webp" title="ワンダー" subtitle="tayori" />
+  <ItemCard img="/img/music/songs/Last Journey.webp" title="Last Journey" subtitle="Chris Egan & Trystan Francis" />
+  <ItemCard img="/img/music/songs/天籟森林-鳥.webp" title="天籟森林" subtitle="吳金黛 / 孫清松" />
+  <ItemCard img="/img/music/songs/Unravelling.webp" title="Unravelling" subtitle="Aethoro" />
+</ItemCards>
+
+
+<Splitter>
+  <i class="ri-moon-fill"></i> 適合傍晚聽的歌
+</Splitter>
+
+<ItemCards mb="17" center>
+  <ItemCard img="/img/music/songs/雪は何色.webp" title="雪は何色" subtitle="堀江晶太 / Kotoha" />
+  <ItemCard img="/img/music/songs/Juvenile.webp" title="Juvenile" subtitle="technoplanet" />
+  <ItemCard img="/img/music/songs/花たちに希望を.webp" title="花たちに希望を" subtitle="Sound piercer / DAZBEE" />
+  <ItemCard img="/img/music/songs/Utopia.webp" title="ユートピア" subtitle="tayori" />
+  <ItemCard img="/img/music/songs/結い結われ.webp" title="結い結われ" subtitle="nayuta" />
+  <ItemCard img="/img/music/songs/星になる.webp" title="星になる" subtitle="tayori" />
+  <ItemCard img="/img/music/songs/Moonlight.webp" title="Moonlight" subtitle="Roa" />
+  <ItemCard img="/img/music/songs/Star Trail.webp" title="Star Trail" subtitle="松本文紀 / 長谷川育美" />
+  <ItemCard img="/img/music/songs/水の証.webp" title="水の証 (piano arr.)" subtitle="nayuta" />
+  <ItemCard img="/img/music/songs/ヘリオトロープ.webp" title="Heliotrope" subtitle="onoken / NIQRO" />
+</ItemCards>
+
+
+
+{/* <Splitter>
+  <i class="ri-run-fill"></i> 適合慢跑聽的歌
+</Splitter>
+
+<ItemCards mb="17">
+  
+  <ItemCard img="/img/music/songs/Geedの証.webp" title="Geedの証" subtitle="川井憲次 / 濱田龍臣 / voyager" />
+</ItemCards> */}
+
+
+
+<Splitter>
+  <i class="ri-book-open-fill"></i> 適合讀書聽的歌
+</Splitter>
+
+<ItemCards mb="17" center>
+  <ItemCard img="/img/music/songs/finale.webp" title="Finale" subtitle="Akiza" />
+  <ItemCard img="/img/music/songs/Windmill Festival.webp" title="Windmill Festival" subtitle="Aethoro" />
+  <ItemCard img="/img/music/songs/Arielle's Wish.webp" title="Arielle's Wish" subtitle="Aethoro" />
+  <ItemCard img="/img/music/songs/日陰と帽子と風鈴と.webp" title="日陰と帽子と風鈴と" subtitle="Foxtail-Grass Studio" />
+  <ItemCard img="/img/music/songs/Paradox Palette.webp" title="Paradox Palette" subtitle="Aethoro" />
+  <ItemCard img="/img/music/songs/海の始まり.webp" title="海のはじまり" subtitle="得田真裕" />
+  <ItemCard img="/img/music/songs/Abiogenesis.webp" title="Abiogenesis" subtitle="Juggernaut." />
+  <ItemCard img="/img/music/songs/一番好きな花.webp" title="いちばんすきな花" subtitle="得田真裕" />
+  <ItemCard img="/img/music/songs/Eden.webp" title="Eden" subtitle="Sakuzyo / Katali" />
+  <ItemCard img="/img/music/songs/warmth.webp" title="warmth" subtitle="mamomo" />
+  <ItemCard img="/img/music/songs/Trap Crow.webp" title="Trap Crow" subtitle="Puru" />
+  <ItemCard img="/img/music/songs/Eternity Break.webp" title="Eternity Break" subtitle="Puru" />
+  <ItemCard img="/img/music/songs/杜の国.webp" title="杜の国" subtitle="Blacklolita" />
+  <ItemCard img="/img/music/songs/Waltz for Lorelei.webp" title="Waltz for Lorelei" subtitle="Sobrem / 庭師" />
+  <ItemCard img="/img/music/songs/Perfect Blue.webp" title="Perfect Blue" subtitle="DJ Okawari" />
+  <ItemCard img="/img/music/songs/Luv Letter.webp" title="Luv Letter" subtitle="月野そら / DJ Okawari" />
+  <ItemCard img="/img/music/songs/Lisrim.webp" title="Lisrim" subtitle="onoken" />
+  <ItemCard img="/img/music/songs/Flower Dance.webp" title="Flower Dance" subtitle="DJ Okawari" />
+  {/* <ItemCard img="/img/music/songs/Altale Duo.webp" title="Altale (Duo Rework)" subtitle="Sakuzyo / Katali" /> */}
+  <ItemCard img="/img/music/songs/When You Were Here.webp" title="When You Were Here" subtitle="ARForest" />
+  <ItemCard img="/img/music/songs/Destr0yer.webp" title="Destr0yer" subtitle="Sakuzyo" />
+</ItemCards>
+
+
+<Splitter>
+  <i class="ri-car-fill"></i> 適合開車聽的歌
+</Splitter>
+
+<ItemCards mb="17" center>
+  <ItemCard img="/img/music/songs/I Want It That Way.webp" title="I Want It That Way" subtitle="Backstreet Boys" />
+  <ItemCard img="/img/music/songs/You'll Be In My Heart.webp" title="You'll Be In My Heart" subtitle="Phil Collins" />
+  <ItemCard img="/img/music/songs/Kiss From A Rose.webp" title="Kiss From A Rose" subtitle="Seal" />
+  <ItemCard img="/img/music/songs/Right Here Waiting.webp" title="Right Here Waiting" subtitle="Richard Marx" />
+  <ItemCard img="/img/music/songs/Take On Me.webp" title="Take On Me" subtitle="a-ha" />
+</ItemCards>
+
+
+<Splitter>
+  <i class="ri-music-2-fill"></i> J-POP
+</Splitter>
+
+<ItemCards mb="17" center>
+  <ItemCard img="/img/music/songs/夜明けの歌.webp" title="夜明けの歌" subtitle="M2U / DAZBEE" />
+  <ItemCard img="/img/music/songs/hydrangea.webp" title="hydrangea" subtitle="yourmythos" />
+  <ItemCard img="/img/music/songs/灯火.webp" title="灯火" subtitle="yourmythos" />
+  <ItemCard img="/img/music/songs/結い結われ.webp" title="結い結われ" subtitle="nayuta" />
+  <ItemCard img="/img/music/songs/rarara.webp" title="ららら" subtitle="ナナツカゼ" />
+  <ItemCard img="/img/music/songs/楔.webp" title="楔 -くさび-" subtitle="奥華子" />
+  <ItemCard img="/img/music/songs/トリセツ.webp" title="トリセツ" subtitle="西野加奈" />
+  {/* <ItemCard img="/img/music/songs/雪の華.webp" title="雪の華" subtitle="中島美嘉" /> */}
+  {/* <ItemCard img="/img/music/songs/LEVEL5 -judgelight-.webp" title="LEVEL5 -judgelight-" subtitle="fripSide" /> */}
+  <ItemCard img="/img/music/songs/Daisy.webp" title="Daisy" subtitle="花鋏キョウ" />
+  <ItemCard img="/img/music/songs/サイエンス.webp" title="サイエンス" subtitle="MIMI / 重音テト" />
+  <ItemCard img="/img/music/songs/今、歩き出す君へ。.webp" title="今、歩き出す君へ。" subtitle="Ceui" />
+  <ItemCard img="/img/music/songs/雨に祈りを.webp" title="雨に祈りを" subtitle="onoken / 木下珠子" />
+  <ItemCard img="/img/music/songs/神様は謡う.webp" title="神様は謡う" subtitle="森羅万象" />
+  <ItemCard img="/img/music/songs/Sincerely.webp" title="Sincerely" subtitle="TRUE" />
+  <ItemCard img="/img/music/songs/過去的日子與你.webp" title="過ぎゆく日と君へ" subtitle="Aiobahn / nayuta" />
+  <ItemCard img="/img/music/songs/風になる.webp" title="風になる" subtitle="つじあやの" />
+</ItemCards>
+
+
+<Splitter>
+  <i class="ri-leaf-fill"></i> Celtic
+</Splitter>
+
+<ItemCards mb="17" center>
+  <ItemCard img="/img/music/songs/Elfridean Stories.webp" title="Elfridean Stories" subtitle="Elliot Hsu" />
+  <ItemCard img="/img/music/songs/Secret Illumination.webp" title="Secret Illumination" subtitle="Yooh" />
+  <ItemCard img="/img/music/songs/Avril.webp" title="Ävril -Flicka i krans-" subtitle="Rigël Theatre" />
+  <ItemCard img="/img/music/songs/Recreant of the Everlasting.webp" title="Recreant of Everlasting" subtitle="Elliot Hsu" />
+  <ItemCard img="/img/music/songs/Rockhill.webp" title="Rockhill" subtitle="Beltaine" />
+  <ItemCard img="/img/music/songs/Burning Pipers Hut.webp" title="Burning Pipers Hut" subtitle="Beltaine" />
+  <ItemCard img="/img/music/songs/Mizlecca.webp" title="Mizlecca" subtitle="Hagali" />
+  <ItemCard img="/img/music/songs/Solstand.webp" title="Solstånd" subtitle="Rigël Theatre" />
+  <ItemCard img="/img/music/songs/Rockhill.webp" title="Beltaine" subtitle="Beltaine" />
+  <ItemCard img="/img/music/songs/Scarborough Fair.webp" title="Scarborough Fair" subtitle="山田タマル" />
+</ItemCards>
+
+
+<Splitter>
+  <i class="ri-headphone-fill"></i> 電子音樂
+</Splitter>
+
+<ItemCards mb="17" center>
+
+  <ItemCard img="/img/music/songs/Inverted World.webp" title="Inverted World" subtitle="ARForest" />
+  <ItemCard img="/img/music/songs/EOS.webp" title="EOS" subtitle="ginkiha" />
+  <ItemCard img="/img/music/songs/Shelter.webp" title="Shelter" subtitle="Porter Robinson" />
+  <ItemCard img="/img/music/songs/Incyde.webp" title="Incyde" subtitle="YbeLL aka. Sta" />
+  <ItemCard img="/img/music/songs/Particle Arts.webp" title="Particle Arts" subtitle="Virtual Self aka. Porter Robinson" />
+  <ItemCard img="/img/music/songs/my-identity.webp" title="僕らのアイデンティティ" subtitle="ナナツカゼ" />
+  <ItemCard img="/img/music/songs/Perspicuus_Aestus.webp" title="Perspicuus_Aestus" subtitle="Ryusee" />
+  <ItemCard img="/img/music/songs/satellite.webp" title="S.A.T.E.L.L.I.T.E." subtitle="かめりあ" />
+  <ItemCard img="/img/music/songs/Maboroshi.webp" title="Maboroshi" subtitle="かめりあ" />
+  <ItemCard img="/img/music/songs/1f1e33.webp" title="#1f1e33" subtitle="かめりあ" />
+  <ItemCard img="/img/music/songs/Lwyn.webp" title="Lwyn" subtitle="Sakuzyo" />
+  <ItemCard img="/img/music/songs/Kronos.webp" title="Kronos" subtitle="Sakuzyo" />
+  <ItemCard img="/img/music/songs/儀 -lirile-.webp" title="儀 -lirile-" subtitle="黒皇帝" />
+  <ItemCard img="/img/music/songs/Seraphim.webp" title="Seraphim" subtitle="Yooh" />
+  <ItemCard img="/img/music/songs/Halloween Candystore.webp" title="Halloween Candystore" subtitle="Plum" />
+  <ItemCard img="/img/music/songs/Antler.webp" title="Antler" subtitle="Juggernaut." />
+  <ItemCard img="/img/music/songs/Arghena.webp" title="Arghena" subtitle="Feryquitous / Laur" />
+  {/* <ItemCard img="/img/music/songs/Flower.webp" title="Flower (Orchestra Arr.)" subtitle="DJ YOSHITAKA / onoken / gaQdan" /> */}
+  <ItemCard img="/img/music/songs/Asian Distractive.webp" title="AsiaN distractive" subtitle="猫叉劇団" />
+  <ItemCard img="/img/music/songs/Celestial Sight.webp" title="Celestial Sight" subtitle="BlackY / Risa Yuzuki" />
+  <ItemCard img="/img/music/songs/桃幻謳歌.webp" title="桃幻謳歌" subtitle="BlackY / Risa Yuzuki" />
+  <ItemCard img="/img/music/songs/Loschen.webp" title="Löschen" subtitle="BlackY / Risa Yuzuki" />
+  <ItemCard img="/img/music/songs/Ga1ahad and Scientific Witchery.webp" title="Ga1ahad and Scientific Witchery" subtitle="Mili" />
+</ItemCards>
+
+  {/* <ItemCard img="/img/music/songs/风屿.webp" title="风屿" subtitle="闫东炜" /> */}
+
+
+
+
+<Splitter>
+  <i class="ri-film-fill"></i> 海角七號
+</Splitter>
+
+<ItemCards mb="17" center>
+  <ItemCard img="/img/music/songs/國境之南.webp" title="國境之南" subtitle="范逸臣" />
+  <ItemCard img="/img/music/songs/野玫瑰.webp" title="野玫瑰" subtitle="范逸臣 / 中孝介" />
+  <ItemCard img="/img/music/songs/1945.webp" title="1945" subtitle="駱集益" />
+  <ItemCard img="/img/music/songs/情書.webp" title="情書" subtitle="范逸臣" />
+  <ItemCard img="/img/music/songs/sorezoreni.webp" title="それぞれに" subtitle="中孝介" />
+</ItemCards>
