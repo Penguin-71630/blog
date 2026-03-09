@@ -43,3 +43,5 @@ pnpm-debug.log*
 
 # Backup files
 backups/
+legacy/
+backup-original/
