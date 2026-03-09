@@ -55,7 +55,7 @@ function ButtonLink({ url, label, isActive, children }: ButtonLinkProps) {
 }
 
 const Navigator = memo(function Navigator({ currentPath }: NavigatorProps) {
-  const { isBeyond, direction } = useScrollTrigger({
+  useScrollTrigger({
     triggerDistance: 0.45,
     throttleMs: 80,
   });
@@ -102,15 +102,10 @@ const Navigator = memo(function Navigator({ currentPath }: NavigatorProps) {
       return;
     }
 
-    // Mobile/tablet behavior: hide on scroll down, show on scroll up
-    if (direction === 'down') {
-      siteHeader?.classList.add('-translate-y-full');
-      mobileMenuContainer?.classList.add('-translate-y-full');
-    } else if (direction === 'up') {
-      siteHeader?.classList.remove('-translate-y-full');
-      mobileMenuContainer?.classList.remove('-translate-y-full');
-    }
-  }, [direction, isPostPageMobile, isTablet]);
+    // Mobile/tablet behavior: always keep header visible
+    siteHeader?.classList.remove('-translate-y-full');
+    mobileMenuContainer?.classList.remove('-translate-y-full');
+  }, [isPostPageMobile, isTablet]);
 
   // Cleanup timer on unmount
   useEffect(() => {

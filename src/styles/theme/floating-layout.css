@@ -5,11 +5,16 @@
 
 #site-bg {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh; /* 給舊版瀏覽器的 Fallback */
+  height: 100lvh; /* Large Viewport Height - 鎖定在網址列完全隱藏時的最大高度 */
   z-index: -1;
   background: var(--site-bg-image, none), linear-gradient(to top, var(--gradient-bg-end) 0, var(--gradient-bg-start) 30%);
   background-size: cover;
-  background-position: center;
+  /* 關鍵：鎖定背景在上方，避免上下拉扯 */
+  background-position: top center;
   background-repeat: no-repeat;
   pointer-events: none;
 }
@@ -22,13 +27,13 @@
   content: "";
   position: absolute;
   z-index: -1;
-  background: 
-    linear-gradient(var(--bg-overlay, transparent), var(--bg-overlay, transparent)),
-    var(--site-bg-image, none), 
+  background:
+    linear-gradient(var(--bg-overlay, transparent), var(--bg-overlay, transparent)), var(--site-bg-image, none),
     linear-gradient(to top, var(--gradient-bg-end) 0, var(--gradient-bg-start) 30%);
   background-size: cover;
-  background-position: center;
+  background-position: top center;
   background-attachment: fixed;
+  background-repeat: no-repeat;
   pointer-events: none;
 }
 
@@ -74,6 +79,41 @@
 .floating-card::before {
   inset: -10px;
   filter: blur(8px);
+}
+
+/* 抽屜內的側邊欄使用主題背景色（不是純白/純黑） */
+#mobile-drawer .floating-sider,
+#mobile-drawer .shadow-home-sider {
+  --bg-overlay: transparent;
+  background: hsl(var(--background));
+  border: none;
+  box-shadow: none;
+}
+
+#mobile-drawer .floating-sider::before {
+  display: none;
+}
+
+/* 隱藏抽屜內 HomeSider 的滾動條 */
+#mobile-drawer .page-home-sider {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+#mobile-drawer .page-home-sider::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
+}
+
+/* 移除抽屜內 HomeInfo 的頂部 padding */
+#mobile-drawer .HomeInfo,
+#mobile-drawer [data-home-info-container] {
+  padding-top: 0 !important;
+}
+
+/* 調整抽屜內 sider-content 的 padding */
+#mobile-drawer sider-content {
+  padding-top: 0 !important;
+  padding-left: 0 !important;
 }
 
 /* Header 維持原樣 */

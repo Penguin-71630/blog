@@ -38,7 +38,7 @@ const bannerLqipStyle = getLqipStyle(`/img/site_headers/${lightImageBase}.webp`)
     {
       title ? (
         <h1
-          class={`shadow-text word-break flex items-center gap-2 text-center text-5xl/[1.2] font-bold tracking-widest ${MAX_WIDTH.content}`}
+          class={`shadow-text word-break flex items-center gap-2 text-center text-5xl/[1.2] font-bold tracking-widest md:text-xl ${MAX_WIDTH.content}`}
         >
           {title}
           {/* <Icon
@@ -51,7 +51,7 @@ const bannerLqipStyle = getLqipStyle(`/img/site_headers/${lightImageBase}.webp`)
       ) : data ? (
         <>
           <h1
-            class={`shadow-text word-break text-4.5xl text-center font-bold md:text-2xl ${MAX_WIDTH.content} flex flex-wrap items-center justify-center gap-3`}
+            class={`shadow-text word-break text-4.5xl text-center font-bold md:text-lg ${MAX_WIDTH.content} flex flex-wrap items-center justify-center gap-3`}
           >
             {dataTitle ?? title}
             {isDraft && (
@@ -88,10 +88,10 @@ const bannerLqipStyle = getLqipStyle(`/img/site_headers/${lightImageBase}.webp`)
         </>
       ) : (
         <>
-          <h1 class="text-5xl/[1.2] tracking-widest drop-shadow-[0_2px_5px_rgba(0,0,0,0.85)]">
+          <h1 class="text-5xl/[1.2] tracking-widest drop-shadow-[0_2px_5px_rgba(0,0,0,0.85)] md:text-4xl">
             {siteConfig?.title}
           </h1>
-          <p class="mt-5 text-sm drop-shadow-[0_1px_5px_rgba(0,0,0,0.7)]">
+          <p class="mt-5 text-sm drop-shadow-[0_1px_5px_rgba(0,0,0,0.7)] md:text-md">
             {siteConfig?.subtitle}
           </p>
         </>

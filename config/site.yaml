@@ -52,10 +52,10 @@ site:
 categoryMap:
   # Primary categories
   課業筆記: coursenote
-  工具: tools
+  # 工具: tools
   音遊: rhythmgame
   競程: cp
-  攝影: photo
+  # 攝影: photo
   札記: life
   # Secondary categories (for nested paths)
   雜項: misc
@@ -82,10 +82,10 @@ featuredCategories:
     image: /img/cover/coursenote.webp
     description: 大學課程的筆記
 
-  - link: tools # 对应 categoryMap 中 工具: tools
-    label: 工具
-    image: /img/cover/tools.webp
-    description: 工具使用方法
+  # - link: tools # 对应 categoryMap 中 工具: tools
+  #   label: 工具
+  #   image: /img/cover/tools.webp
+  #   description: 工具使用方法
 
   - link: rhythmgame
     label: 音遊
@@ -97,10 +97,10 @@ featuredCategories:
     image: /img/cover/cp.webp
     description: 競程解題記錄、演算法學習筆記
 
-  - link: photo
-    label: 攝影
-    image: /img/cover/photo.webp
-    description: 放一些自己拍的照片
+  # - link: photo
+  #   label: 攝影
+  #   image: /img/cover/photo.webp
+  #   description: 放一些自己拍的照片
 
   - link: life # 对应 categoryMap 中 随笔: life
     label: 札記

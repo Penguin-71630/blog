@@ -2,9 +2,8 @@
   /* override the max-width of the prose */
   max-width: none;
 
-  /* ✅ 1. 在這裡定義你的主色 (RGB 數值) */
-  /* #d946ef 對應的 RGB 是 217, 70, 239 */
-  --my-primary: 100 100 100;
+  /* ✅ 淺色模式 inline code 主色 (較深，確保可讀性) */
+  --my-primary: 110 110 110;
 
   a {
     @apply text-primary hover:text-blue no-underline transition-colors duration-300 hover:underline;
@@ -625,6 +624,11 @@ img[src$="#10"] {
 }
 
 /* ========== 深色模式样式 ========== */
+
+/* 深色模式 - inline code 主色 (較亮) */
+.dark .prose {
+  --my-primary: 170 170 170;
+}
 
 /* 深色模式 - 行内代码 */
 .dark .prose :not(pre) > code {

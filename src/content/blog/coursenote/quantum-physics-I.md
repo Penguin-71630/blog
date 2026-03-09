@@ -352,7 +352,7 @@ Stimulated Emission 特徵：
 
 
 :::success
-此篇筆記的下一篇：[量子力學正篇：德布羅伊假設、海森堡不確定性原理、波函數、薛丁格方程式、無限高位能井](/post/coursenote/quantum-physics)
+此篇筆記的下一篇：[量子力學正篇：德布羅伊假設、海森堡不確定性原理、波函數、薛丁格方程式、無限高位能井](/post/coursenote/quantum-physics-ii)
 :::
 
 
