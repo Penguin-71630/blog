@@ -45,3 +45,7 @@ pnpm-debug.log*
 backups/
 legacy/
 backup-original/
+
+# CLAUDE-related
+TO_CLAUDE.md
+CLAUDE*
