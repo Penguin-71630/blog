@@ -1,49 +1,58 @@
 ---
 import { EmbedHydrator } from '@components/embed/EmbedHydrator';
 import ContentEnhancer from '@components/markdown/ContentEnhancer';
-import ItemCard from '@components/markdown/ItemCard.astro';
-import Link from '@components/markdown/Link.astro';
-// My own components
-import Mark from '@components/markdown/Mark.astro';
-import Note from '@components/markdown/Note.astro';
-import Reference from '@components/markdown/Reference.astro';
-import Splitter from '@components/markdown/Splitter.astro';
+// My own components (lexicographical order)
+import CollapseBlock from '@components/markdown/Gino/CollapseBlock.astro';
+import Columns from '@components/markdown/Gino/Columns.astro';
+import ImageCarousel from '@components/markdown/Gino/ImageCarousel.astro';
+import InfoBox from '@components/markdown/Gino/InfoBox.astro';
+import ItemCard from '@components/markdown/Gino/ItemCard.astro';
+import ItemCards from '@components/markdown/Gino/ItemCards.astro';
+import Link from '@components/markdown/Gino/Link.astro';
+import Mark from '@components/markdown/Gino/Mark.astro';
+import Note from '@components/markdown/Gino/Note.astro';
+import People from '@components/markdown/Gino/People.astro';
+import Person from '@components/markdown/Gino/Person.astro';
+import Reference from '@components/markdown/Gino/Reference.astro';
+import Splitter from '@components/markdown/Gino/Splitter.astro';
+import SplitterCenter from '@components/markdown/Gino/SplitterCenter.astro';
+import Tabs from '@components/markdown/Gino/Tabs.astro';
 import type { ContentConfig } from '@constants/content-config';
 import { defaultContentConfig } from '@constants/content-config';
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
 import { christmasConfig } from '@/constants/site-config';
-import ImageCarousel from '../markdown/ImageCarousel.astro';
-import InfoBox from '../markdown/InfoBox.astro';
-import ItemCards from '../markdown/ItemCards.astro';
-import People from '../markdown/People.astro';
-import Person from '../markdown/Person.astro';
-import Tabs from '../markdown/Tabs.astro';
 
 const globalComponents = {
-  Mark,
-  mark: Mark,
-  Note,
-  note: Note,
-  Reference,
-  reference: Reference,
+  CollapseBlock,
+  collapseblock: CollapseBlock,
+  Columns,
+  columns: Columns,
+  ImageCarousel,
+  imagecarousel: ImageCarousel,
+  InfoBox,
+  infobox: InfoBox,
   ItemCard,
   itemcard: ItemCard,
   ItemCards,
   itemcards: ItemCards,
-  Splitter,
-  splitter: Splitter,
   Link,
   link: Link,
-  InfoBox,
-  infobox: InfoBox,
-  Tabs,
-  tabs: Tabs,
-  Person,
-  person: Person,
+  Mark,
+  mark: Mark,
+  Note,
+  note: Note,
   People,
   people: People,
-  ImageCarousel,
-  imagecarousel: ImageCarousel,
+  Person,
+  person: Person,
+  Reference,
+  reference: Reference,
+  Splitter,
+  splitter: Splitter,
+  SplitterCenter,
+  splittercenter: SplitterCenter,
+  Tabs,
+  tabs: Tabs,
 };
 
 interface Props {

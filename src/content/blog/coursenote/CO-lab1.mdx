@@ -1,0 +1,81 @@
+---
+title: 計算機組織 Lab1
+date: 2026-03-22
+categories: 
+  - 課業筆記
+draft: true
+---
+
+import Columns from '@components/markdown/Gino/Columns.astro';
+import InfoBox from '@components/markdown/Gino/InfoBox.astro';
+
+import lsbAlu from './CO-lab1/lsb-alu.png?url';
+import msbAlu from './CO-lab1/msb-alu.png?url';
+import alu32 from './CO-lab1/32-bit-ALU.png?url';
+import alu32Upper from './CO-lab1/32-bit-ALU-upper.png?url';
+import alu32Lower from './CO-lab1/32-bit-ALU-lower.png?url';
+
+{/* ============================================================================ */}
+
+
+## Architecture Diagrams
+
+Below is the architecture diagram of the 1-bit ALU (LSB):
+
+<img src={lsbAlu} alt="LSB ALU" class="w-full" />
+
+Below is the architecture diagram of the 1-bit ALU (MSB):
+
+<img src={msbAlu} alt="MSB ALU" class="w-full" />
+
+Below is the architecture diagram of the 32-bit ALU.  The "set" pin of the MSB is wired back to the "less" pin of the LSB, indicating the result of `slt` operation when `ALU_ctl` is `0111`.
+
+<Columns noline ratio="1fr 4fr">
+<div class="w-full">
+  <img src={alu32} alt="32-bit ALU" class="w-full" />
+</div>
+<div class="w-full">
+  <img src={alu32Upper} alt="32-bit ALU Upper" class="w-full" />
+  <div class="h-4"></div>
+  <img src={alu32Lower} alt="32-bit ALU Lower" class="w-full" />
+</div>
+</Columns>
+
+
+## Questions
+<InfoBox style="default">
+How overflow is calculated?
+</InfoBox>
+
+
+<InfoBox style="default">
+Explain why ALU control signal of SUB is 0110 and NOR is 1100 ?
+</InfoBox>
+
+<InfoBox style="default">
+If you assign different signal to these operation, what problems you may
+encountered?
+</InfoBox>
+
+<InfoBox style="default">
+True or false: Because the register file is both read and written on the same clock cycle, any
+MIPS datapath using edge-triggered writes must have more than one copy of the register file.
+Explain your answer.
+</InfoBox>
+
+
+## Experimental Result of ALU
+1. (1%) Show the waveform screen shot of the testbench tb_alu.0.txt result.
+2. (1%) What other cases you've tested? Why you choose them?
+
+
+## Problems Encountered & Solution (optional)
+List some important problem you've met during this lab and there solution.
+
+
+## Feedback (optional)
+Any thing you want to say to TA team about this lab. How can we improve the lab?
+
+
+
+

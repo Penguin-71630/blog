@@ -41,7 +41,7 @@ export function TableOfContents({ defaultExpanded = false, enableNumbering = tru
   if (headings.length === 0) {
     return (
       <div className="py-6 text-center text-muted-foreground">
-        <div className="text-sm">暂无目录</div>
+        <div className="text-sm">暫無目錄</div>
       </div>
     );
   }

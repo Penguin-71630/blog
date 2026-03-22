@@ -6,6 +6,7 @@ interface Props {
 const { style = 'default' } = Astro.props;
 ---
 
-<div class=`note-block note-${style}`>
+<div class={`note-block note-${style}`}>
   <slot />
 </div>
+

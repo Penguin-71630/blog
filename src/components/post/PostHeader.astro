@@ -33,6 +33,14 @@ const isDraft = import.meta.env.DEV && draft === true;
   <div
     class="text-muted-foreground flex flex-wrap items-center justify-center gap-4 text-sm md:text-xs"
   >
+    {
+      isDraft && (
+        <span class="flex items-center gap-1.5">
+          <Icon name="fa6-solid:user" class="h-4 w-4" />
+          111550055 黃致皓
+        </span>
+      )
+    }
     <span class="flex items-center gap-1.5">
       <Icon name="fa6-solid:calendar-days" class="h-4 w-4" />
       發表於 {displayDate.datetime(date)}
