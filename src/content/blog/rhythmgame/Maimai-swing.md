@@ -26,13 +26,13 @@ categories:
 
 跳拍（或心跳拍）對應到樂理上的名稱是 Swing，在 maimai 裡面通常會體現成將 1 個 8 分音拆成 12 分音 + 24 分音，也就是將一堆音符以間隔 2 : 1 的方式排列，而非均勻的 16 分連打。
 
-![](/img/content/Maimai-swing/1.png#50)
+![](./Maimai-swing/1.png#50)
 
 以 <span class="exp">Valsqotch 紅譜</span>為例：
 
 <div class="grid grid-cols-[65%_35%] gap-4">
-  <img src="/img/content/Maimai-swing/2.png" alt="圖2" class="w-full" />
-  <img src="/img/content/Maimai-swing/3.png" alt="圖3" class="w-full" />
+  <img src="./Maimai-swing/2.png" alt="圖2" class="w-full" />
+  <img src="./Maimai-swing/3.png" alt="圖3" class="w-full" />
 </div>
 
 ## 意識
@@ -42,7 +42,7 @@ categories:
 :::info
 **第一種：**
 
-![](/img/content/Maimai-swing/4.png#50)
+![](./Maimai-swing/4.png#50)
 
 
 這種打法短拍起手固定都是同一隻手。
@@ -59,7 +59,7 @@ https://www.youtube.com/watch?v=zKobl27lmh0&t=38s
 :::info
 **第二種：**
 
-![](/img/content/Maimai-swing/5.png#50)
+![](./Maimai-swing/5.png#50)
 
 這種打法短拍的起手會左右左右交互輪替。是大家比較常用的打法，幾乎沒有缺點、可以應付各種位置的跳拍。但同時也比第一種打法難練，不熟悉的話很容易打成均勻 16 分音導致噴 GREAT。
 

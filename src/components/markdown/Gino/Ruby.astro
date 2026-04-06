@@ -1,0 +1,39 @@
+---
+/**
+ * Ruby component for MDX - displays furigana (reading annotations) above text
+ *
+ * Usage: <Ruby t="文字^もじ" />
+ *
+ * The component splits the content by '^' to separate base text and annotation.
+ * Multiple ruby annotations can be used: <Ruby>漢字^かんじ</Ruby>と<Ruby>平仮名^ひらがな</Ruby>
+ */
+
+interface Props {
+  t: string;
+  class?: string;
+}
+
+const { t, class: className } = Astro.props;
+
+// Remove any wrapping <p> tags that MDX might add
+const cleanContent = t.replace(/<\/?p>/g, '').trim();
+
+// Split by ^ to get base text and annotation
+const parts = t.split('^');
+const baseText = parts[0] || '';
+const annotation = parts[1] || '';
+
+// If no annotation is provided, just render the base text
+const hasAnnotation = annotation.length > 0;
+---
+
+{hasAnnotation ? (
+  <ruby class={className}>
+    {baseText}
+    <rp>(</rp>
+    <rt>{annotation}</rt>
+    <rp>)</rp>
+  </ruby>
+) : (
+  <span class={className}>{baseText}</span>
+)}

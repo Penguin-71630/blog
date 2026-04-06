@@ -56,6 +56,7 @@ categoryMap:
   音遊: rhythmgame
   競程: cp
   # 攝影: photo
+  日文: jp
   札記: life
   # Secondary categories (for nested paths)
   雜項: misc
@@ -102,10 +103,15 @@ featuredCategories:
   #   image: /img/cover/photo.webp
   #   description: 放一些自己拍的照片
 
-  - link: life # 对应 categoryMap 中 随笔: life
-    label: 札記
-    image: /img/cover/life.webp
-    description: 生活札記
+  - link: jp
+    label: 日文
+    image: /img/cover/jp.webp
+    description: 日文學習記錄
+
+  # - link: life # 对应 categoryMap 中 随笔: life
+  #   label: 札記
+  #   image: /img/cover/life.webp
+  #   description: 生活札記
 
 # =============================================================================
 # Featured Series

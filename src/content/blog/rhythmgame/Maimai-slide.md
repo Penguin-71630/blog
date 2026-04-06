@@ -29,7 +29,7 @@ categories:
 簡單來說，maimai 的滑星分成兩個部分：滑星頭 + 滑星條
 。星頭等價於一個 TAP，星條永遠都是比星頭**慢一拍**啟動，一拍的長度就看每首歌的 BPM（選歌介面右下角都會標註）。
 
-![](/img/content/Maimai-slide/1.png)
+![](./Maimai-slide/1.png)
 
 
 所以處理滑星的方式是點一下星頭，**手稍微抬起來，不要把手黏在按鍵上**，等一拍之後把星條滑掉。
@@ -38,7 +38,7 @@ categories:
 
 ## 扇形滑星（Wi-Fi 滑星）
 
-![](/img/content/Maimai-slide/2.png#50)
+![](./Maimai-slide/2.png#50)
 
 這種滑星應該會讓不少新手困惑，可能會很常遇到「感覺明明已經滑掉了卻沒判定到」的狀況。
 
@@ -62,7 +62,7 @@ categories:
 
 拍滑的定義：在星條出發的瞬間加上一個 TAP，讓玩家在滑掉滑星之前還要先補打一個 TAP，形成「先拍後滑」的感覺。
 
-![](/img/content/Maimai-slide/3.png)
+![](./Maimai-slide/3.png)
 
 這個 TAP 相當於星條啟動的提示音，代表 TAP 出現的時候你要把滑星一起滑掉。
 
@@ -78,16 +78,16 @@ categories:
 例：<span class="mas">妄想感傷代償聯盟</span> **01\:08 處**
 https://www.youtube.com/watch?v=bktAJ3bz4_4&t=68
 
-![](/img/content/Maimai-slide/4.png)
+![](./Maimai-slide/4.png)
 
 打法有兩種，一種是直接把中間的 TAP 當星條啟動拍，打完那個 TAP 就直接開始滑星條，像這樣：
 
-![](/img/content/Maimai-slide/5.png)
+![](./Maimai-slide/5.png)
 
 
 另外一種是在星條啟動瞬間補上一個啟動拍（想像多一個 TAP）：
 
-![](/img/content/Maimai-slide/6.png)
+![](./Maimai-slide/6.png)
 
 第一種打法較節省體力，適用於高 BPM 的歌、滑星速度較快的配置。
 

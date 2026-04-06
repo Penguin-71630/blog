@@ -51,7 +51,7 @@ categories:
 
 黑體放射出的電磁波有很多種，而各波長的電磁波與其輻射率分布圖如下：
 
-![](/img/content/quantum-physics/fig1.png)
+![](./quantum-physics/fig1.png)
 
 從圖可以發現不同溫度下的黑體會有不同的曲線。古典物理無法給出一個可以擬合這些曲線的模型，要不就是長波長無法吻合，要不就是短波長無法吻合 (紫外災變)。
 
@@ -120,7 +120,7 @@ $$
 
 光電效應的裝置如下：由一單頻光 $\nu$ 射入真空管內的金屬板陰極，陰極會射出電子至陽極，射出電子稱為光電子。
 
-![](/img/content/quantum-physics/fig2.png)
+![](./quantum-physics/fig2.png)
 
 $\bar{V}$ 為減速電壓 (retarding voltage)，當電壓大到一定程度時，電子會停止移動，電流降為 0，此時電壓稱為遏止電壓 $\bar{V}_0$ (stopping voltage)。
 
@@ -164,7 +164,7 @@ X 光的產生有點像是光電效應的逆反應，由電子產生電磁波。
 
 Crookes Tube:
 
-![](/img/content/quantum-physics/fig3.png)
+![](./quantum-physics/fig3.png)
 
 電壓夠大時，真空管內的熱金屬絲會發射電子，撞擊金屬靶後會產生 X-ray。
 
@@ -231,7 +231,7 @@ $$
 
 ### 氫原子光譜
 
-![]( /img/content/quantum-physics/fig4.png )
+![]( ./quantum-physics/fig4.png )
 
 萊曼系列：紫外光，為電子躍遷回第 1 能階輻射出的光譜。
 
@@ -320,7 +320,7 @@ $n$ 取多少就是第幾個能階，此結果完美吻合芮得柏公式。
 
 ### Franck-Hertz 實驗
 
-![]( /img/content/quantum-physics/fig5.jpg )
+![]( ./quantum-physics/fig5.jpg )
 
 ---
 
@@ -356,6 +356,6 @@ Stimulated Emission 特徵：
 :::
 
 
-![]( /img/content/quantum-physics/fig6.png )
+![]( ./quantum-physics/fig6.png )
 
 

@@ -81,7 +81,7 @@ categories:
 
 上機打之前推薦在手機或平板上先練習，最推薦的方法是使用模擬器因為有反饋效果（模擬器怎麼安裝：https://hackmd.io/@penguin71630/maimai-guide/%2FJS1LSTzyQUOtLqZGcG6ZVA ）。如果裝不了的話可以用 Bilibili 的鎖屏功能練習。搜尋某張譜的譜面確認，點進去後右邊會有一個小小的 :unlock: 標示，點一下可以鎖住螢幕，就可以直接在螢幕上跟著敲。
 
-![](/img/content/Maimai-how-to-rainbow/1.png#60)
+![](./Maimai-how-to-rainbow/1.png#60)
 
 練習的時候強烈推薦一定要**放慢速度**。先開 0.75 倍看自己打不打得動，如果打不了那就再放慢速度，反之則逐漸加快練習，直到確定原速打得動為止。
 
@@ -107,13 +107,13 @@ categories:
 
 ||||
 |:--:|:--:|:--:|
-|![](/img/content/Maimai-how-to-rainbow/2.png#90)|![](/img/content/Maimai-how-to-rainbow/3.png#90)|![](/img/content/Maimai-how-to-rainbow/4.png#100)|
+|![](./Maimai-how-to-rainbow/2.png#90)|![](./Maimai-how-to-rainbow/3.png#90)|![](./Maimai-how-to-rainbow/4.png#100)|
 
 **解決方法：**
 - 7→3 直線滑星：滑的時候身體右傾，減少左手出張。
 - 橫向弧線滑星：注意力集中在滑星尾，加大手移動的幅度。
 - 直角滑星：我後來注意到我會不小心滑成弧線，手沒摸到直角。注意力集中在直角即可。
-		![](/img/content/Maimai-how-to-rainbow/5.png#40)
+		![](./Maimai-how-to-rainbow/5.png#40)
 :::
 
 :::warning
@@ -143,7 +143,7 @@ categories:
 
 :::warning
 **Ether Strike 一筆畫段左手經常無法出張導致滑星灰掉**
-![](/img/content/Maimai-how-to-rainbow/6.png#40)
+![](./Maimai-how-to-rainbow/6.png#40)
 
 標記紅色的那條星星我先前經常烙賽。
 
@@ -205,7 +205,7 @@ https://www.youtube.com/watch?v=MVFpWJp61ZQ
 
 - [**暗百砂理 judjdigj - 【杂谈】玩音游遇见了瓶颈，该怎么办？**](https://www.bilibili.com/video/BV1eR4y177iJ/?share_source=copy_web&vd_source=ea566f79f87489557f0240ce764591c9)
 - [**Cuber-26 - sølips AP 手元**底下的影片簡介](https://www.bilibili.com/video/BV1Kh4y127NG/?share_source=copy_web&vd_source=ea566f79f87489557f0240ce764591c9)
-	![](/img/content/Maimai-how-to-rainbow/6-1.png#80)
+	![](./Maimai-how-to-rainbow/6-1.png#80)
 
 
 
@@ -275,7 +275,7 @@ https://www.youtube.com/watch?v=MVFpWJp61ZQ
 
 當然也是可以靠紅譜上白金，只是非常難，因為高定數的紅譜很少，13.4 以上的紅譜又非常噁心（下圖），可能會為了推分而不得不打自己不怎麼喜歡的歌。
 
-![](/img/content/Maimai-how-to-rainbow/7.png#80)
+![](./Maimai-how-to-rainbow/7.png#80)
 
 推分策略：練好海底譚。然後從 12^+^ ~ 13 的歌當中找自己喜歡的歌推 100.5%。也可以嘗試比較簡單的 13^+^ 並打到 100% 以上（推不到 100% 的話就不要硬廚，很容易手癖）。
 

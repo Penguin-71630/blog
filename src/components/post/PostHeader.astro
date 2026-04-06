@@ -22,7 +22,7 @@ const isDraft = import.meta.env.DEV && draft === true;
     {title}
     {
       isDraft && (
-        <span class="inline-flex items-center gap-1.5 rounded-full bg-yellow-500 px-3 py-1.5 text-base font-semibold text-white shadow-lg backdrop-blur-sm hover:bg-yellow-600 transition-colors md:px-2.5 md:py-1 md:text-sm">
+        <span class="print:hidden inline-flex items-center gap-1.5 rounded-full bg-yellow-500 px-3 py-1.5 text-base font-semibold text-white shadow-lg backdrop-blur-sm hover:bg-yellow-600 transition-colors md:px-2.5 md:py-1 md:text-sm">
           <Icon name="fa6-solid:file-pen" class="h-4 w-4 md:h-3.5 md:w-3.5" />
           未公開
         </span>
@@ -36,28 +36,28 @@ const isDraft = import.meta.env.DEV && draft === true;
     {
       isDraft && (
         <span class="flex items-center gap-1.5">
-          <Icon name="fa6-solid:user" class="h-4 w-4" />
+          <Icon name="fa6-solid:pen-nib" class="h-4 w-4" />
           111550055 黃致皓
         </span>
       )
     }
-    <span class="flex items-center gap-1.5">
+    <span class="print:hidden flex items-center gap-1.5">
       <Icon name="fa6-solid:calendar-days" class="h-4 w-4" />
       發表於 {displayDate.datetime(date)}
     </span>
     {
       updated && (
-        <span class="flex items-center gap-1.5">
+        <span class="print:hidden flex items-center gap-1.5">
           <Icon name="fa6-solid:calendar-days" class="h-4 w-4" />
           更新於 {displayDate.datetime(updated)}
         </span>
       )
     }
-    <span class="flex items-center gap-1.5">
+    <span class="print:hidden flex items-center gap-1.5">
       <Icon name="fa6-solid:pen-nib" class="h-4 w-4" />
       {readState.words} 字
     </span>
-    <span class="flex items-center gap-1.5">
+    <span class="print:hidden flex items-center gap-1.5">
       <Icon name="fa6-solid:clock" class="h-4 w-4" />
       {readState.text}
     </span>

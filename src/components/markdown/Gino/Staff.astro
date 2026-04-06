@@ -1,0 +1,28 @@
+---
+// src/components/markdown/Gino/Staff.astro
+---
+<abc-music>
+  <template>
+    <slot />
+  </template>
+  <div class="abc-render-container my-8 overflow-x-auto bg-white/10 rounded-lg p-4"></div>
+</abc-music>
+
+<script>
+  import abcjs from 'abcjs';
+
+  class AbcMusic extends HTMLElement {
+    connectedCallback() {
+      const template = this.querySelector('template');
+      const container = this.querySelector('.abc-render-container');
+
+      if (!template || !container) return;
+      
+      const source = template.innerHTML.replace(/<\/?p>/g, '').trim();
+      
+      abcjs.renderAbc(container, source, { responsive: 'resize' });
+    }
+  }
+
+  customElements.define('abc-music', AbcMusic);
+</script>

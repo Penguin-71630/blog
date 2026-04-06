@@ -17,7 +17,7 @@ categories:
 
 或許有些人可能還是不知道 Maimai Rating 怎麼算，在這邊簡單提一下，Rating 是由**舊歌 Best 35 首歌 + 新歌 Best 15 首歌**組成，單曲 Rating 計算可參考[**萌娘百科**](https://zh.moegirl.org.cn/zh-tw/Maimai%E7%B3%BB%E5%88%97)。
 
-![](/img/content/Maimai-resources/1.png#50)
+![](./Maimai-resources/1.png#50)
 
 
 
@@ -38,7 +38,7 @@ Step 1
 
 先到這邊複製你的 Friend Code。
 
-![](/img/content/Maimai-resources/2.png#40)
+![](./Maimai-resources/2.png#40)
 
 
 :::default
@@ -53,7 +53,7 @@ Step 2
 
 然後勾一下 reCAPTCHA 驗證你不是機器人，接著按 `LOGIN`。
 
-![](/img/content/Maimai-resources/3.png#30)
+![](./Maimai-resources/3.png#30)
 
 
 :::default
@@ -62,7 +62,7 @@ Step 3
 
 到 maimai DX NET >> `FRIENDS` >> `ACCEPTING ENTRIES`，接受機器人傳送的交友邀請。
 
-![](/img/content/Maimai-resources/4.png#30)
+![](./Maimai-resources/4.png#30)
 
 
 :::default
@@ -71,7 +71,7 @@ Step 4
 
 回到 MaiChart 網站按 `NEXT`。就可以看見自己的 B50／清譜紀錄。長按一下（電腦按右鍵）選 Download Image 可以下載圖片。
 
-![](/img/content/Maimai-resources/5.png)
+![](./Maimai-resources/5.png)
 
 
 
@@ -91,7 +91,7 @@ Step 4
 
 介面大概長這樣：
 
-![](/img/content/Maimai-resources/6.png#40)
+![](./Maimai-resources/6.png#40)
 
 
 
@@ -107,7 +107,7 @@ Step 4
 
 可以顯示分數細項、被扣多少 % 之類的，介面長這樣：
 
-![](/img/content/Maimai-resources/7.png#40)
+![](./Maimai-resources/7.png#40)
 
 
 
@@ -163,7 +163,7 @@ Bilibili (B 站) 上面有關 maimai 的資源非常豐富，各種教學、手�
 
 B 站還有鎖屏功能，搜尋某張譜的譜面確認，點進去後右邊會有一個小小的 :unlock: 標示，點一下可以鎖住螢幕。
 
-![](/img/content/Maimai-resources/8.png#50)
+![](./Maimai-resources/8.png#50)
 
 .
 

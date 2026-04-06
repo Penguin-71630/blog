@@ -1,0 +1,72 @@
+---
+title: 計算機組織 - Chapter 2
+date: 2026-04-06
+categories: 
+  - 課業筆記
+draft: true
+---
+
+import whatWeAreLearning from './CO-note/what_we_are_learning.png?url';
+import whatWeAreLearningDark from './CO-note/what_we_are_learning_dark.png?url';
+
+
+{/* ============================================================================ */}
+
+<Image
+  img={whatWeAreLearning}
+  darkImg={whatWeAreLearningDark}
+/>
+
+## Instruction Format
+
+
+<InfoBox style="info">
+
+R-Type Instruction
+
+$$
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+op & rs & rt & rd & shamt & funct \\
+\hline
+000000 & 00000 & 00000 & 00000 & 00000 & 000000 \\
+\hline
+\end{array}
+$$
+
+</InfoBox>
+
+<InfoBox style="success">
+
+I-Type Instruction
+
+$$
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+op & rs & rt & rd & shamt & funct \\
+\hline
+000000 & 00000 & 00000 & 00000 & 00000 & 000000 \\
+\hline
+\end{array}
+$$
+
+Example:
+- `addi $t0, $t1, 5` → `001000 01001 01000 0000000000000101`
+
+</InfoBox>
+
+<InfoBox style="warning">
+
+J-Type Instruction
+
+$$
+\begin{array}{|c|c|c|c|c|c|}
+\hline
+op & rs & rt & rd & shamt & funct \\
+\hline
+000000 & 00000 & 00000 & 00000 & 00000 & 000000 \\
+\hline
+\end{array}
+$$
+
+</InfoBox>

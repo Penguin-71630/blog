@@ -169,23 +169,23 @@ pA 以為鴨子移動過程可視為瞬間移動，想說只要 $\sum a_i$ 跟 $
 
 結果過程中碰到很弔詭的 bug，題本疑似有不乾淨的字元，我直接複製到 code 底下再貼到 console 竟然沒辦法輸入，於是又重新檢查模板、主程式，又換了好幾次寫法，最後改成手動輸入才終於安分地吃進數字。莫名其妙地又浪費二十分鐘在解決看不見的 bug。
 
-![Fig 1](/img/content/2021-HSNU-summer-II/broken-char.png)
+![Fig 1](./2021-HSNU-summer-II/broken-char.png)
 
 上面那個是爛掉的輸入，下面是好的，有夠奇怪。
 
 丟上去結果吃了 WA（賽後覺得吃 WA 不意外）。
 
-**<span class="red">00\:40 pA  0分</span>**
+**<span class="red">00\:40 pA   0分</span>**
 
 賽中沒發現是題目讀錯，又耍智障了 15 分鐘結果一分都沒有
 
-**<span class="red">00\:42 pA  0分</span>**
+**<span class="red">00\:42 pA   0分</span>**
 
-**<span class="red">00\:45 pA  0分</span>**
+**<span class="red">00\:45 pA   0分</span>**
 
-**<span class="red">00\:50 pA  0分</span>**
+**<span class="red">00\:50 pA   0分</span>**
 
-**<span class="red">00\:52 pA  0分</span>**
+**<span class="red">00\:52 pA   0分</span>**
 
 前面發生的一堆意外、pA 一直燒，加上過了一個小時卻一分都沒有。這時心態基本上已經崩了，完全不想繼續寫下去。觸犯比賽的大忌。
 
@@ -201,29 +201,29 @@ pE 讀題目的時候有讀到一個魔法可以從 a 變成 b 也可以反過�
 
 這時我覺得 pD 雖然比較簡單，但我實作 dijkstra 比較穩定，於是就先從 pB 開始寫。10 分鐘後寫完就丟上去了。
 
-**<span class="yellow">01\:11 pB 3 9分</span>**
+**<span class="yellow">01\:11 pB 3  9分</span>**
 
 有點慶幸總算有分數了，但我預期的是滿分，百思不解又繼續盯著 code，然後開始很智障地改一些沒有用處的實作小細節。這樣一拖又浪費了 30 分鐘
 
-**<span class="yellow">01\:19 pB 3 9分</span>**
+**<span class="yellow">01\:19 pB 3  9分</span>**
 
-**<span class="yellow">01\:22 pB 3 9分</span>**
+**<span class="yellow">01\:22 pB 3  9分</span>**
 
-**<span class="yellow">01\:25 pB 3 9分</span>**
+**<span class="yellow">01\:25 pB 3  9分</span>**
 
-**<span class="yellow">01\:42 pB 3 9分</span>**
+**<span class="yellow">01\:42 pB 3  9分</span>**
 
 心態又更糟了，甚至一度認為是測資的問題。上完廁所後才終於肯跳題。
 
 pD 穩定地刻完二分搜就丟上去了，一發 AC。應該先寫這題來穩住心態的。
 
-**<span class="green">01\:57 pD 10 0分</span>**
+**<span class="green">01\:57 pD 10  0分</span>**
 
 接下來開始撈分，首先是 pA，這時候我才注意到我看錯題目，被自己笨死。
 
 讀了子題，前 25 分可以暴力 $O((n!)^2 \times n^2)$ 拿掉，28 分觀察到可以先對 $a$ 排序，前 $n-1$ 個向量所形成的軌跡會是一個下凸包，最後則回到原點。於是改了一下剛剛的 code，丟上去 28 分。
 
-**<span class="orange">02\:05 pA 2 8分</span>**
+**<span class="orange">02\:05 pA 2  8分</span>**
 
 這時候想刻 25 暴力分，沒想到除了要重寫外還需要刻向量模板。但我完全沒注意到 pC 更好撈而且分數更多，眼裡就只有 pA。
 
@@ -231,19 +231,19 @@ pD 穩定地刻完二分搜就丟上去了，一發 AC。應該先寫這題來�
 
 剩下半個小時才驚覺時間不夠，這時才跳去 pC。邊寫邊想實作細節，幸好沒有出問題。
 
-**<span class="yellow">02\:49 pC 3 7分</span>**
+**<span class="yellow">02\:49 pC 3  7分</span>**
 
 3 分只要加個特判就行了，多加幾行 if 丟上去我就去撈 pE 了，沒有去注意有沒有拿到，結果竟然沒有。
 
-**<span class="yellow">02\:52 pC 3 7分</span>**
+**<span class="yellow">02\:52 pC 3  7分</span>**
 
 pE 的 6 分只要把 pair 丟進 set 就行了。
 
-**<span class="orange">02\:55 pE  6分</span>**
+**<span class="orange">02\:55 pE   6分</span>**
 
 再來有 4 分是只要分 case，但因為我沒注意到邊是雙向的所以就沒有拿到 QQ。
 
-**<span class="red">02\:59 pE  0分</span>**
+**<span class="red">02\:59 pE   0分</span>**
 
 
 
@@ -280,7 +280,7 @@ pE 的 6 分只要把 pair 丟進 set 就行了。
 1. 開場**讀題 15 分鐘**，讀題時務必連**子題配分**都要讀過一遍。
 2. **打模板的時間 5 分鐘**，打的時候不要一直思考有什麼忘記打，浪費腦力，反正之後要用再補就好。
 3. 按照**難度排序**題目的技能要再加強。
-![](/img/content/2021-HSNU-summer-II/sort-problem.png)
+![](./2021-HSNU-summer-II/sort-problem.png)
 4. **時間分配**：
     - **觀察性質 3 分鐘**
     - **思考解法 7 分鐘**
@@ -344,10 +344,10 @@ pE 的 6 分只要把 pair 丟進 set 就行了。
 
 4. 電神們的建議
 
-![](/img/content/2021-HSNU-summer-II/advice1.png)
+![](./2021-HSNU-summer-II/advice1.png)
 
-![](/img/content/2021-HSNU-summer-II/advice2.png#60)
+![](./2021-HSNU-summer-II/advice2.png#60)
 
-![](/img/content/2021-HSNU-summer-II/advice3.png)
+![](./2021-HSNU-summer-II/advice3.png)
 
 

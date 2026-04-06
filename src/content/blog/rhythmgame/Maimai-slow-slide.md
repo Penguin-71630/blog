@@ -29,7 +29,7 @@ categories:
 
 研究慢滑星歌前可以先確認歌曲 BPM、拍號，記一下星星要隔幾拍再啟動。例如 <span class="mas">Transcend Lights</span>、<span class="mas">Altale</span> 就是隔 3 拍，<span class="mas">四月の雨</span>是隔 4 拍。再來就是多看手元、背手順，通常手順也不用刻意去記，因為星星要滑出去的時候**通常會有 TAP 當作啟動提示**。就算沒有，在**心裡默數拍子**便可。
 
-![](/img/content/Maimai-slow-slide/fig1.png#40)
+![](./Maimai-slow-slide/fig1.png#40)
 
 （像 Last Samurai 後半段的三角、傘狀星星都會有一組雙押當作星星啟動提示）
 
@@ -38,7 +38,7 @@ categories:
 還有一點就是慢滑星歌有點吃腦力，所以當天如果精神不太好、腦波特別弱就別硬要推分。
 
 另外如果實在不習慣，也可以考慮在遊戲設定中把星星出現時間（`SLIDE TIMING`）設為 `+1.0`，以減少視覺干擾。
-![](/img/content/Maimai-slow-slide/image.png#40)
+![](./Maimai-slow-slide/image.png#40)
 
 
 ## 練習曲推薦

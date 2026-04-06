@@ -1,0 +1,36 @@
+---
+interface Props {
+  img: string;
+  darkImg?: string;
+}
+
+const { img, darkImg } = Astro.props;
+---
+
+<figure class="markdown-image-wrapper">
+  {
+    darkImg ? (
+      <>
+        <img
+          src={img}
+          alt=""
+          loading="lazy"
+          class="scale-102 w-full h-full object-cover transition-transform duration-250 group-hover:scale-106 m-0 block dark:hidden"
+        />
+        <img
+          src={darkImg}
+          alt=""
+          loading="lazy"
+          class="scale-102 w-full h-full object-cover transition-transform duration-250 group-hover:scale-106 m-0 hidden dark:block"
+        />
+      </>
+    ) : (
+      <img
+        src={img}
+        alt=""
+        loading="lazy"
+        class="scale-102 w-full h-full object-cover transition-transform duration-250 group-hover:scale-106 m-0"
+      />
+    )
+  }
+</figure>

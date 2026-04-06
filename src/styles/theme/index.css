@@ -22,8 +22,8 @@
   --color-pink-a3: rgba(215, 172, 213, 0.3);
 
   /* Shoka container/effect colors (primary uses --primary from shadcn theme) */
-  --shoka-default: 280 8% 65%;
-  --shoka-info: 250 71% 76%;
+  --shoka-default: 280 1% 65%;
+  --shoka-info: 210 80% 65%;
   --shoka-success: 142 45% 45%;
   --shoka-warning: 45 85% 50%;
   --shoka-danger: 0 75% 60%;
@@ -63,8 +63,8 @@
   --color-pink-a3: rgba(98, 85, 167, 0.3);
 
   /* Shoka container/effect colors (dark mode) */
-  --shoka-default: 246 8% 70%;
-  --shoka-info: 240 27% 61%;
+  --shoka-default: 246 1% 70%;
+  --shoka-info: 210 67% 61%;
   --shoka-success: 142 60% 45%;
   --shoka-warning: 45 85% 60%;
   --shoka-danger: 0 75% 63%;

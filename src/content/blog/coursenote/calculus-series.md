@@ -103,13 +103,13 @@ $\sum_{n=1}^\infty a_n$ 的斂散性和 $\int_1^\infty f(x)dx$ 相同。
 
 收斂的部分用 DCT + MST 證：
 
-![](/img/content/calculus-series/fig1.png)
+![](./calculus-series/fig1.png)
 
 發散的部分用 DCT 證：
 
-![](/img/content/calculus-series/fig2.png)
+![](./calculus-series/fig2.png)
 
-![](/img/content/calculus-series/fig3.jpg)
+![](./calculus-series/fig3.jpg)
 
 數論裡面一些演算法的時間複雜度、函數成長速度就是用積分估算的。
 
@@ -148,7 +148,7 @@ DCT 證明可以用 MST，而 LCT 證明可以先設 $m < a_n / b_n < M \implies
 
 其實把 $s_n$ 放到數線上的話，不難發現 $s_n$ 會來回跳動，非嚴格遞減、收斂到 0 這兩個條件可以保證每次跳動的長度越來越小，振幅越小最後就會收斂在某個點上。
 
-![](/img/content/calculus-series/fig4.png)
+![](./calculus-series/fig4.png)
 
 證明的話也很單純，以最後收斂的和 $s$ 作為分界點，會發現其中一邊是奇數另外一邊是偶數。先選擇其中一邊來證明收斂 (by MST)，最後另外一邊的證明就只要補上某一項讓奇偶性反轉，就可以不用兩邊都做 MST。
 
@@ -198,5 +198,5 @@ $$
 |R_n| \leq |a_{n+1}|
 $$
 
-![](/img/content/calculus-series/fig5.jpg#50)
+![](./calculus-series/fig5.jpg#50)
 

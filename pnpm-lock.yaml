@@ -80,6 +80,9 @@ importers:
       '@waline/client':
         specifier: ^3.8.0
         version: 3.8.0(typescript@5.9.3)
+      abcjs:
+        specifier: ^6.6.2
+        version: 6.6.2
       astro:
         specifier: ^5.16.6
         version: 5.16.6(@netlify/blobs@10.5.0)(@types/node@24.10.1)(@vercel/functions@2.2.13)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.37.0)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
@@ -3552,6 +3555,9 @@ packages:
   abbrev@3.0.1:
     resolution: {integrity: sha512-AO2ac6pjRB3SJmGJo+v5/aK6Omggp6fsLrs6wN9bd35ulu4cCwaAU9+7ZhXjeqHVkaHThLuzH0nZr0YpCDhygg==}
     engines: {node: ^18.17.0 || >=20.5.0}
+
+  abcjs@6.6.2:
+    resolution: {integrity: sha512-YLbp5lYUq0uOywWZx9EuTdm0TcflKZi7hOzz366A/LFl3qoAXSYIjznJQmr/VeHg8NcLxZYoN8dLi7PqCpxKEA==}
 
   abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -12638,6 +12644,8 @@ snapshots:
   '@xsai/shared@0.4.0-beta.10': {}
 
   abbrev@3.0.1: {}
+
+  abcjs@6.6.2: {}
 
   abort-controller@3.0.0:
     dependencies:

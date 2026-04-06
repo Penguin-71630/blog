@@ -2,6 +2,11 @@
   /* override the max-width of the prose */
   max-width: none;
 
+  /* 文章字體大小 */
+  font-size: 1.1rem;
+  line-height: 1.7;
+
+
   /* ✅ 淺色模式 inline code 主色 (較深，確保可讀性) */
   --my-primary: 110 110 110;
 
@@ -355,7 +360,8 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  .gino-table {
+  .gino-table,
+  .Gino-table {
     display: block;
     width: 100%;
     overflow-x: auto;
@@ -461,58 +467,75 @@
 
 /* 使用方法: ![圖](/path/img.png#full) -> 100% 寬 */
 /* --- 電腦版：標準級距 --- */
-img[src$="#100"] {
+img[src$="#100"],
+img.img-w-100 {
   width: 100% !important;
 }
-img[src$="#90"] {
+img[src$="#90"],
+img.img-w-90 {
   width: 90% !important;
 }
-img[src$="#80"] {
+img[src$="#80"],
+img.img-w-80 {
   width: 80% !important;
 }
-img[src$="#70"] {
+img[src$="#70"],
+img.img-w-70 {
   width: 70% !important;
 }
-img[src$="#60"] {
+img[src$="#60"],
+img.img-w-60 {
   width: 60% !important;
 }
-img[src$="#50"] {
+img[src$="#50"],
+img.img-w-50 {
   width: 50% !important;
 }
-img[src$="#40"] {
+img[src$="#40"],
+img.img-w-40 {
   width: 40% !important;
 }
-img[src$="#30"] {
+img[src$="#30"],
+img.img-w-30 {
   width: 30% !important;
 }
-img[src$="#20"] {
+img[src$="#20"],
+img.img-w-20 {
   width: 20% !important;
 }
-img[src$="#10"] {
+img[src$="#10"],
+img.img-w-10 {
   width: 10% !important;
 }
 
 /* --- 手機版優化：<= 70 的圖片自動 +30% --- */
 @media (max-width: 768px) {
-  img[src$="#70"] {
+  img[src$="#70"],
+  img.img-w-70 {
     width: calc(70% + 30%) !important;
   } /* 變 100% */
-  img[src$="#60"] {
+  img[src$="#60"],
+  img.img-w-60 {
     width: calc(60% + 30%) !important;
   } /* 變 90% */
-  img[src$="#50"] {
+  img[src$="#50"],
+  img.img-w-50 {
     width: calc(50% + 30%) !important;
   } /* 變 80% */
-  img[src$="#40"] {
+  img[src$="#40"],
+  img.img-w-40 {
     width: calc(40% + 30%) !important;
   } /* 變 70% */
-  img[src$="#30"] {
+  img[src$="#30"],
+  img.img-w-30 {
     width: calc(30% + 30%) !important;
   } /* 變 60% */
-  img[src$="#20"] {
+  img[src$="#20"],
+  img.img-w-20 {
     width: calc(20% + 30%) !important;
   } /* 變 50% */
-  img[src$="#10"] {
+  img[src$="#10"],
+  img.img-w-10 {
     width: calc(10% + 30%) !important;
   } /* 變 40% */
 }
@@ -780,46 +803,52 @@ img[src$="#10"] {
     --color-pink-a3: rgba(237, 110, 160, 0.3);
   }
 
-  img[src$="#100"] {
-    width: 100% !important;
-  }
-  img[src$="#90"] {
-    width: 90% !important;
-  }
-  img[src$="#80"] {
-    width: 80% !important;
-  }
-  img[src$="#70"] {
-    width: 70% !important;
-  }
-  img[src$="#60"] {
-    width: 60% !important;
-  }
-  img[src$="#50"] {
-    width: 50% !important;
-  }
-  img[src$="#40"] {
-    width: 40% !important;
-  }
-  img[src$="#30"] {
-    width: 30% !important;
-  }
-  img[src$="#20"] {
-    width: 20% !important;
-  }
-  img[src$="#10"] {
-    width: 15% !important;
+  /* 移除背景圖片、浮動模糊效果 */
+  #site-bg {
+    display: none !important;
   }
 
-  /* 隱藏無關元素 */
-  site-header,
+  .floating-content,
+  .floating-card {
+    background: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    isolation: auto !important;
+    overflow: visible !important;
+  }
+
+  .floating-content::before,
+  .floating-sider::before,
+  .floating-card::before {
+    display: none !important;
+  }
+
+  /* 圖片尺寸控制 */
+  img[src$="#100"], img.img-w-100 { width: 100% !important; }
+  img[src$="#90"],  img.img-w-90  { width: 90%  !important; }
+  img[src$="#80"],  img.img-w-80  { width: 80%  !important; }
+  img[src$="#70"],  img.img-w-70  { width: 70%  !important; }
+  img[src$="#60"],  img.img-w-60  { width: 60%  !important; }
+  img[src$="#50"],  img.img-w-50  { width: 50%  !important; }
+  img[src$="#40"],  img.img-w-40  { width: 40%  !important; }
+  img[src$="#30"],  img.img-w-30  { width: 30%  !important; }
+  img[src$="#20"],  img.img-w-20  { width: 20%  !important; }
+  img[src$="#10"],  img.img-w-10  { width: 15%  !important; }
+
+  /* 隱藏無關 UI 元素 */
+  #site-header,
+  .floating-header,
   astro-loading-indicator,
-  mobile-menu-container,
+  #mobile-menu-container,
   .page-home-sider,
   .shadow-home-sider,
+  .floating-sider,
   footer,
-  button[aria-label="搜索"],
   .theme-toggle,
+  nav:has(a[aria-label^="返回"]),
+  div:has(> button[aria-controls="summary-panel-content"]),
+  .fixed.bottom-4,
+  button[aria-label="搜索"],
   button[aria-label="toggle theme"],
   nav:has(a[aria-label="返回首頁"]),
   .overflow-hidden.rounded-lg.mt-2,
@@ -828,7 +857,7 @@ img[src$="#10"] {
   button[aria-label="滚到底部"],
   button[aria-label="展开/收起工具栏"],
   .grid.grid-cols-2.tablet\:grid-cols-1.gap-4,
-  .flex-center.tablet\:flex.fixed.top-0.left-3.z-52.hidden.h-14.transition-transform {
+  .flex-center.tablet\:flex.fixed.top-0.left-3.z-52.hidden.h-14.transition-transform{
     display: none !important;
   }
 
@@ -837,7 +866,7 @@ img[src$="#10"] {
     max-width: 100% !important;
     width: 100% !important;
     margin: 0 !important;
-    box-shadow: none !important; /* 移除卡片陰影 */
+    box-shadow: none !important;
   }
 
   /* 確保背景色被列印 (尤其是程式碼區塊) */
@@ -852,6 +881,28 @@ img[src$="#10"] {
   img,
   table {
     break-inside: avoid;
+  }
+
+  /* 標題不孤立在頁尾（保持與後續內容同頁） */
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    break-after: avoid;
+    break-inside: avoid;
+  }
+
+  /* 含圖片的段落不分割 */
+  .prose p:has(img) {
+    break-inside: avoid;
+  }
+
+  /* 避免段落首尾孤行 */
+  .prose p {
+    orphans: 3;
+    widows: 3;
   }
 }
 
@@ -895,4 +946,24 @@ img[src$="#10"] {
   content: attr(data-prompt) " ";
   color: hsl(var(--muted-foreground));
   user-select: none;
+}
+
+/* ========== Ruby/Furigana 樣式 ========== */
+ruby {
+  ruby-align: center;
+  ruby-position: over;
+}
+
+rt {
+  /* 平假名字體大小 - 可以調整這個值 */
+  font-size: 0.65em;
+  
+  /* 使用正常字體顏色 */
+  color: inherit;
+  line-height: 1;
+}
+
+/* 深色模式下的 ruby 樣式 */
+.dark rt {
+  color: inherit;
 }

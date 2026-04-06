@@ -1,0 +1,87 @@
+---
+interface Props {
+  loop?: boolean;
+}
+
+const { loop = false } = Astro.props;
+---
+
+<frame-slider data-loop={loop.toString()} class="block my-6 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm">
+  <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-800/50 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+    <button class="prev-btn px-3 py-1 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+      &#8592; Prev
+    </button>
+    <span class="counter text-sm font-mono text-gray-600 dark:text-gray-300"></span>
+    <button class="next-btn px-3 py-1 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+      Next &#8594;
+    </button>
+  </div>
+
+  <div class="slider-content p-4">
+    <slot />
+  </div>
+</frame-slider>
+
+<script>
+  class FrameSlider extends HTMLElement {
+    currentIndex: number = 0;
+    loop: boolean = false;
+    frames: Element[] = [];
+    
+    prevBtn!: HTMLButtonElement;
+    nextBtn!: HTMLButtonElement;
+    counter!: HTMLSpanElement;
+    
+    connectedCallback() {
+      this.currentIndex = 0;
+      this.loop = this.dataset.loop === 'true';
+      
+      const contentContainer = this.querySelector('.slider-content');
+      if (!contentContainer) return;
+
+      // 取得所有的 Frame (即 slot 傳進來的第一層子元素)
+      this.frames = Array.from(contentContainer.children);
+      if (this.frames.length === 0) return;
+
+      this.prevBtn = this.querySelector('.prev-btn') as HTMLButtonElement;
+      this.nextBtn = this.querySelector('.next-btn') as HTMLButtonElement;
+      this.counter = this.querySelector('.counter') as HTMLSpanElement;
+
+      this.prevBtn.addEventListener('click', () => this.navigate(-1));
+      this.nextBtn.addEventListener('click', () => this.navigate(1));
+
+      this.updateView();
+    }
+
+    navigate(direction: number) {
+      this.currentIndex += direction;
+      
+      if (this.loop) {
+        if (this.currentIndex < 0) this.currentIndex = this.frames.length - 1;
+        if (this.currentIndex >= this.frames.length) this.currentIndex = 0;
+      } else {
+        this.currentIndex = Math.max(0, Math.min(this.currentIndex, this.frames.length - 1));
+      }
+      
+      this.updateView();
+    }
+
+    updateView() {
+      // 控制 Frame 顯示與隱藏
+      this.frames.forEach((frame, index) => {
+        (frame as HTMLElement).style.display = index === this.currentIndex ? 'block' : 'none';
+      });
+
+      // 更新計數器
+      this.counter.textContent = `Step ${this.currentIndex + 1} / ${this.frames.length}`;
+
+      // 若不循環，在頭尾禁用按鈕
+      if (!this.loop) {
+        this.prevBtn.disabled = this.currentIndex === 0;
+        this.nextBtn.disabled = this.currentIndex === this.frames.length - 1;
+      }
+    }
+  }
+
+  customElements.define('frame-slider', FrameSlider);
+</script>

@@ -57,4 +57,18 @@ const { ratio = 'repeat(2, minmax(0, 1fr))', noline = false, className } = Astro
       height: auto;
     }
   }
+
+  /* 列印模式：強制多欄排版 */
+  @media print {
+    .custom-columns {
+      grid-template-columns: var(--ratio);
+    }
+    .custom-columns.has-divider > :global(:not(:first-child))::before {
+      top: 0;
+      bottom: 0;
+      left: -0.75rem;
+      width: 1px;
+      height: auto;
+    }
+  }
 </style>

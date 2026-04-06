@@ -43,7 +43,7 @@
   isolation: isolate;
   overflow: clip;
   /* 原本的 background 換成設定 --bg-overlay 變數 */
-  --bg-overlay: hsl(var(--background) / 0.78);
+  --bg-overlay: hsl(var(--background) / 0.83);
   border: 1px solid hsl(var(--border) / 0.2);
   box-shadow: 0 8px 32px hsl(var(--foreground) / 0.04);
 }

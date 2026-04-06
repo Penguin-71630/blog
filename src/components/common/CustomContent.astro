@@ -4,6 +4,7 @@ import ContentEnhancer from '@components/markdown/ContentEnhancer';
 // My own components (lexicographical order)
 import CollapseBlock from '@components/markdown/Gino/CollapseBlock.astro';
 import Columns from '@components/markdown/Gino/Columns.astro';
+import Image from '@components/markdown/Gino/Image.astro';
 import ImageCarousel from '@components/markdown/Gino/ImageCarousel.astro';
 import InfoBox from '@components/markdown/Gino/InfoBox.astro';
 import ItemCard from '@components/markdown/Gino/ItemCard.astro';
@@ -14,8 +15,11 @@ import Note from '@components/markdown/Gino/Note.astro';
 import People from '@components/markdown/Gino/People.astro';
 import Person from '@components/markdown/Gino/Person.astro';
 import Reference from '@components/markdown/Gino/Reference.astro';
+import Ruby from '@components/markdown/Gino/Ruby.astro';
+import Slider from '@components/markdown/Gino/Slider.astro';
 import Splitter from '@components/markdown/Gino/Splitter.astro';
 import SplitterCenter from '@components/markdown/Gino/SplitterCenter.astro';
+import Staff from '@components/markdown/Gino/Staff.astro';
 import Tabs from '@components/markdown/Gino/Tabs.astro';
 import type { ContentConfig } from '@constants/content-config';
 import { defaultContentConfig } from '@constants/content-config';
@@ -31,6 +35,8 @@ const globalComponents = {
   imagecarousel: ImageCarousel,
   InfoBox,
   infobox: InfoBox,
+  Image,
+  image: Image,
   ItemCard,
   itemcard: ItemCard,
   ItemCards,
@@ -47,10 +53,16 @@ const globalComponents = {
   person: Person,
   Reference,
   reference: Reference,
+  Ruby,
+  ruby: Ruby,
   Splitter,
   splitter: Splitter,
   SplitterCenter,
   splittercenter: SplitterCenter,
+  Slider,
+  slider: Slider,
+  Staff,
+  staff: Staff,
   Tabs,
   tabs: Tabs,
 };

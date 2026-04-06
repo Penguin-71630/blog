@@ -73,7 +73,7 @@ categories:
 
 最後一天早上是模擬競賽，307／Rk.6，打得還不錯。**這場模擬賽對我來說很關鍵，我不只抓到了撈分的感覺，也對自己有了不少信心。**
 
-![](/img/content/2021-THSPC/mock-contest.png)
+![](./2021-THSPC/mock-contest.png)
 
 賽前一天一直在刷考古題，我很清楚自己底力不夠手感很容易斷，所以跟別人「賽前一天不做事／耍廢」的策略相反。
 
@@ -211,7 +211,7 @@ Total Score：**280**／Rank：**16**／**三等獎**
 [**計分板連結**](https://sorahisa.github.io/OI/DumpedRanks/nhspc2021_tpe/ranking/Ranking.html)
 :::
 
-![](/img/content/2021-THSPC/scoreboard.png)
+![](./2021-THSPC/scoreboard.png)
 
 
 ### Subtasks Gained

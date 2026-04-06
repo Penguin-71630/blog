@@ -25,7 +25,9 @@ import { rehypeEncryptedBlock } from './src/lib/markdown/rehype-encrypted-block.
 import { rehypeImagePlaceholder } from './src/lib/markdown/rehype-image-placeholder.ts';
 import { rehypeShokaAttrs } from './src/lib/markdown/rehype-shoka-attrs.ts';
 import { remarkEncryptedDirective } from './src/lib/markdown/remark-encrypted-directive.ts';
+import { remarkImageWidth } from './src/lib/markdown/remark-image-width.ts';
 import { remarkLinkEmbed } from './src/lib/markdown/remark-link-embed.ts';
+import { remarkMdImagePath } from './src/lib/markdown/remark-md-image-path.ts';
 import { remarkIns, remarkMark } from './src/lib/markdown/remark-shoka-effects.ts';
 import { remarkShokaPreprocess } from './src/lib/markdown/remark-shoka-preprocess.ts';
 import { remarkShokaRuby } from './src/lib/markdown/remark-shoka-ruby.ts';
@@ -150,6 +152,10 @@ if (contentConfig.enableShokaEffects !== false) {
 if (contentConfig.enableEncryptedBlock) {
   remarkPlugins.push(remarkDirective, remarkEncryptedDirective);
 }
+// Convert relative image paths in .md files to absolute paths
+remarkPlugins.push(remarkMdImagePath);
+// Image width syntax (#50) — must run before Astro's image pipeline
+remarkPlugins.push(remarkImageWidth);
 // Link embed is always on (existing feature)
 remarkPlugins.push([
   remarkLinkEmbed,

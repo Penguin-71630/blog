@@ -284,40 +284,40 @@ Wrong Answer
 ## 照片
 ### **錄取通知** :heart
 
-![](/img/content/2020-Sprout-I/1.jpg)
+![](./2020-Sprout-I/1.jpg)
 
 ### **台大前的綠蔭大道**
 
-![](/img/content/2020-Sprout-I/2.jpg)
+![](./2020-Sprout-I/2.jpg)
 
 ### **德田館 - 三年後我一定要來這裡！**
 
-![](/img/content/2020-Sprout-I/3.jpg)
+![](./2020-Sprout-I/3.jpg)
 
 ### **神奇的 P 與 NP 問題**
 
-![](/img/content/2020-Sprout-I/4.jpg)
+![](./2020-Sprout-I/4.jpg)
 
 ### **白板**
 
-![](/img/content/2020-Sprout-I/5.jpg)
+![](./2020-Sprout-I/5.jpg)
 
 ### **停機問題**
 
-![](/img/content/2020-Sprout-I/6.jpg)
+![](./2020-Sprout-I/6.jpg)
 
 ### **手寫作業剪影**
 
-![](/img/content/2020-Sprout-I/7.jpg)
+![](./2020-Sprout-I/7.jpg)
 
 ### **講師欺負行政**
 
-![](/img/content/2020-Sprout-I/8.png)
+![](./2020-Sprout-I/8.png)
 
 ### **講師的三字箴言：管你的**
 
-![](/img/content/2020-Sprout-I/9.png)
+![](./2020-Sprout-I/9.png)
 
 ### **手寫作業成績**
 
-![](/img/content/2020-Sprout-I/10.jpg)
+![](./2020-Sprout-I/10.jpg)

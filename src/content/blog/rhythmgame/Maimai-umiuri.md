@@ -46,7 +46,7 @@ categories:
 
 ### Part I 基本型
 
-![](/img/content/Maimai-umiuri/fig1.png#30)
+![](./Maimai-umiuri/fig1.png#30)
 
 
 
@@ -55,7 +55,7 @@ categories:
 這裡的配置最難的其實是左右兩側的單 TAP 會沒按準。
 
 
-![](/img/content/Maimai-umiuri/fig2.png#30)
+![](./Maimai-umiuri/fig2.png#30)
 
 
 
@@ -63,7 +63,7 @@ categories:
 
 ### Part II 圓弧型
 
-![](/img/content/Maimai-umiuri/fig3.png#30)
+![](./Maimai-umiuri/fig3.png#30)
 
 
 
@@ -71,13 +71,13 @@ categories:
 
 首先，弧線星星卡手的原因很有可能是因為擔心星星開頭一小段沒有滑到，導致手順變這樣：
 
-![](/img/content/Maimai-umiuri/fig4.png#30)
+![](./Maimai-umiuri/fig4.png#30)
 
 這樣很容易 miss 掉 TAP 或是影響到後續的手順。
 
 實際上根本不用擔心這個問題，這樣滑完全不會出事：
 
-![](/img/content/Maimai-umiuri/fig5.png#30)
+![](./Maimai-umiuri/fig5.png#30)
 
 敲一下外鍵，直接直線滑進內框，跳過星星開頭一小段也沒問題。
 
@@ -85,7 +85,7 @@ categories:
 
 再來是左右兩側的 TAP 很容易 miss 的問題。
 
-![](/img/content/Maimai-umiuri/fig6.png#30)
+![](./Maimai-umiuri/fig6.png#30)
 
 
 
@@ -99,7 +99,7 @@ categories:
 
 ### Part III 斜圓弧
 
-![](/img/content/Maimai-umiuri/fig7.png#30)
+![](./Maimai-umiuri/fig7.png#30)
 
 
 
@@ -108,7 +108,7 @@ categories:
 
 ### Part IV 反向圓弧
 
-![](/img/content/Maimai-umiuri/fig8.png#30)
+![](./Maimai-umiuri/fig8.png#30)
 
 
 
@@ -117,13 +117,13 @@ categories:
 
 ### Part V 綜合型
 
-![](/img/content/Maimai-umiuri/fig9.png#30)
+![](./Maimai-umiuri/fig9.png#30)
 
 
 
 這段好難，對我來說最難的地方是這顆 TAP：
 
-![](/img/content/Maimai-umiuri/fig10.png#30)
+![](./Maimai-umiuri/fig10.png#30)
 
 
 
@@ -134,7 +134,7 @@ categories:
 
 ### 其他細節
 
-![](/img/content/Maimai-umiuri/fig11.png#30)
+![](./Maimai-umiuri/fig11.png#30)
 
 
 
