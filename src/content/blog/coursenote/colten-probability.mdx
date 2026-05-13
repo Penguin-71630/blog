@@ -1,0 +1,242 @@
+---
+title: 機率與統計
+date: 2026-04-16
+categories: 
+  - 課業筆記
+draft: true
+---
+
+
+
+## 基本公式
+
+#### 期望值 (Expected Value)
+
+$$
+E[X] = \sum_{i} x_i p(x_i) \quad \text{或} \quad \int_{-\infty}^{\infty} x f(x) dx
+$$
+
+#### 變異數 (Variance)
+
+$$
+V(X) = E[X^2] - (E[X])^2
+$$
+
+#### 標準差 (Standard Deviation)
+
+$$
+\sigma_X = \sqrt{V(X)}
+$$
+
+#### 泊松分配 (Poisson Distribution)
+
+$$
+P(X=x) = \frac{e^{-\lambda} \lambda^x}{x!}
+$$
+
+#### 常態分布標準化 (Z-score)
+
+$$
+Z = \frac{X - \mu}{\sigma}
+$$
+
+#### 常態分布線性組合 (Linear Combination)
+
+若 $X \sim N(\mu_x, \sigma_x^2)$ 且 $Y \sim N(\mu_y, \sigma_y^2)$ 且兩者獨立：
+
+$$
+aX + bY \sim N(a\mu_x + b\mu_y, a^2\sigma_x^2 + b^2\sigma_y^2)
+$$
+
+#### 邊際機率 (Marginal PDF/PMF):
+
+$$
+f_X(x) = \int_{-\infty}^{\infty} f(x, y) dy \quad , \quad f_Y(y) = \int_{-\infty}^{\infty} f(x, y) dx
+$$
+
+#### 條件機率 (Conditional PDF/PMF):
+
+$$
+f(y|x) = \frac{f(x, y)}{f_X(x)}
+$$
+
+#### 共變異數 (Covariance):
+$$
+Cov(X, Y) = E[XY] - E[X]E[Y]
+$$
+
+#### 相關係數 (Correlation Coefficient):
+
+$$
+\rho_{XY} = \frac{Cov(X, Y)}{\sigma_X \sigma_Y}
+$$
+
+#### 抽樣分配 Sampling Distribution: 樣本平均數的期望值與變異數
+
+$$
+E[\bar{X}] = \mu, \quad V(\bar{X}) = \frac{\sigma^2}{n}
+$$
+
+## 離散型聯合分布 (PMF)
+
+#### 解題步驟: 邊際分布 (Marginal)
+
+把「橫列」或「直欄」加總。橫加的結果是 $f_X(x)$，直加的結果是 $f_Y(y)$ 
+
+#### 解題步驟: 條件期望值 $E[Y|X=k]$
+
+1. 鎖定 $X=k$ 那一行
+2. 將該行每個值除以該行的總和 (重新正規化)
+3. 用新的機率算期望值：$E[Y|X=k] = \sum y \cdot P(y|x)$
+
+#### 解題步驟：條件變異數 $V(Y|X=k)$
+
+1. 鎖定 $X=k$ 那一行
+2. 將該行每個值除以該行的總和 (重新正規化)
+3. 計算 $E[Y^2|X=k] = \sum y^2 \cdot P(y|x)$
+4. $V(Y|X=k) = E[Y^2|X=k] - (E[Y|X=k])^2$
+
+#### 解題步驟: 隨機變數轉換 (Variable Transformation)
+
+當題目定義了新的變數 $U = g(X, Y)$ 與 $V = h(X, Y)$ 時，解題邏輯是：遍歷所有 $(x, y)$ 組合，計算對應的 $(u, v)$，並把機率填入新表。
+
+1. 列出所有可能的 $(x, y)$ 組合
+2. 計算對應的 $(u, v)$ 值
+3. 畫出表格 (同樣 $(u,v)$ 的機率加總在同一格)
+
+---
+
+
+## 二項式分佈 $X \sim B(n, p)$
+
+- $n$ (Trials)：試驗的總次數。
+- $p$ (Probability)：單次試驗成功的機率。
+- $X$：在這 $n$ 次中，成功的次數。
+- 期望值 (平均數)：$E[X] = np$
+- 變異數：$V(X) = np(1-p)$
+- PMF 公式: $$P(X=k) = C^n_k \cdot p^k \cdot (1-p)^{n-k}$$
+
+#### 累積機率表 (Cumulative Distribution Table)
+
+根據題目問的類型做轉換：
+
+1. 恰好 $k$ 次: $P(X = k) = P(X \le k) - P(X \le k-1)$
+2. 至多 $k$ 次: $P(X \le k)$
+3. 至少 $k$ 次: $P(X \ge k) = 1 - P(X \le k-1)$
+4. 大於 $k$ 次: $P(X > k) = 1 - P(X \le k)$
+5. 介於 $a$ 與 $b$ 之間: $P(a \le X \le b) = P(X \le b) - P(X \le a-1)$
+
+#### 樣本比率 $\hat{P}$ 的期望值與變異數
+
+當隨機變數 $X$ 服從二項式分佈 $X \sim B(n, p)$，而我們感興趣的是成功的比例 $\hat{P} = \frac{X}{n}$ 時：
+
+- $n$：總試驗次數（樣本數）。
+- $p$：單次試驗成功的機率（母體比例）。
+- 期望值 $E[\hat{P}] = p$
+- 變異數 $V(\hat{P}) = \frac{p(1-p)}{n}$ 
+
+$$
+V(\hat{P}) = V\left(\frac{X}{n}\right) = \frac{1}{n^2} V(X) = \frac{1}{n^2} [np(1-p)] = \frac{p(1-p)}{n}
+$$
+
+
+## 泊松分佈 $X \sim Poisson(\lambda)$
+
+- $\lambda$ (Lambda)：在一個固定單位內，事件發生的平均次數。
+- 特性：$E(X) = Var(X) = \lambda$ (或 $\mu$)
+- **$\lambda$ 與單位長度成正比**
+            - Ex. 每 10 分鐘平均有 6 人到達 ($\lambda = 6$)，問「半小時（30 分鐘）」的人數分佈: 新參數：$\lambda_{new} = 6 \times (\frac{30}{10}) = 18$
+- 如果 $X$ 和 $Y$ 是獨立的泊松隨機變數，則它們的和 $X+Y$ 也是泊松分佈
+
+泊松公式為：$$P(W=k) = \frac{e^{-\lambda} \lambda^k}{k!}$$
+
+#### 泊松分佈查表: 累積機率 $P(X \le k)$
+
+- 恰好 $k$ 次: $P(X = k) = P(X \le k) - P(X \le k-1)$
+- 至少 $k$ 次: $P(X \ge k) = 1 - P(X \le k-1)$
+- 超過 $k$ 次: $P(X > k) = 1 - P(X \le k)$
+- 介於 $a$ 與 $b$ 之間 $P(a \le X \le b) = P(X \le b) - P(X \le a-1)$
+
+## 常態分佈觀念
+
+- 由於是連續型機率分佈，因此如果求單點 $P(Z = a)$ 的機率永遠是 $0$。
+- 期望值（Expected Value, $E[X]$）與平均數（Mean, $\mu$） 相等。
+
+## 常態分布 PDF
+
+常態分佈的標準 PDF 公式:
+
+$$
+f(x) = \frac{1}{{\sigma} \sqrt{2\pi}} e^{-\frac{(x-{\mu})^2}{2{\sigma^2}}}
+$$
+
+找 $\mu$ (平均數) 和 找 $\sigma$ (標準差)
+
+#### Step 1. 標準化 (Standardization)
+
+$$
+Z = \frac{X - \mu}{\sigma}
+$$
+
+<InfoBox style="success">
+$X$ 帶入臨界值，範例可以參考常態分佈線性組合
+</InfoBox>
+
+#### Step 2. 查表
+
+- $P(Z \le a)$ ($a$ 為正): 直接查表
+- $P(Z > a)$ ($a$ 為正): $1 - P(Z \le a)$
+- $P(Z \le -a)$ (負數): $1 - P(Z \le a)$
+- $P(a \le Z \le b)$: $P(Z \le b) - P(Z \le a)$
+
+
+## 常態分佈線性組合
+
+兩個獨立的常態分佈 $X \sim N(\mu_X, \sigma_X^2)$ 與 $Y \sim N(\mu_Y, \sigma_Y^2)$
+
+求 $W = aX + bY$ 的機率：
+
+#### Step 1. 計算 $W$ 的新期望值與變異數
+
+- $E[W] = aE[X] + bE[Y]$
+- $V(W) = a^2V(X) + b^2V(Y)$
+
+#### Step 2. 標準化 (Standardization)
+
+將 $W$ 轉換為標準常態分佈 $Z \sim N(0, 1)$：
+
+$$
+Z = \frac{W - E[W]}{\sqrt{V(W)}}
+$$
+
+<InfoBox style="success">
+$W$ 帶入臨界值。
+
+Example:
+$P(W < 18)$，$W$ 就帶 $18$；問 $P(W > 0)$，$W$ 就帶 $0$。
+</InfoBox>
+
+#### Step 3. 查表
+
+- $P(Z \le a)$ ($a$ 為正): 直接查表
+- $P(Z > a)$ ($a$ 為正): $1 - P(Z \le a)$
+- $P(Z \le -a)$ (負數): $1 - P(Z \le a)$
+- $P(a \le Z \le b)$: $P(Z \le b) - P(Z \le a)$
+
+#### 內插法 (Linear Interpolation)
+
+$$
+\frac{z^* - z_1}{z_2 - z_1} \times (P_2 - P_1) = x - P_1
+$$
+
+Example:
+
+目標 $z^* = 0.4685$查表 $z_1 = 0.46 \implies P_1 = 0.6772$查表 $z_2 = 0.47 \implies P_2 = 0.6808$
+
+$$
+\frac{0.4685 - 0.46}{0.47 - 0.46} \times (0.6808 - 0.6772) = x - 0.6772
+$$
+
+$$
+x \approx \mathbf{0.6803}
+$$

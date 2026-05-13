@@ -2,9 +2,10 @@
 interface Props {
   img: string;
   darkImg?: string;
+  width?: '100' | '90' | '80' | '70' | '60' | '50' | '40' | '30' | '20' | '10';
 }
 
-const { img, darkImg } = Astro.props;
+const { img, darkImg, width } = Astro.props;
 ---
 
 <figure class="markdown-image-wrapper">
@@ -16,12 +17,14 @@ const { img, darkImg } = Astro.props;
           alt=""
           loading="lazy"
           class="scale-102 w-full h-full object-cover transition-transform duration-250 group-hover:scale-106 m-0 block dark:hidden"
+          {...width && { 'data-width': width }}
         />
         <img
           src={darkImg}
           alt=""
           loading="lazy"
           class="scale-102 w-full h-full object-cover transition-transform duration-250 group-hover:scale-106 m-0 hidden dark:block"
+          {...width && { 'data-width': width }}
         />
       </>
     ) : (
@@ -30,7 +33,101 @@ const { img, darkImg } = Astro.props;
         alt=""
         loading="lazy"
         class="scale-102 w-full h-full object-cover transition-transform duration-250 group-hover:scale-106 m-0"
+        {...width && { 'data-width': width }}
       />
     )
   }
 </figure>
+
+<style>
+  /* Image width control via URL hash and data-width attribute - similar to markdown.css functionality */
+  .markdown-image-wrapper img[src$="#100"],
+  .markdown-image-wrapper img.img-w-100,
+  .markdown-image-wrapper img[data-width="100"] {
+    width: 100% !important;
+  }
+  .markdown-image-wrapper img[src$="#90"],
+  .markdown-image-wrapper img.img-w-90,
+  .markdown-image-wrapper img[data-width="90"] {
+    width: 90% !important;
+  }
+  .markdown-image-wrapper img[src$="#80"],
+  .markdown-image-wrapper img.img-w-80,
+  .markdown-image-wrapper img[data-width="80"] {
+    width: 80% !important;
+  }
+  .markdown-image-wrapper img[src$="#70"],
+  .markdown-image-wrapper img.img-w-70,
+  .markdown-image-wrapper img[data-width="70"] {
+    width: 70% !important;
+  }
+  .markdown-image-wrapper img[src$="#60"],
+  .markdown-image-wrapper img.img-w-60,
+  .markdown-image-wrapper img[data-width="60"] {
+    width: 60% !important;
+  }
+  .markdown-image-wrapper img[src$="#50"],
+  .markdown-image-wrapper img.img-w-50,
+  .markdown-image-wrapper img[data-width="50"] {
+    width: 50% !important;
+  }
+  .markdown-image-wrapper img[src$="#40"],
+  .markdown-image-wrapper img.img-w-40,
+  .markdown-image-wrapper img[data-width="40"] {
+    width: 40% !important;
+  }
+  .markdown-image-wrapper img[src$="#30"],
+  .markdown-image-wrapper img.img-w-30,
+  .markdown-image-wrapper img[data-width="30"] {
+    width: 30% !important;
+  }
+  .markdown-image-wrapper img[src$="#20"],
+  .markdown-image-wrapper img.img-w-20,
+  .markdown-image-wrapper img[data-width="20"] {
+    width: 20% !important;
+  }
+  .markdown-image-wrapper img[src$="#10"],
+  .markdown-image-wrapper img.img-w-10,
+  .markdown-image-wrapper img[data-width="10"] {
+    width: 10% !important;
+  }
+
+  /* Mobile optimization: images with width <= 70 get +30% on mobile */
+  @media (max-width: 768px) {
+    .markdown-image-wrapper img[src$="#70"],
+    .markdown-image-wrapper img.img-w-70,
+    .markdown-image-wrapper img[data-width="70"] {
+      width: calc(70% + 30%) !important; /* becomes 100% */
+    }
+    .markdown-image-wrapper img[src$="#60"],
+    .markdown-image-wrapper img.img-w-60,
+    .markdown-image-wrapper img[data-width="60"] {
+      width: calc(60% + 30%) !important; /* becomes 90% */
+    }
+    .markdown-image-wrapper img[src$="#50"],
+    .markdown-image-wrapper img.img-w-50,
+    .markdown-image-wrapper img[data-width="50"] {
+      width: calc(50% + 30%) !important; /* becomes 80% */
+    }
+    .markdown-image-wrapper img[src$="#40"],
+    .markdown-image-wrapper img.img-w-40,
+    .markdown-image-wrapper img[data-width="40"] {
+      width: calc(40% + 30%) !important; /* becomes 70% */
+    }
+    .markdown-image-wrapper img[src$="#30"],
+    .markdown-image-wrapper img.img-w-30,
+    .markdown-image-wrapper img[data-width="30"] {
+      width: calc(30% + 30%) !important; /* becomes 60% */
+    }
+    .markdown-image-wrapper img[src$="#20"],
+    .markdown-image-wrapper img.img-w-20,
+    .markdown-image-wrapper img[data-width="20"] {
+      width: calc(20% + 30%) !important; /* becomes 50% */
+    }
+    .markdown-image-wrapper img[src$="#10"],
+    .markdown-image-wrapper img.img-w-10,
+    .markdown-image-wrapper img[data-width="10"] {
+      width: calc(10% + 30%) !important; /* becomes 40% */
+    }
+  }
+</style>

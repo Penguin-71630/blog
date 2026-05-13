@@ -1,0 +1,46 @@
+---
+interface Props {
+  align?: 'left' | 'center' | 'right' | 'full';
+}
+
+const { align = 'full' } = Astro.props;
+
+const alignClass = {
+  left: 'justify-start',
+  center: 'justify-center',
+  right: 'justify-end',
+  full: '',
+}[align];
+---
+
+
+<div 
+  class={`Gino-table my-6 flex w-full ${align === "full" ? "" : alignClass}`}
+  data-align={align}
+>
+  <slot />
+</div>
+
+<style>
+  /* 將選擇器統一為 .Gino-table */
+  .Gino-table :global(table) {
+    display: table !important;
+    margin: 0 !important;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  /* 當 align 為 full 時，強制 100% 寬度 */
+  .Gino-table[data-align="full"] :global(table) {
+    width: 100% !important;
+  }
+
+  /* 當 align 為其他值時，使用內容寬度 */
+  .Gino-table[data-align="left"] :global(table),
+  .Gino-table[data-align="center"] :global(table),
+  .Gino-table[data-align="right"] :global(table) {
+    width: max-content !important;
+    max-width: 100%;
+  }
+</style>
+

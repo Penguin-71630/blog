@@ -1,0 +1,204 @@
+---
+title: YTP Hackathon
+date: 2026-04-25
+categories: 
+  - 工具
+draft: true
+---
+
+
+## 地點特徵與 API 對應
+
+
+<InfoBox>
+**時間資訊**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 現在時間 / 預定時間 | 系統時間 + 使用者輸入 | `Date.now()` | 注意 timezone 為 Asia/Taipei |
+</InfoBox>
+
+
+<InfoBox>
+**位置資訊**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 使用者目前位置 | 瀏覽器 Geolocation API | `navigator.geolocation` | 需使用者授權 |
+| 使用者指定地點 | Places API (New) Autocomplete | `places:autocomplete` | Session token 內免費 |
+</InfoBox>
+
+<InfoBox>
+**店家基本資訊**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 名稱、地址、座標 | Google Places API (New) | `displayName`, `formattedAddress`, `location` | 完整 |
+| 類型 / 類別 | Google Places API (New) | `primaryType`, `types` | 完整 |
+| 網站 / 電話 | Google Places API (New) | `websiteUri`, `nationalPhoneNumber` | 高 |
+</InfoBox>
+
+<InfoBox>
+**營業狀態**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 每週營業時間 | Google Places API (New) | `regularOpeningHours` | 高 |
+| 含節日特殊調整 | Google Places API (New) | `currentOpeningHours` | 高 |
+| 永久 / 暫時歇業 | Google Places API (New) | `businessStatus` | 完整 |
+| 臨時店休 / 颱風公告 | ❌ 無 API | — | LLM 偵測 `websiteUri` 為 IG/FB 時提示使用者確認 |
+</InfoBox>
+
+
+<InfoBox>
+**評價**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 平均評分 | Google Places API (New) | `rating` | 完整 |
+| 評論數 | Google Places API (New) | `userRatingCount` | 完整,建議搭配 `rating` 雙重門檻 |
+| 評論文字 | Google Places API (New) | `reviews` | 屬 Atmosphere SKU(較貴),demo 時挑選使用 |
+</InfoBox>
+
+<InfoBox>
+**預算 / 價格**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 價格等級($ ~ $$$$) | Google Places API (New) | `priceLevel` | 中,需根據品類映射到實際金額 |
+| 價格區間 | Google Places API (New) | `priceRange` | 台灣覆蓋率約 20-30% |
+| 實際人均消費 | LLM 從 `reviews` 抽取 | — | 軟資料,信心度標註 |
+</InfoBox>
+
+<InfoBox>
+**同行人員**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 親子友善 | Google Places API (New) | `goodForChildren` | 台灣覆蓋率低,LLM 從 reviews 補 |
+| 寵物友善 | Google Places API (New) | `allowsDogs` | 台灣覆蓋率低,LLM 從 reviews 補 |
+| 適合團體 | LLM 從 `reviews` 抽取 | — | 軟資料 |
+</InfoBox>
+
+<InfoBox>
+**無障礙需求**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 輪椅入口 / 廁所 / 座位 / 停車 | Google Places API (New) | `accessibilityOptions.*` | 台灣覆蓋率低 |
+</InfoBox>
+
+<InfoBox>
+**語言 / 國籍**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 多語言服務 | ❌ 無 API | — | LLM 從 reviews 偵測外文評論比例 |
+</InfoBox>
+
+<InfoBox>
+**飲食限制**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 素食 | Google Places API (New) | `servesVegetarianFood` | 台灣覆蓋率低 |
+| 清真 / 無麩質 / 過敏原 | ❌ 無 API | — | LLM 從 `cuisine` + reviews 推斷 |
+</InfoBox>
+
+<InfoBox>
+**環境特徵(咖啡廳工作型常用)**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 插座 / Wi-Fi / 安靜程度 | ❌ 無 API | — | LLM 從 `reviews` 抽取(demo 重點功能) |
+| 限時 / 低消 | ❌ 無 API | — | LLM 從 `reviews` 抽取 |
+</InfoBox>
+
+<InfoBox>
+**交通方式**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 公車 / 捷運 / 步行交通時間 | Google Routes API | `computeRoutes` (`travelMode: TRANSIT/WALK`) | Pro SKU,前 5000 次/月免費 |
+| 開車交通時間 | Google Routes API | `computeRoutes` (`travelMode: DRIVE`) | Essentials SKU |
+| 騎機車交通時間 | Google Routes API | `computeRoutes` (`travelMode: TWO_WHEELER`) | Enterprise SKU |
+| 一對多距離矩陣 | Google Routes API | `computeRouteMatrix` | 計費單位為 origin × destination |
+</InfoBox>
+
+<InfoBox>
+**停車**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 店家自身停車場 | Google Places API (New) | `parkingOptions.*` | 台灣覆蓋率低 |
+| 附近停車場 | Google Places API (New) Nearby Search | `places:searchNearby` (`type: parking`) | 較完整 |
+| 停車費價格 | data.taipei 開放資料 | 台北市停車場資料集 | 免費 |
+</InfoBox>
+
+<InfoBox>
+**YouBike**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| YouBike 站點 / 即時車輛數 | data.taipei 開放資料 | YouBike 即時資訊 API | 免費,即時 |
+</InfoBox>
+
+<InfoBox>
+**天氣**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 天氣預報 | 中央氣象署開放資料 | `opendata.cwa.gov.tw` 鄉鎮天氣預報 | 免費,需申請 API key |
+| 天氣警特報 | 中央氣象署開放資料 | 天氣警特報 API | 免費 |
+</InfoBox>
+
+<InfoBox>
+**熱門程度 / 排隊**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 即時排隊狀況 | ❌ 無 API | — | Google Maps 的 Popular Times 未開放 API |
+| 熱門程度估計 | Google Places API (New) | `userRatingCount` 大小 | 改為「熱門容忍度」設計 |
+</InfoBox>
+
+<InfoBox>
+**訂位**
+
+| 需求項目 | 資料來源 | 對應欄位 / API | 覆蓋率 / 備註 |
+|---|---|---|---|
+| 是否可訂位 | Google Places API (New) | `reservable` | 台灣覆蓋率低,從 reviews 推斷 |
+</InfoBox>
+
+## 資料分類:硬資料 vs 軟資料
+
+回傳前端的 JSON 中,建議每個欄位附上來源與信心度:
+
+| 類別 | 取得方式 | 處理方式 |
+|---|---|---|
+| **硬資料** | API 直接欄位 | `confidence: 1.0`,直接使用 |
+| **軟資料** | LLM 從評論文字抽取 | 標註信心度,提供 evidence |
+| **缺失資料** | 完全無來源 | 不顯示,或提示「請至 XXX 確認」 |
+
+範例 JSON 格式:
+
+```json
+{
+  "name": "店家名稱",
+  "rating": {
+    "value": 4.3,
+    "source": "google_places",
+    "confidence": 1.0
+  },
+  "has_outlet": {
+    "value": true,
+    "source": "review_extraction",
+    "confidence": 0.7,
+    "evidence": ["評論中 5 則提到有插座"]
+  },
+  "opening_hours_warning": {
+    "needs_social_check": true,
+    "reason": "店家網站為 Instagram,可能有臨時公告"
+  }
+}
+```
+

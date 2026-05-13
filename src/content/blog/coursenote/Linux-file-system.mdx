@@ -1,0 +1,61 @@
+---
+title: 記憶體與儲存系統 - Linux File System
+date: 2026-04-18
+categories: 
+  - 課業筆記
+draft: true
+---
+
+
+## inode
+
+```c
+/* Simplified Linux struct inode (from include/linux/fs.h)
+ * Represents a file object in kernel (metadata + ops + links to VFS)
+ */
+
+struct inode {
+    umode_t        i_mode;        // file type + permissions
+    unsigned short i_opflags;     // inode operation flags
+
+    kuid_t         i_uid;         // owner uid
+    kgid_t         i_gid;         // owner gid
+    unsigned int   i_flags;       // inode flags (immutable, etc.)
+
+#ifdef CONFIG_FS_POSIX_ACL
+    struct posix_acl *i_acl;          // access ACL
+    struct posix_acl *i_default_acl;  // default ACL
+#endif
+
+    const struct inode_operations *i_op;  // inode operations (lookup, create, etc.)
+    struct super_block           *i_sb;   // filesystem this inode belongs to
+    struct address_space         *i_mapping; // page cache mapping
+
+    unsigned long i_ino;          // inode number
+    unsigned long i_nlink;        // number of hard links
+    dev_t         i_rdev;         // device id (for special files)
+
+    loff_t        i_size;         // file size (bytes)
+
+    struct timespec64 i_atime;    // last access time
+    struct timespec64 i_mtime;    // last modify time
+    struct timespec64 i_ctime;    // last status change time
+
+    spinlock_t    i_lock;         // protects inode fields
+    unsigned short i_bytes;       // bytes used in last block
+
+    const struct file_operations *i_fop;  // default file ops for this inode
+
+    struct list_head i_lru;       // LRU list (inode cache)
+    struct list_head i_sb_list;   // list of inodes in superblock
+
+    union {
+        struct pipe_inode_info *i_pipe;  // if pipe
+        struct cdev            *i_cdev;  // if char device
+        char                   *i_link;  // if symlink (fast)
+        unsigned int            i_dir_seq; // directory seq counter
+    };
+
+    void *i_private;              // fs-specific private data
+};
+```

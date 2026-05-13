@@ -8,65 +8,904 @@ draft: true
 
 import whatWeAreLearning from './CO-note/what_we_are_learning.png?url';
 import whatWeAreLearningDark from './CO-note/what_we_are_learning_dark.png?url';
-
+import JType from './CO-note/J-Type.png?url';
+import JTypeDark from './CO-note/J-Type-dark.png?url';
+import ImmediateAddressing from './CO-note/immediate-addressing.png?url';
+import RegisterAddressing from './CO-note/register-addressing.png?url';
+import MIPSAddressingModes from './CO-note/mips-addressing-modes.svg?url';
 
 {/* ============================================================================ */}
+
+
+```
+[ ] Introduction to ISA
+    [ ] RISC vs CISC, ISA history
+    [v] MIPS 4 Design Principles
+
+[ ] Arithmetic Operations
+    [v] Operand, Word
+    [v] General-purpose Registers
+
+[ ] Memory Operations & Data Transfer
+    [ ] Big-Endian vs Little-Endian
+    [ ] Register Spilling
+
+[v] Instruction Formats
+    [v] R-Type
+    [v] I-Type
+    [v] J-Type
+    [ ] Pseudo-instructions
+
+[ ] Procedure Call
+    [v] Caller vs Callee
+    [v] Caller-saved vs Callee-saved
+    [v] Prologue and Epilogue
+    [v] Leaf Procedure
+    [v] Non-leaf Procedure
+    [ ] Recursion
+    [ ] Memory Layout
+    [ ] Local Variable Addressing ($sp or $fp)
+
+[v] MIPS 5 Addressing Modes
+    [v] Register
+    [v] Immediate (jr)
+    [v] Base Registers (lw, sw)
+    [v] PC-relative (beq, bne)
+    [v] Pseudodirect (j, jal)
+
+[v] Read/Write Synchronization
+    [v] ll/sc
+
+[ ] Common Operations
+    [v] If-else
+    [v] While
+    [v] For
+    [v] Function Prologue/Epilogue
+    [v] Atomic Swap
+    [ ] Atomic Fetch-and-Increment
+    [ ] Simple Sorting Algorithm
+
+[ ] Running a Program
+    [ ] Static Linking
+    [ ] 6 Steps of Loading a Program
+    [ ] Dynamic Linking and Lazy Linkage
+
+[ ] GCC Optimization
+    [ ] -O0, -O1, -O2, -O3
+    [ ] CPI 不是一個好的衡量標準
+
+[ ] Pointers, Arrays
+
+[ ] Other ISAs
+    [ ] ARM
+    [ ] x86 Family
+        [ ] IA-32
+        [ ] x86-64
+```
+
+
+## ISA: Instruction Set Architecture
 
 <Image
   img={whatWeAreLearning}
   darkImg={whatWeAreLearningDark}
+  width="60"
 />
 
-## Instruction Format
+
+TODO: RISC v.s. CISC
+
+TODO: Several ISAs history
 
 
 <InfoBox style="info">
+### MIPS ISA Design Principles
 
+1. **Simplicity Favors Regularity**
+    - e.g. Length of all instructions are 32 bits.  All arithmetic operations use the same format.
+2. **Smaller is Faster**
+    - e.g. MIPS has only 32 registers.
+3. **Make the Common Case Fast**
+    - e.g. The most common instructions can be executed in one cycle.
+    - e.g. No load instruction for immediate values.
+4. **Good Design Demands Good Compromises**
+    - e.g. I-type 只有 16 bits 的 immediate field，要拼出 32 bits 的位址需要 `lui` + `ori`。
+    - e.g. Branch, Jump 需要的定址策略不同（Branch 通常都是處理「附近的條件判斷」，Jump 則是處理「跳轉到遠處的函式」），不能盲目統一。
+</InfoBox>
+
+
+
+
+### Instruction Format
+
+詞尾修飾
+  + `b`: byte
+  + `h`: half word  (2 bytes)
+  + `w`: word (4 bytes)
+  + `u`: unsigned
+  + `v`: variable
+
+<InfoBox style="info">
 R-Type Instruction
 
 $$
-\begin{array}{|c|c|c|c|c|c|}
+\begin{array}{|c||c|c||c||c|c|}
 \hline
 op & rs & rt & rd & shamt & funct \\
 \hline
-000000 & 00000 & 00000 & 00000 & 00000 & 000000 \\
+\text{6 bits} & \text{5 bits} & \text{5 bits} & \text{5 bits} & \text{5 bits} & \text{6 bits} \\
+\hline
+\text{Opcode} & \text{src.} & \text{src.} & \text{dest.} & \text{位移量} & \text{功能碼} \\
 \hline
 \end{array}
 $$
 
+<Table>
+| Category | Instruction | Binary | 備註 |
+|:--------:|:--------:|:--------:|:--------|
+| 算術運算 | `add $t0, $s1, $s2` | `000000 s1 s2 t0 00000 100000` | |
+|  | `addu $t0, $s1, $s2` | `000000 s1 s2 t0 00000 100001` | |
+|  | `sub $t0, $s1, $s2` | `000000 s1 s2 t0 00000 100010` | |
+|  | `subu $t0, $s1, $s2` | `000000 s1 s2 t0 00000 100011` | |
+| 邏輯運算 | `and $t0, $s1, $s2` | `000000 s1 s2 t0 00000 100100` | |
+|  | `or $t0, $s1, $s2` | `000000 s1 s2 t0 00000 100101` | |
+|  | `nor $t0, $s1, $s2` | `000000 s1 s2 t0 00000 100111` | |
+|  | `xor $t0, $s1, $s2` | `000000 s1 s2 t0 00000 100110` | |
+| 比較運算 | `slt $t0, $s1, $s2` | `000000 s1 s2 t0 00000 101010` | `if (s1 < s2) t0 := 1` |
+|  | `sltu $t0, $s1, $s2` | `000000 s1 s2 t0 00000 101011` | |
+| 位移運算 | `sll $t0, $s1, 4` | `000000 -- s1 t0 00100 000000` | `t0 := s1 << 4` |
+|  | `srl $t0, $s1, 4` | `000000 -- s1 t0 00100 000010` | `t0 := s1 >> 4` |
+|  | `sra $t0, $s1, 4` | `000000 -- s1 t0 00100 000011` | `t0 := s1 >> 4` (左邊補 sign bit) |
+|  | `sllv $t0, $s1, $s2` | `000000 s2 s1 t0 00000 000100` | `t0 := s1 << s2` |
+|  | `srlv $t0, $s1, $s2` | `000000 s2 s1 t0 00000 000110` | `t0 := s1 >> s2` |
+| 乘除運算 | `mult $s1, $s2` | `000000 s1 s2 -- 00000 011000` | `s1 * s2` 等於 `HI` \| `LO` |
+|  | `multu $s1, $s2` | `000000 s1 s2 -- 00000 011001` | `s1 * s2` 等於 `HI` \| `LO` |
+|  | `div $s1, $s2` | `000000 s1 s2 -- 00000 011010` | `s1 ÷ s2` 等於 `LO` 餘 `HI` |
+|  | `mfhi $t0` | `000000 -- -- t0 00000 010000` | `t0 := HI` (move from `HI`) |
+|  | `mflo $t0` | `000000 -- -- t0 00000 010010` | `t0 := LO` (move from `LO`) |
+| 跳躍指令 | `jr $ra` | `000000 ra -- -- 00000 001000` | `PC` 設為 `$ra` 的值 |
+</Table>
+
+關於 MIPS 的定址方式，請見 [MIPS 定址方式](/post/coursenote/co-note#mips-%E5%AE%9A%E5%9D%80%E6%96%B9%E5%BC%8F)。
 </InfoBox>
 
-<InfoBox style="success">
 
+<InfoBox style="success">
 I-Type Instruction
 
 $$
-\begin{array}{|c|c|c|c|c|c|}
+\begin{array}{|c||c|c||c|}
 \hline
-op & rs & rt & rd & shamt & funct \\
+op & rs & rt & constant \\
 \hline
-000000 & 00000 & 00000 & 00000 & 00000 & 000000 \\
+\text{6 bits} & \text{5 bits} & \text{5 bits} & \text{16 bits} \\
+\hline
+\text{Opcode} & \text{src.} & \text{src.} & \text{immediate, address} \\
 \hline
 \end{array}
 $$
 
-Example:
-- `addi $t0, $t1, 5` → `001000 01001 01000 0000000000000101`
+<Table>
+| Category | Instruction | Binary (op, rs, rt, imm) | 備註 |
+|:--------:|:--------:|:--------:|:--------|
+| 算術運算 | `addi $t0, $s1, 100` | `001000 s1 t0 0...01100100` |  |
+|  | `addiu $t0, $s1, 100` | `001001 s1 t0 0...01100100` |  |
+| 邏輯運算 | `andi $t0, $s1, 100` | `001100 s1 t0 0...01100100` |  |
+|  | `ori $t0, $s1, 100` | `001101 s1 t0 0...01100100` |  |
+|  | `xori $t0, $s1, 100` | `001110 s1 t0 0...01100100` |  |
+|  | `lui $t0, 100` | `001111 -- t0 0...01100100` | `t0 := 100 << 16` |
+| 比較運算 | `slti $t0, $s1, 100` | `001010 s1 t0 0...01100100` |  |
+|  | `sltiu $t0, $s1, 100`| `001011 s1 t0 0...01100100` |  
+| 記憶體存取 | `lw $t0, 4($s1)` | `100011 s1 t0 0...00000100` | `t0 := Memory[s1 + 4]` |
+|  | `sw $t0, 4($s1)` | `101011 s1 t0 0...00000100` | `Memory[s1 + 4] := t0` |
+|  | `lb $t0, 4($s1)` | `100000 s1 t0 0...00000100` | `t0 :=` `Memory[s1 + 4]` 的最低 byte |
+|  | `lbu $t0, 4($s1)`| `100100 s1 t0 0...00000100` | `t0 :=` `Memory[s1 + 4]` 的最低 byte |
+|  | `sb $t0, 4($s1)` | `101000 s1 t0 0...00000100` | `Memory[s1 + 4] :=` `$t0` 的最低 byte |
+| 條件分支 | `beq $s1, $s2, 25` | `000100 s1 s2 0...00011001` | `if (s1 == s2)`<br /> `PC := (PC+4) + (offset * 4)` |
+|  | `bne $s1, $s2, 25` | `000101 s1 s2 0...00011001` | `if (s1 != s2)`<br /> `PC := (PC+4) + (offset * 4)` |
+|  | `blez $s1, 25` | `000110 s1 -- 0...00011001` | `if (s1 <= 0)`<br /> `PC := (PC+4) + (offset * 4)` |
+|  | `bgtz $s1, 25` | `000111 s1 -- 0...00011001` | `if (s1 > 0)`<br /> `PC := (PC+4) + (offset * 4)` |
+</Table>
+
+關於 MIPS 的定址方式，請見 [MIPS 定址方式](/post/coursenote/co-note#mips-%E5%AE%9A%E5%9D%80%E6%96%B9%E5%BC%8F)。
 
 </InfoBox>
 
-<InfoBox style="warning">
 
+<InfoBox style="warning">
 J-Type Instruction
 
 $$
-\begin{array}{|c|c|c|c|c|c|}
+\begin{array}{|c||c|}
 \hline
-op & rs & rt & rd & shamt & funct \\
+op & address \\
 \hline
-000000 & 00000 & 00000 & 00000 & 00000 & 000000 \\
+\text{6 bits} & \text{26 bits} \\
+\hline
+\text{Opcode} & \text{偽直接定址 (Pseudodirect address)} \\
 \hline
 \end{array}
 $$
 
+<Table>
+| Category | Instruction | Binary (op, address) | 備註 |
+|:--------:|:--------:|:--------:|:--------|
+| 無條件跳躍 | `j 10000` | `000010 00000000000010011100010000` | `PC := (PC+4)[31:28] \| (address * 4)` |
+| 呼叫函式 | `jal 10000` | `000011 00000000000010011100010000` | `$ra := PC+4`（存 return address）<br/>`PC := (PC+4)[31:28] \| (address * 4)` |
+</Table>
+
+關於 MIPS 的定址方式，請見 [MIPS 定址方式](/post/coursenote/co-note#mips-%E5%AE%9A%E5%9D%80%E6%96%B9%E5%BC%8F)。
+
 </InfoBox>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Memory Operations & Data Transfer
+
+MIPS 是 Big Endian。
+
+```
+ADDR
+3    LSB
+2    
+1
+0    MSB
+```
+
+
+
+
+
+
+
+
+
+
+
+## Procedure Call
+
+```
+[ ] Procedure Call
+    [v] Caller vs Callee
+    [v] Caller-saved vs Callee-saved
+    [v] Prologue and Epilogue
+    [v] Leaf Procedure
+    [ ] Non-leaf Procedure
+    [ ] Memory Layout
+    [ ] Local Variable Addressing ($sp or $fp)
+```
+
+Procedure call 就是高階語言的函式呼叫。函式呼叫者叫做 caller，被呼叫者叫做 callee。
+
+{/* 一個 procedure call 流程如下：
+1. **caller 將 callee 需要的 parameters 放進 registers**
+    - 塞進 `$a0-$a3`
+    - 多的 parameters 塞進 stack。
+
+2. **`jal` callee 位址**
+    - `$ra = PC + 4`
+    - `PC = callee 位址`
+
+3. **Function Prologue**
+    - 開 stack frame（讓 `$sp` 往下長）
+    - 備份 callee-saved registers，也就是 `$s0-$s7`、caller 的 `$ra`。
+
+4. **Function Body**
+
+5. **Function Epilogue**
+    - 將 return value 存到 register
+    - 還原 callee-saved registers */}
+
+Leaf Procedure：不會呼叫別的 procedure，已經是整個函式樹的最末端。
+
+Procedure call 示意組語：
+
+<Tabs gid="source codes 1" tabs={[
+  '示意組語', 
+  'Leaf Procedure',
+  'Leaf Procedure (超過 4 個參數)',
+  'Non-leaf Procedure',
+  'Recursive Procedure'
+]} >
+<div slot="panel-0"> <div class="h-5"></div>
+    ```asm
+    CALLER:
+        ...
+        jal CALLEE
+
+    CALLEE:
+        # --- Prologue ---
+        ...
+        
+        # --- Function Body ---
+        ...
+
+        # --- Epilogue ---
+        ...
+        jr $ra
+    ```
+</div>
+<div slot="panel-1"> <div class="h-5"></div>
+    ```cpp
+    func(10, 20, 30, 40);
+
+    int func(int a, b, c, d) {  // a, b, c, d ==> $a0, $a1, $a2, $a3
+        int ret;                // ret ==> $s0
+        ret = (a + b) - (c + d);
+        return ret;
+    }
+    ```
+    ```asm
+    CALLER:
+        ...
+        li   $a0 10
+        li   $a1 20
+        li   $a2 30
+        li   $a3 40
+        jal  func
+        ...
+
+    func:
+        # --- Prologue ---
+        addi $sp $sp -4  # 開出 stack frame
+        sw   $s0 0($sp)  # 備份 caller 的 $s0
+        
+        # --- Function Body ---
+        add  $t0 $a0 $a1
+        add  $t1 $a2 $a3
+        sub  $s0 $t0 $t1
+
+        add  $v0 $s0 $zero
+
+        # --- Epilogue ---
+        lw   $s0 0($sp)  # 復原 caller 的 $s0
+        addi $sp $sp 4   # 清掉 stack frame
+        jr   $ra
+    ```
+</div>
+<div slot="panel-2"> <div class="h-5"></div>
+    ```cpp
+    func(10, 20, 30, 40, 50, 60);
+
+    int func(int a, b, c, d, e, f) {  // a, b, c, d ==> $a0, $a1, $a2, $a3; e, f ==> stack
+        int ret;                      // ret ==> $s0
+        ret = (a + b) - (c + d) - (e + f);
+        return ret;
+    }
+    ```
+    ```asm
+    CALLER:
+        ...
+        li   $a0 10
+        li   $a1 20
+        li   $a2 30
+        li   $a3 40
+        
+        addi $sp $sp -8
+        li   $t0 50
+        sw   $t0 0($sp)
+        li   $t1 60
+        sw   $t1 4($sp)
+        jal  func
+        addi $sp $sp 8
+        ...
+    
+    func:
+        # --- Prologue ---
+        addi $sp $sp -4
+        sw   $s0 0($sp)
+
+        # --- Function Body ---
+        add  $t0 $a0 $a1
+        add  $t1 $a2 $a3
+
+        # 高位址
+        # ┌─────────────────┐
+        # │       f (60)    │ <── (進入 func 後的 8($sp))
+        # ├─────────────────┤
+        # │       e (50)    │ <── 剛進入 func 時的 $sp (目前的 4($sp))
+        # ├─────────────────┤ 
+        # │    備份的 $s0    │ <── 目前的 $sp (0($sp))
+        # └─────────────────┘
+        # 低位址
+
+        lw   $t2 4($sp)  # 讀取 e (50)
+        lw   $t3 8($sp)  # 讀取 f (60)
+        add  $t2 $t2 $t3
+        sub  $t0 $t0 $t1
+        sub  $s0 $t0 $t2
+
+        add  $v0 $s0 $zero
+
+        # --- Epilogue ---
+        lw   $s0 0($sp)  # 復原 caller 的 $s0
+        addi $sp $sp 4   # 清掉 stack frame
+        jr   $ra
+    ```
+</div>
+<div slot="panel-3"> <div class="h-5"></div>
+    ```cpp
+    func(10, 20);
+
+    int func(int a, b) {  // a, b ===> $a0, $a1
+      int ret;            // ret ===> $s0
+      ret = a + b;
+      ret = ret + func2(30, 40);
+      return ret;
+    }
+
+    int func2(int c, d) {  // c, d ===> $a0, $a1
+      int ret;             // ret ===> $s0
+      ret = c - d;
+      return ret;
+    }
+    ```
+</div>
+<div slot="panel-4"> <div class="h-5"></div>
+    ```cpp
+    int fact (int n) {
+        if (n <= 1) return 1;
+        else return n * fact(n - 1);
+    }
+    ```
+</div>
+</Tabs>
+
+Caller 與 Callee 的角色是相對的。
+
+
+### General-purpose Registers
+
+<InfoBox style="danger">
+Caller-saved：如果你是 caller，當你呼叫別人（執行 `jal`）時，你不能預期這些 registers 的值還是一樣的。如果你要用到的話，請在 `jal` 前手動存入 stack。
+</InfoBox>
+
+<InfoBox style="success">
+Callee-saved：如果你是 callee，當你被呼叫後想用這些 registers，你必須負責在 prologue 將這些 registers 原值存入 stack，並在 epilogue 復原給原本的 caller 使用。
+</InfoBox>
+
+<Table>
+| 暫存器編號 | 名稱 | 用途 | Preserved on call |
+|:--------:|:--------:|:--------:|:--------:|
+| 0 | `$zero` | Hardwired to 0 | - |
+| 1 | `$at` | 給 assembler 用的 temporary | <Mark color="red">No (Caller-saved)</Mark> |
+| 2-3 | `$v0-$v1` | 函式的 return values | <Mark color="red">No (Caller-saved)</Mark> |
+| 4-7 | `$a0-$a3` | 函式的 arguments | <Mark color="red">No (Caller-saved)</Mark> |
+| 8-15 | `$t0-$t7` | Temporaries，存用完就丟的計算結果 | <Mark color="red">No (Caller-saved)</Mark> |
+| 16-23 | `$s0-$s7` | Saved registers，函式呼叫時會被修改 | <Mark color="green">Yes (Callee-saved)</Mark> |
+| 24-25 | `$t8-$t9` | 額外的 Temporaries | <Mark color="red">No (Caller-saved)</Mark> |
+| 26-27 | `$k0-$k1` | 給 kernel 用的，處理中斷或例外時使用 | - |
+| 28 | `$gp` | Global Pointer | <Mark color="green">Yes (Callee-saved)</Mark> |
+| 29 | `$sp` | Stack Pointer | <Mark color="green">Yes (Callee-saved)</Mark> |
+| 30 | `$fp` | Frame Pointer | <Mark color="green">Yes (Callee-saved)</Mark> |
+| 31 | `$ra` | Return Address | <Mark color="green">Yes (Callee-saved)</Mark> |
+</Table>
+
+
+
+### Function Prologue/Epilogue
+
+Prologue 
+
+```asm
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Arithmetic Operations
+
+### Signed Integers
+
+<Table align="center">
+| Positive | Binary | | Negative | Binary |
+|:--------:|:--------:|:--------:|:--------:|:--------:|
+| 7 | `0111` | $\Leftrightarrow$ | -8 | `1000` |
+| 6 | `0110` | $\Leftrightarrow$ | -7 | `1001` |
+| 5 | `0101` | $\Leftrightarrow$ | -6 | `1010` |
+| 4 | `0100` | $\Leftrightarrow$ | -5 | `1011` |
+| 3 | `0011` | $\Leftrightarrow$ | -4 | `1100` |
+| 2 | `0010` | $\Leftrightarrow$ | -3 | `1101` |
+| 1 | `0001` | $\Leftrightarrow$ | -2 | `1110` |
+| 0 | `0000` | $\Leftrightarrow$ | -1 | `1111` |
+</Table>
+
+<InfoBox>
+Q：$-6$ 的 binary representation 是多少？
+
+A：$-6$ 的對面是 $+5$，因此直接把 $+5$ 的 binary representation `0101` 反轉就好，得到 `1010`。
+</InfoBox>
+
+<InfoBox>
+Q：`1101` 是誰？
+
+A：`1101` 反轉後是 `0010` 也就是 $+2$，所以找 $+2$ 的對面也就是 $-3$。
+</InfoBox>
+
+
+對於 signed integers，如果要對齊指令格式都要做 sign extension:
+- `0110 (+6)` $\rightarrow$ `0000000000000110`（對齊 I-type immediate）
+- `1010 (-6)` $\rightarrow$ `1111111111111010`（對齊 I-type immediate）
+
+### Misc.
+
+1. 如果要將一個完整的 32-bit 數值（例如 `0x12345678`）存入 `$t0`，需要做兩個指令：
+    ```asm
+    lui $t0, 0x1234       # `$t0` 現在是 0x12340000
+    ori $t0, $t0, 0x5678  # `$t0` 變成了 0x12345678
+    ```
+    常用於全域變數定址，因為記憶體位址都是 32-bit。
+2. Unsigned 不會觸發 overflow exception；Signed 會觸發 overflow exception。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## MIPS 定址方式
+
+所謂的「定址方式 (Addressing Modes)」是指：
+- 指令如何尋找運算元 (Operands)。
+- 如何決定下一個指令跳轉位址。
+
+
+MIPS 共有 5 種定址方式。
+
+<Image img={MIPSAddressingModes} width="80" />
+
+{/* <InfoBox>
+Immediate Addressing
+<Image img={ImmediateAddressing} width="60" />
+</InfoBox>
+<InfoBox>
+Register Addressing
+<Image img={RegisterAddressing} width="60" />
+</InfoBox> */}
+
+<SplitterCenter>運算元存取</SplitterCenter>
+<div class="mt-[-25px]"></div>
+<Columns ratio="1fr 1fr 1fr">
+<div>
+  <InfoBox>
+    ### Immediate Addressing
+  </InfoBox>
+
+  運算元直接包含在指令內部 16-bit 的欄位中，可以直接使用，不需要存取記憶體。
+
+  範圍：$-2^{15}$ 到 $2^{15} - 1$
+
+</div>
+<div>
+  <InfoBox>
+    ### Register Addressing
+  </InfoBox>
+
+  運算元在暫存器，指令透過 5-bit 的編號存取暫存器。
+
+  比較特殊的是 `jr` 指令，暫存器的值不是運算元而是作為位址使用。
+</div>
+<div>
+  <InfoBox>
+    ### Base Addressing
+  </InfoBox>
+
+  透過一個 base register 和 16-bit offset 來計算記憶體位址。
+  `100($s0) => $s0 + 100`
+</div>
+</Columns>
+
+
+<SplitterCenter>位址計算</SplitterCenter>
+<div class="mt-[-25px]"></div>
+<Columns ratio="1fr 1fr">
+<div>
+  <InfoBox>
+    ### PC-relative Addressing
+  </InfoBox>
+
+  這是 `beq`、`bne` 指令使用的定址方式。
+
+  $$
+  \text{目標位址} = \text{當前 PC} + \text{offset} \times 4
+  $$
+  offset 範圍 $-2^{15}$ 到 $2^{15} - 1$。
+
+  注意公式沒有 $+4$，因為 `beq`、`bne` 被解碼完之後 PC 就已經被加 $4$ 了。
+
+  Branch 指令有時候會看到 `beq $s1, $s2, LOOP` 之類的寫法，這是給人看的，代表跳轉到標籤 `LOOP`，組譯器翻譯時會計算跳轉的 offset。
+
+  ```asm
+    beq $t0, $t1, label   # jump to label
+  ```
+
+  此外如果 Branch 要跳很遠，assembler 會搭配 `j` 指令重寫：
+  ```asm
+    bne $t0, $t1, skip
+    j label
+  skip:
+    
+    ...
+  label:
+  ```
+
+
+</div>
+<div>
+  <InfoBox>
+    ### Pseudodirect Addressing
+  </InfoBox>
+
+  這是 `j`、`jal` 指令使用的定址方式，此類定址方式借用 PC 4 位高位拼出完整的絕對位址。
+
+  <Image img={JType} darkImg={JTypeDark} width="90" />
+
+  1. 32-bit MIPS 的位址也是 32 bits，因此只有 $2^{32}$ 個位址能用，因此只能定址到 4GB 的記憶體。以傳統 MIPS Linux 為例，一個 process 的 kernel space 佔用 2GB，user space 就只剩 2GB 能用。
+  2. 32-bit MIPS 所有指令都是 4 bytes，因此指令定址一定都是 4 的倍數，雖然看起來只有 26 bits 能用但實際上可以定址到 $2^{28} = 256$ MB 的記憶體。
+  3. 既然定址只能到 28 bits，剩下的 4 bits 就會直接借當前 PC 的高位，這代表 `j`、`jal` 指令雖然比 `beq`、`bne` 能跳更遠，但只能在 256 MB 空間內跳轉。
+</div>
+</Columns>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Atomic Read/Write: `ll` and `sc`
+
+這兩個指令是為了防止讀寫記憶體時發生 race condition。
+
+1. `ll $rt offset($rs)`：Load Linked，`lw` 之後硬體會開始標控並追蹤這個記憶體位址。
+2. `sc $rt offset($rs)`：Store Conditional，跟 `sw` 一樣，但會先確認 `ll` 到 `sc` 之間該記憶體沒有被修改才會 `sw`。
+    - 如果寫入 `$rt` 失敗，`$rt` 被清掉並設為 0。
+    - 如果寫入 `$rt` 成功，`$rt` 被清掉並設為 1。
+
+MIPS 規範：`ll` 與 `sc` 指令之間越短越好，且只能包含單純的暫存器運算指令，絕對不能插入其他的記憶體存取指令
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Common Operations
+
+```
+[ ] Common Operations
+    [ ] If-else
+    [ ] While
+    [ ] For
+    [ ] Function Prologue / Epilogue
+    [v] Atomic Swap
+    [ ] Atomic Fetch-and-Increment
+    [ ] Simple Sorting Algorithm
+```
+
+<Columns ratio="1fr 1fr 1fr">
+<div>
+  ### If-else
+  ```cpp
+  if (i == j) {
+      f = g + h;
+  } else {
+      f = g - h;
+  }
+  ```
+  假設：`i, j, f, g, h` 分別對應到 `$s0, $s1, $s2, $s3, $s4`
+  ```asm
+      bne  $s0 $s1 ELSE
+      add  $s2 $s3 $s4
+      j    EXIT
+  ELSE:
+      sub  $s2 $s3 $s4
+  EXIT:
+  ```
+</div>
+<div>
+  ### While
+  ```cpp
+  while (i < j) {
+      A[i] = i;
+      i++;
+  }
+  ```
+  假設：`i=$s0`, `j=$s1`, `A` base address `=$s2`
+  ```asm
+  LOOP:
+      slt  $t0 $s0 $s1
+      beq  $t0 $zero EXIT
+
+      sll  $t1 $s0 2
+      add  $t1 $t1 $s2
+      sw   $s0 0($t1)
+      addi $s0 $s0 1
+
+      j    LOOP
+  
+  EXIT:
+  ```
+</div>
+<div>
+  ### For
+  ```cpp
+  for (int i = 0; i < 10; i++) {
+      sum = sum + i;
+  }
+  ```
+  ```asm
+      li $t0 0
+
+  LOOP:
+      slti $t1 $t0 10
+      beq  $t1 $zero EXIT
+
+      add  $a0 $a0 $t0
+      addi $t0 $t0 1
+      j LOOP
+  
+  EXIT:
+  ```
+</div>
+<div>
+  ### Function Prologue / Epilogue
+</div>
+
+
+
+<div>
+  ### Atomic Swap
+
+  ```asm
+  # 交換 $s4 與 Memory[$s1] 的值
+  try: add $t0, $s4, $zero
+       ll  $t1, 0($s1)
+       sc  $t0, 0($s1)
+       beq $t0, $zero, try
+
+       add $s4, $t1, $zero
+  ```
+
+</div>
+<div>
+  ### Atomic Fetch-and-Increment
+</div>
+<div>
+  ### Simple Sorting Algorithm
+</div>
+</Columns>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Linking
+

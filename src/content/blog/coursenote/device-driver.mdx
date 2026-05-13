@@ -1,0 +1,32 @@
+---
+title: 記憶體與儲存系統 - Device Driver
+date: 2026-04-18
+categories: 
+  - 課業筆記
+draft: true
+---
+
+
+<InfoBox>
+**摘要**
+
+
+</InfoBox>
+
+
+Device Driver 是 kernel 裡負責控制特定硬體或 controller 的程式，負責將硬體相關的細節封裝起來，接到既有的 kernel subsystem 底下。
+
+User Space 的應用程式會透過 `pread()`、`pwrite()`、`ioctl()` 等 system call 存取 device files、透過 kernel subsystems 間接使用 device drivers。
+
+硬體包含：SSD、GPU、USB、鍵盤、滑鼠、NIC (網路卡)、螢幕、音效卡... 等。
+
+
+
+## 鍵盤事件的讀取
+
+假設 user space 想寫一個讀取鍵盤事件的程式，方法大致如下：
+
+// TODO
+
+
+

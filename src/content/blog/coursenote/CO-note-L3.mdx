@@ -1,0 +1,1059 @@
+---
+title: 計算機組織 - Chapter 3
+date: 2026-04-15
+categories: 
+  - 課業筆記
+draft: true
+---
+
+import LongMultiplication from './CO-note-L3/long-multiplication.png?url';
+import FpAddHardware from './CO-note-L3/fp-add-hardware.png?url';
+
+{/* ============================================================================ */}
+
+
+```
+MIDTERM
+
+[ ] 2024
+    [v] Q1
+    [v] Q2
+    [v] Q3 Design Principles
+    [v] Q4
+        [v] (a)
+        [v] (b)
+        [v] (c)
+        [v] (d)
+    [v] Q5 Fast Multiplier
+    [v] Q6 Addition and Overflow
+    [v] Q7 Division
+    [v] Q8 FP Addition
+    [ ] Q9 Single-cycle Pipelined CPU
+
+[ ] 2026 Quiz 1
+[ ] 2026 Quiz 2
+[ ] 2026 Quiz 3
+```
+
+```
+[v] 32-bit ALU
+[ ] Overflow
+    [v] Signed Addition
+    [v] Unsigned Addition
+    [ ] Different Languages Handle Overflow Differently
+    [ ] Overflow Detection for Multimedia
+[ ] Multiplication
+    [ ] Multiplicand * Multiplier = Product
+    [v] Long Multiplication：模擬人類的長除法
+    [v] Optimized Multiplier：稍微改良一下長除法，把 Product, Multiplier 擺在一起，可以讓 ALU, Multiplicand 位元數減半，並且 ADD, SRL 同時 1 cycle 內解決。
+    [v] Faster Multiplier：用 31 個 adder 平行運算所有的 partial product。
+    [v] Carry Look-Ahead Adder：用來加速加法與乘法硬體的進階電路。
+        [v] Generate
+        [v] Propagate
+    [v] Booth's Algorithm：跟競程的差分有點像，具體技巧是把連續的 1 壓成一加一減。
+    [ ] MIPS Multiplication
+[ ] Division
+    [v] Dividend / Divisor = Quotient ... Remainder
+    [v] Restoring Division：如果減去 Divisor 後 Remainder 變為負值，需要將 Divisor 加回去以「恢復」原值的演算法。
+    [v] Non-Restoring Division：不立即恢復餘數，而是在下一步進行加法運算的優化演算法。這樣可以少一個加法的 penalty。
+    [ ] SRT Division：一種能每個週期產生多個 Quotient 位元的快速算法。
+    [ ] MIPS Division
+[ ] IEEE 754 Floating Point
+    [ ] Sign | Fraction/Mantissa | Exponent
+    [v] Details
+        [v] Hidden bit
+        [v] Bias
+    [v] Denormalized Numbers
+        [v] Subnormal
+        [v] Infinity
+        [v] NaN
+    [v] Addition
+        [v] Arithmetic
+        [v] Hardware
+    [v] Multiplication
+        [v] Arithmetic
+    [ ] Floating Point Instructions
+    [ ] Examples
+        [ ] Fahrenheit to Celsius
+        [ ] Array Multiplication
+    [ ] Precision
+        [v] Guardian bit, Round bit, Sticky bit
+        [ ] ulp (Unit in the Last Place)
+    [ ] Floating Point Doesn't Obey Associative Law
+    [ ] x86 Floating Point Architecture
+        [ ] Early Architecture Dilemma
+        [ ] SSE2
+[ ] (Misc)
+    [ ] Shift Right != Division (for signed integers)
+    [ ] The Intel Pentium FDIV Bug
+```
+
+
+## Overflow Detection
+
+### Unsigned
+
+ALU：看 MSB 的 carry out。
+
+MIPS：
+```asm
+addu $t0, $t1, $t2
+
+nor  $t3, $t1, $zero  # 0xFFFFFFFF - $t1
+sltu $t3, $t3, $t2
+bne  $t3, $zero, Overflow
+```
+
+### Signed
+
+ALU：看 MSB 的 carry in $\oplus$ carry out。
+
+MIPS：
+```asm
+addu $t0, $t1, $t2
+
+xor  $t3, $t1, $t2
+slt  $t3, $t3, $zero
+bne  $t3, $zero, No_Overflow
+
+xor  $t3, $t0, $t1
+slt  $t3, $t3, $zero       # 兩個同號數相加溢位 iff 有變號
+bne  $t3, $zero, Overflow
+```
+
+
+
+
+## Multiplication
+
+Multiplican x Multiplier = Product
+
+### Long Multiplication
+
+
+<Image img={LongMultiplication} width="60" />
+
+
+Smaller Example: $3 \times 5 = 15$
+
+<Slider>
+<div>
+```
+Initial State
+┌─────────────────────┐  ┌─────────────────────┐
+|  Multiplicand       |  |   Multiplier        |
+|                     |  |                     |
+|      0000 0011      |  |         0101        |
+|                     |  |            ▲        |
+└─────────────────────┘  └─────────────────────┘
+
+
+┌─────────────────────┐
+|       Product       |
+|      0000 0000      |
+└─────────────────────┘
+```
+</div>
+<div>
+```
+1st Iteration
+┌─────────────────────┐  ┌─────────────────────┐
+|  Multiplicand       |  |   Multiplier        |
+|                     |  |                     |
+|      0000 0011      |  |         0101        |
+|                     |  |            ▲        |
+└─────────────────────┘  └─────────────────────┘
+           │ ADD
+           ▼   
+┌─────────────────────┐
+|       Product       |
+|      0000 0011      |
+└─────────────────────┘
+```
+</div>
+<div>
+```
+1st Iteration
+┌─────────────────────┐  ┌─────────────────────┐
+|  Multiplicand (<<)  |  |   Multiplier (>>)   |
+|                     |  |                     |
+|      0000 011-      |  |         -010        |
+|                     |  |            ▲        |
+└─────────────────────┘  └─────────────────────┘
+
+
+┌─────────────────────┐
+|       Product       |
+|      0000 0011      |
+└─────────────────────┘
+```
+</div>
+
+<div>
+```
+2nd Iteration
+┌─────────────────────┐  ┌─────────────────────┐
+|  Multiplicand       |  |   Multiplier        |
+|                     |  |                     |
+|      0000 011-      |  |         -010        |
+|                     |  |            ▲        |
+└─────────────────────┘  └─────────────────────┘
+
+
+┌─────────────────────┐
+|       Product       |
+|      0000 0011      |
+└─────────────────────┘
+```
+</div>
+<div>
+```
+2nd Iteration
+┌─────────────────────┐  ┌─────────────────────┐
+|  Multiplicand  (<<) |  |   Multiplier (>>)   |
+|                     |  |                     |
+|      0000 11--      |  |         --01        |
+|                     |  |            ▲        |
+└─────────────────────┘  └─────────────────────┘
+
+
+┌─────────────────────┐
+|       Product       |
+|      0000 0011      |
+└─────────────────────┘
+```
+</div>
+
+<div>
+```
+3rd Iteration
+┌─────────────────────┐  ┌─────────────────────┐
+|  Multiplicand       |  |   Multiplier        |
+|                     |  |                     |
+|      0000 11--      |  |         --01        |
+|                     |  |            ▲        |
+└─────────────────────┘  └─────────────────────┘
+
+
+┌─────────────────────┐
+|       Product       |
+|      0000 0011      |
+└─────────────────────┘
+```
+</div>
+<div>
+```
+3rd Iteration
+┌─────────────────────┐  ┌─────────────────────┐
+|  Multiplicand       |  |   Multiplier        |
+|                     |  |                     |
+|      0000 11--      |  |         --01        |
+|                     |  |            ▲        |
+└─────────────────────┘  └─────────────────────┘
+           │ ADD
+           ▼   
+┌─────────────────────┐
+|       Product       |
+|      0000 1111      |
+└─────────────────────┘
+```
+</div>
+<div>
+```
+3rd Iteration
+┌─────────────────────┐  ┌─────────────────────┐
+|  Multiplicand (<<)  |  |   Multiplier (>>)   |
+|                     |  |                     |
+|      0001 1---      |  |         ---0        |
+|                     |  |            ▲        |
+└─────────────────────┘  └─────────────────────┘
+           │ ADD
+           ▼   
+┌─────────────────────┐
+|       Product       |
+|      0000 1111      |
+└─────────────────────┘
+```
+</div>
+
+<div>
+```
+4th Iteration
+┌─────────────────────┐  ┌─────────────────────┐
+|  Multiplicand       |  |   Multiplier        |
+|                     |  |                     |
+|      0001 1---      |  |         ---0        |
+|                     |  |            ▲        |
+└─────────────────────┘  └─────────────────────┘
+
+
+┌─────────────────────┐
+|       Product       |
+|      0000 1111      |
+└─────────────────────┘
+```
+</div>
+<div>
+```
+4th Iteration
+┌─────────────────────┐  ┌─────────────────────┐
+|  Multiplicand (<<)  |  |   Multiplier (>>)   |
+|                     |  |                     |
+|      0011 ----      |  |         ----        |
+|                     |  |            ▲        |
+└─────────────────────┘  └─────────────────────┘
+
+
+┌─────────────────────┐
+|       Product       |
+|      0000 1111      |
+└─────────────────────┘
+```
+</div>
+</Slider>
+
+### Booth's Algorithm
+
+假設要算 $C \times$ `0111110`，一般的乘法器會做 5 次加法：
+$$
+C \times (2^5 + 2^4 + 2^3 + 2^2 + 2^1)
+$$
+利用 $2^n - 1$ 的技巧，將連續的 1 合併成兩個 2 的冪次方相減，可以減少加法的次數。
+$$
+C \times (2^6 - 2^1)
+$$
+
+### MIPS Multiplication
+
+- `$HI`: High 32 bits of the result
+- `$LO`: Low 32 bits of the result
+
+```asm
+mult $rs, $rt  # HI|LO = rs x rt
+mfhi $rd       # rd = HI
+mflo $rd       # rd = LO
+
+# pseudo-instruction
+mul  $rd, $rs, $rt  # rd = (rs x rt)[31:0]
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Division
+
+Dividend ÷ Divisor = Quotient ... Remainder
+
+### Long Division
+
+
+
+### Optimized Division
+
+
+
+### Restoring v.s. Non-Restoring
+
+
+
+### MIPS Division
+
+- `$HI`: 32-bit remainder
+- `$LO`: 32-bit quotient
+
+```asm
+div  $rs, $rt  # rs / rt = HI ... LO
+mfhi $rd       # rd = HI
+mflo $rd       # rd = LO
+```
+
+不會檢查 overflow 或 zero division，交給軟體處理。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Floating Point 
+
+
+
+
+### Fixed-Point Representation
+
+固定小數點的位置，也就是說每個 bit 能表達的數是固定的。
+
+```
+8   4   2   1   |   1/2   1/4   1/8   1/16
+
+0   0   0   0   .    0     0     0     0
+```
+
+最大的問題就是能表達的數太少。
+
+
+### IEEE 754 Floating Point Representation
+
+使用類似科學記號的方式表達浮點數，優點是可表示的數範圍較大，小缺點是數字特別大時精度也會被放大，但這已經是非常優秀的折衷方案了。
+
+
+<Tabs gid="source codes 1" tabs={[
+  '單精度 (32-bit)',
+  '雙精度 (64-bit)'
+]} >
+<div slot="panel-0"> <div class="h-5"></div>
+```
+┌──────────┬──────────────┬──────────────────┐
+| Sign (S) | Exponent (E) |    Mantissa (M)  |
+|    (1)   |      (8)     |       (23)       |
+└──────────┴──────────────┴──────────────────┘
+```
+<InfoBox>
+- Sign $(S)$: $0$ 正 $1$ 負
+- Exponent $(E)$: biased exponent
+    1. 將 $E$ 看成 unsigned $(0 \sim 255)$
+    2. 減去 bias $= 127$ $(-127 \sim 128)$，得到實際的指數
+    3. $-127, 128$ 是給特殊數字使用，也就是說單精度浮點數指數的範圍是 $2^{-126} \sim 2^{127}$
+- Mantissa $(M)$ (aka Significand): 類似科學記號的尾數，範圍是 $1.000...000_{(2)} \sim 1.111...111_{(2)}$，但因為開頭永遠都是 $1$，所以直接省略，只存後面的小數。
+    - 範例：$1.375$ 對應到 $M = $ `01100000000000000000000`
+</InfoBox>
+
+IEEE 754 單精度浮點數公式如下：
+$$
+\text{實際數字} = (-1)^S \times 1.M \times 2^{E-127}
+$$
+
+</div>
+<div slot="panel-1"> <div class="h-5"></div>
+```
+┌──────────┬──────────────────┬───────────────────────────────────┐
+| Sign (S) |   Exponent (E)   |            Mantissa (M)           |
+|    (1)   |       (11)       |                (52)               |
+└──────────┴──────────────────┴───────────────────────────────────┘
+```
+<InfoBox>
+- Sign $(S)$: $0$ 正 $1$ 負
+- Exponent $(E)$: biased exponent
+    1. 將 $E$ 看成 unsigned $(0 \sim 2047)$
+    2. 減去 bias $= 1023$ $(-1023 \sim 1024)$，得到實際的指數
+    3. $-1023, 1024$ 是給特殊數字使用，也就是說雙精度浮點數指數的範圍是 $2^{-1022} \sim 2^{1023}$
+- Mantissa $(M)$ (aka Significand): 類似科學記號的尾數，範圍是 $1.000...000_{(2)} \sim 1.111...111_{(2)}$，但因為開頭永遠都是 $1$，所以直接省略，只存後面的小數。
+    - 範例：$1.375$ 對應到 $M = $ `0110000000000000000000000000000000000000000000000000`
+</InfoBox>
+
+IEEE 754 雙精度浮點數公式如下：
+$$
+\text{實際數字} = (-1)^S \times 1.M \times 2^{E-1023}
+$$
+
+</div>
+</Tabs>
+
+
+<InfoBox style="info">
+**Q：為什麼用 signed exponent（直接把 exponent 當作有號整數對待）？**
+
+因為這樣可以讓浮點數的比較、排序變得更容易，因為我們可以直接比較兩個浮點數的位元，而不需要考慮 sign bit。
+</InfoBox>
+
+<InfoBox style="info">
+**Q：以單精度為例，為什麼用 bias 要 127，而不是 128？**
+
+還沒查到是什麼原因，感覺可能是為了科學運算讓指數大一些？
+</InfoBox>
+
+
+<InfoBox style="warning">
+**特殊數字表達方式**
+
+|  | $E$ 全部都是 $0$ | $E$ 全部都是 $1$ |
+|---|:---:|:---:|
+| **$M = 0$** | $\pm 0$ | $\pm \infty$ |
+| **$M \neq 0$** | Subnormal | NaN |
+
+**\# 關於 NaN**
+
+整數除以 0 會直接觸發 exception，浮點數設計了 INF 和 NaN 因此除以 0 時通常不會直接掉進 exception（Default Non-stop Computing），方便一些數值運算的進行。
+
+
+**\# 關於 Subnormal（非正規化數）**
+
+Subnormal 是用來表示一個極小的數值，公式如下：
+
+<Tabs gid="source codes 2" tabs={[
+  '單精度 Subnormal',
+  '雙精度 Subnormal'
+]} >
+<div slot="panel-0"> <div class="h-5"></div>
+$$
+\text{實際數字} = (-1)^S \times 0.M \times 2^{-126}
+$$
+
+注意跟 normalized 不同，沒有 implicit $1$。
+
+正 Normalized 最小可以表示 $2^{-126}$，Subnormal 可以更小到 $2^{-149}$。
+</div>
+<div slot="panel-1"> <div class="h-5"></div>
+$$
+\text{實際數字} = (-1)^S \times 0.M \times 2^{-1022}
+$$
+
+注意跟 normalized 不同，沒有 implicit $1$。
+
+正 Normalized 最小可以表示 $2^{-1022}$，Subnormal 可以更小到 $2^{-1074}$。
+</div>
+</Tabs>
+
+</InfoBox>
+
+
+
+### FP Addition
+
+<Tabs gid="fp addition" tabs={[
+  '正常範例',
+  '會 Overflow 的範例',
+  '會 Underflow 的範例',
+  '需要 Rounding 的範例'
+]} >
+<div slot="panel-0"> <div class="h-5"></div>
+
+    範例：$0.5 + (-0.4375)$
+
+    $0.5 = 1.0 \times 2^{-1} \rightarrow$ `0 01111110 000000000000000000000000`
+
+    $-0.4375 = -1.75 \times 2^{-2} \rightarrow$ `1 01111101 110000000000000000000000`
+
+    <Slider>
+    <div>
+    ```
+    A:  1.000 x 2^{-1}
+    B: -1.110 x 2^{-2}
+    ```
+    </div>
+    <div>
+    ```
+    A:  1.000 x 2^{-1}
+    B: -0.111 x 2^{-1}
+
+
+
+    STEP 1: 對齊指數，指數較小的向上對齊。
+    significand 越靠右的 bit 越不重要（畢竟超級小）。
+    因此選擇向上對齊（significand 往右 shift），會比向下對齊（significand 往左 shift）好很多。
+    ```
+    </div>
+    <div>
+    ```
+    A:  1.000 x 2^{-1}
+    B: -0.111 x 2^{-1}
+
+    C:  0.001 x 2^{-1}
+
+    STEP 2: 兩個 significand 相加。
+    ```
+    </div>
+    <div>
+    ```
+    A:  1.000 x 2^{-1}
+    B: -0.111 x 2^{-1}
+
+    C:  1.000 x 2^{-4}
+
+    STEP 3: Normalize。
+    ```
+    </div>
+    <div>
+    ```
+    A:  1.000 x 2^{-1}
+    B: -0.111 x 2^{-1}
+
+    C:  1.000 x 2^{-4}
+
+    STEP 4: 檢查是否 overflow（指數向上溢位） / underflow（指數向下溢位）。
+    => 這個 case 剛好都不會發生
+    ```
+    </div>
+    <div>
+    ```
+    A:  1.000 x 2^{-1}
+    B: -0.111 x 2^{-1}
+
+    C:  1.000 x 2^{-4}
+
+    STEP 5: Rounding。
+    => 這個 case 剛好都不會發生
+    ```
+    </div>
+    </Slider>
+
+
+
+    <Slider>
+    <div>
+    ```
+    A: 0 01111110 000000000000000000000000
+    B: 1 01111101 110000000000000000000000
+    ```
+    </div>
+    <div>
+    ```
+    A: 0 01111110 000000000000000000000000
+    B: 1 01111110 111000000000000000000000  (IMPORTANT: 不要忘記有 implicit 1)
+
+
+
+    STEP 1: 對齊指數，指數較小的向上對齊。
+    ```
+    </div>
+    <div>
+    ```
+    A: 0 01111110 000000000000000000000000
+    B: 1 01111110 011000000000000000000000
+
+    C: 0 01111110 001000000000000000000000
+
+    STEP 2: 兩個 significand 相加。
+    ```
+    </div>
+    <div>
+    ```
+    A: 0 01111110 000000000000000000000000
+    B: 1 01111110 111000000000000000000000
+
+    C: 0 01111011 000000000000000000000000  (Exponent += 3, Significand <<= 3)
+
+    STEP 3: Normalize
+    ```
+    </div>
+    <div>
+    ```
+    A: 0 01111110 000000000000000000000000
+    B: 1 01111110 111000000000000000000000
+
+    C: 0 01111011 000000000000000000000000  (Exponent += 3, Significand <<= 3)
+
+    STEP 4: 檢查是否 overflow（指數向上溢位） / underflow（指數向下溢位）
+    => 這個 case 剛好都不會發生
+    ```
+    </div>
+    <div>
+    ```
+    A: 0 01111110 000000000000000000000000
+    B: 1 01111110 111000000000000000000000
+
+    C: 0 01111011 000000000000000000000000  (Exponent += 3, Significand <<= 3)
+
+    STEP 5: Rounding
+    => 看有沒有多餘的 bit 被擠出去
+    => 這個 case 剛好都不會發生
+    ```
+    </div>
+    </Slider>
+
+</div>
+<div slot="panel-1"> <div class="h-5"></div>
+
+    當兩個極大的數字相加，使得標準化後的指數超過單精度浮點數的上限（Biased Exponent = 254，255 保留給 Infinity 和 NaN）時發生。
+
+    範例：$(1.0 \times 2^{127}) + (1.0 \times 2^{127})$
+
+    <Slider>
+    <div>
+    ```text
+    A: 0 11111110 00000000000000000000000  (1.0 x 2^127)
+    B: 0 11111110 00000000000000000000000  (1.0 x 2^127)
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 11111110 00000000000000000000000
+    B: 0 11111110 00000000000000000000000
+
+    STEP 1: 對齊指數。
+    指數相同，不需位移。
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 11111110 00000000000000000000000
+    B: 0 11111110 00000000000000000000000
+
+    C:         10 00000000000000000000000
+
+    STEP 2: 兩個 significand 相加。
+    => 1.0 + 1.0 = 二進位的 10.0
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 11111110 00000000000000000000000
+    B: 0 11111110 00000000000000000000000
+
+    C: 0 11111111 00000000000000000000000  (Exponent += 1, Significand >>= 1)
+
+    STEP 3: Normalize
+    => 10.0 向右 shift 1 bit 變成標準的 1.0。
+    => 指數 +1 變成 128。
+    => Biased Exponent 變成 254 + 1 = 255
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 11111110 00000000000000000000000
+    B: 0 11111110 00000000000000000000000
+
+    C: 0 11111111 00000000000000000000000
+
+    STEP 4: 檢查是否 overflow / underflow
+    => Exponent 變成 255 (全 1)，發生 Overflow！
+    硬體會將結果判定為正無限大 (+Infinity)。
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 11111110 00000000000000000000000
+    B: 0 11111110 00000000000000000000000
+
+    C: 0 11111111 00000000000000000000000 (+Infinity)
+
+    STEP 5: Rounding
+    => 已經 Overflow，無須進行捨入。
+    ```
+    </div>
+    </Slider>
+
+</div>
+<div slot="panel-2"> <div class="h-5"></div>
+
+    當兩個極小的數字相減，使得標準化後的指數低於單精度浮點數的下限（Biased Exponent = 1，0 保留給 0 和 Denormalized numbers）時發生。
+
+    範例：$(1.000...01_2 \times 2^{-126}) - (1.0 \times 2^{-126})$
+
+    <Slider>
+    <div>
+    ```text
+    A: 0 00000001 00000000000000000000001  (剛好比最小 Normal 數大一點點)
+    B: 1 00000001 00000000000000000000000  (最小的 Normal 數)
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 00000001 00000000000000000000001
+    B: 1 00000001 00000000000000000000000
+
+    STEP 1: 對齊指數。
+    指數相同，不需位移。
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 00000001 00000000000000000000001
+    B: 1 00000001 00000000000000000000000
+
+    C:            00000000000000000000001  (Exponent: -126)
+
+    STEP 2: 兩個 significand 相加。
+    (1.00...01 - 1.00...00 = 0.00...01)
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 00000001 00000000000000000000001
+    B: 1 00000001 00000000000000000000000
+
+    C:          1 00000000000000000000000  (Exponent: -149)
+
+    STEP 3: Normalize
+    => 需要向左 shift 23 bits 才能把 1 推到小數點前變成 1.0
+    => 指數需要減 23： True Exponent = -126 - 23 = -149
+    => Biased Exponent = -149 + 127 = -22
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 00000001 00000000000000000000001
+    B: 1 00000001 00000000000000000000000
+
+    C: 0 00000000 00000000000000000000001  (最終 Subnormal)
+
+    STEP 4: 檢查是否 overflow / underflow
+    => Biased Exponent (-22) 小於 1，發生 Underflow！
+    => 硬體無法將其表示為 Normal 數，會觸發 Gradual Underflow，
+    => 將結果保留為 Subnormal Number，強制固定真實 Exponent 為 -126，
+       然後將 -149 校正回 -126，也就是向右 shift 23 bits。
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 00000001 00000000000000000000001
+    B: 1 00000001 00000000000000000000000
+
+    C: 0 00000000 00000000000000000000001
+
+    STEP 5: Rounding
+    => 無多餘 bits 被擠出，不需捨入。
+    ```
+    </div>
+    </Slider>
+
+</div>
+<div slot="panel-3"> <div class="h-5"></div>
+
+    當兩個大小相差較多的數字相加，較小數字的 bits 在對齊時被向右推擠出了 23-bit 的 Fraction 欄位，落入了 Guard (G), Round (R), Sticky (S) 隱藏位元區，最終需要進位。
+
+    範例：$(1.0 \times 2^0) + (1.11_2 \times 2^{-24})$
+
+    <Slider>
+    <div>
+    ```text
+    A: 0 01111111 00000000000000000000000  (Exponent: 0)
+    B: 0 01100111 11000000000000000000000  (Exponent: -24)
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 01111111 00000000000000000000000
+    B: 0 01111111 00000000000000000000000 111
+                                   >>= 24 (hidden 1 也被拉出來)
+
+
+    STEP 1: 對齊指數。
+    B 的指數差了 24，需要向右 shift 24 bits。
+    B 的隱藏 1 會落在小數點後第 24 位 (Guard bit)，Fraction 的 11 會落在第 25 (Round) 與 26 (Sticky) 位。
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 01111111 00000000000000000000000
+    B: 0 01111111 00000000000000000000000 | GRS: 111
+
+
+
+    STEP 1: 對齊指數。
+    B 的指數差了 24，需要向右 shift 24 bits。
+    B 的隱藏 1 會落在小數點後第 24 位 (Guard bit)，Fraction 的 11 會落在第 25 (Round) 與 26 (Sticky) 位。
+    ```
+    </div>
+    
+    <div>
+    ```text
+    A: 0 01111111 00000000000000000000000 | GRS: 000
+    B: 0 01111111 00000000000000000000000 | GRS: 111
+
+    C: 0 01111111 00000000000000000000000 | GRS: 111
+
+    STEP 2: 兩個 significand 相加。包含硬體內部的 GRS bits 一起加。
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 01111111 00000000000000000000000 | GRS: 000
+    B: 0 01111111 00000000000000000000000 | GRS: 111
+
+    C: 0 01111111 00000000000000000000000 | GRS: 111
+
+    STEP 3: Normalize
+    (已經是 1.xxxx 的形式，不需要位移，指數不變)
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 01111111 00000000000000000000000 | GRS: 000
+    B: 0 01111111 00000000000000000000000 | GRS: 111
+
+    C: 0 01111111 00000000000000000000000 | GRS: 111
+
+    STEP 4: 檢查是否 overflow / underflow
+    => Exponent 仍為 127，無發生溢位。
+    ```
+    </div>
+    <div>
+    ```text
+    A: 0 01111111 00000000000000000000000 | GRS: 000
+    B: 0 01111111 00000000000000000000000 | GRS: 111
+
+    C: 0 01111111 00000000000000000000001 | GRS: 111
+
+    STEP 5: Rounding
+    => GRS = 111，大於一半 (100)
+    => 根據 Round to nearest, ties to even 規則，我們需要向上進位 (Round Up)。
+    => 將 Significand 最末位 + 1。
+    ```
+    </div>
+    </Slider>
+
+</div>
+</Tabs>
+
+<Image img={FpAddHardware} />
+
+
+
+
+### FP Multiplication
+
+<Tabs gid="fp multiplication" tabs={[
+  '正常範例',
+]} >
+<div slot="panel-0"> <div class="h-5"></div>
+
+    範例：$0.5 \times (-0.4375)$
+
+    $0.5 = 1.0 \times 2^{-1} \rightarrow$ `0 01111110 000000000000000000000000`
+
+    $-0.4375 = -1.75 \times 2^{-2} \rightarrow$ `1 01111101 110000000000000000000000`
+
+    <Slider>
+    <div>
+    ```
+    A:  1.000 x 2^{-1}
+    B: -1.110 x 2^{-2}
+    ```
+    </div>
+    <div>
+    ```
+    A:  1.000 x 2^{-1}
+    B: -1.110 x 2^{-2}
+
+    C:          2^{-3}
+
+    STEP 1: 指數相加
+    ```
+    </div>
+    <div>
+    ```
+    A:  1.000 x 2^{-1}
+    B: -1.110 x 2^{-2}
+
+    C: _1.110 x 2^{-3}
+
+    STEP 2: Significand 相乘（不考慮 sign bit）
+
+    STEP 3: Normalize（這個 case 不需要）
+    STEP 4: 檢查 Overflow/Underflow（這個 case 剛好都沒有發生）
+    STEP 5: Round（這個 case 不需要）
+    ```
+    </div>
+    <div>
+    ```
+    A:  1.000 x 2^{-1}
+    B: -1.110 x 2^{-2}
+
+    C: -1.110 x 2^{-3}
+
+    STEP 6: 決定 sign bit
+    ```
+    </div>
+    </Slider>
+
+    <Slider>
+    <div>
+    ```
+    A: 0 01111110 000000000000000000000000
+    B: 1 01111101 110000000000000000000000
+    ```
+    </div>
+    <div>
+    ```
+    A: 0 01111110 000000000000000000000000
+    B: 1 01111101 110000000000000000000000
+
+    C: _ 01111100 ________________________
+
+    STEP 1: 指數相加
+    ```
+    </div>
+    <div>
+    ```
+    A: 0 01111110 000000000000000000000000
+    B: 1 01111101 110000000000000000000000
+
+    C: _ 01111100 110000000000000000000000
+
+    STEP 2: Significand 相乘（不考慮 sign bit）
+
+    STEP 3: Normalize（這個 case 不需要）
+    STEP 4: 檢查 Overflow/Underflow（這個 case 剛好都沒有發生）
+    STEP 5: Round（這個 case 不需要）
+    ```
+    </div>
+    <div>
+    ```
+    A: 0 01111110 000000000000000000000000
+    B: 1 01111101 110000000000000000000000
+
+    C: 1 01111100 110000000000000000000000
+
+    STEP 6: 決定 sign bit
+    ```
+    </div>
+    </Slider>
+</div>
+</Tabs>
+
+
+
+
+### Floating Point 不遵守結合律
+
+用二進位表示小數的所有方法天生都有個限制：除了二進分數 (Dydalic Fraction) 之外，必定存在誤差。

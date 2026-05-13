@@ -15,7 +15,7 @@ const { ratio = 'repeat(2, minmax(0, 1fr))', noline = false, className } = Astro
 {/* 將預設間距設為 gap-8 (2rem = 32px)，讓細線兩側各有 16px 的空間 */}
 <div
   class={cn(
-    "custom-columns not-prose my-8 grid gap-3 md:gap-6",
+    "custom-columns not-prose my-8 grid gap-8 md:gap-8",
     !noline && "has-divider",
     className,
   )}
@@ -38,7 +38,7 @@ const { ratio = 'repeat(2, minmax(0, 1fr))', noline = false, className } = Astro
     content: "";
     position: absolute;
     background-color: hsl(var(--border)); /* 自動對應你的淺色/深色主題邊框色 */
-    top: -0.25rem; /* 👇 關鍵修改：對應手機版的 gap-3 (0.75rem)，所以向上位移 0.25rem 即可置中 */
+    top: -1rem; /* 👇 關鍵修改：對應手機版的 gap-3 (0.75rem)，所以向上位移 0.25rem 即可置中 */
     left: 0;
     right: 0;
     height: 1px;
@@ -52,7 +52,7 @@ const { ratio = 'repeat(2, minmax(0, 1fr))', noline = false, className } = Astro
     .custom-columns.has-divider > :global(:not(:first-child))::before {
       top: 0;
       bottom: 0;
-      left: -0.75rem; /* 位於水平 gap-6 (1.5rem) 的正中間 */
+      left: -1rem; /* 位於水平 gap-6 (1.5rem) 的正中間 */
       width: 1px;
       height: auto;
     }
@@ -66,7 +66,7 @@ const { ratio = 'repeat(2, minmax(0, 1fr))', noline = false, className } = Astro
     .custom-columns.has-divider > :global(:not(:first-child))::before {
       top: 0;
       bottom: 0;
-      left: -0.75rem;
+      left: -1rem;
       width: 1px;
       height: auto;
     }
