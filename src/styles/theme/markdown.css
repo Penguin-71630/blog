@@ -6,7 +6,6 @@
   font-size: 1.1rem;
   line-height: 1.7;
 
-
   /* ✅ 淺色模式 inline code 主色 (較深，確保可讀性) */
   --my-primary: 110 110 110;
 
@@ -362,22 +361,20 @@
 
   .gino-table,
   .Gino-table {
-    display: block;
-    width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
 
-    table {
+    /* 1. 補上 & 符號，確保編譯與瀏覽器支援 */
+    & table {
       display: table;
-      width: 100%;
+      width: max-content;
       border-collapse: separate;
       border-spacing: 0;
-      margin: 0;
       font-size: 0.95rem;
       line-height: 1.6;
     }
 
-    thead th {
+    & thead th {
       font-weight: 700;
       color: hsl(var(--foreground));
       background: hsl(var(--muted) / 0.35);
@@ -385,27 +382,28 @@
       white-space: nowrap;
     }
 
-    tbody tr {
+    & tbody tr {
       transition: background-color 0.2s ease;
     }
 
-    tbody tr:nth-child(even) {
+    & tbody tr:nth-child(even) {
       background: hsl(var(--muted) / 0.4);
     }
 
-    tbody tr:hover {
+    & tbody tr:hover {
       background: hsl(var(--muted) / 0.8);
     }
 
-    th,
-    td {
+    /* 這裡也要補上 & */
+    & th,
+    & td {
       padding: 0.7rem 0.9rem;
       border-bottom: 1px solid hsl(var(--border));
       vertical-align: middle;
       text-align: inherit;
     }
 
-    td a {
+    & td a {
       text-underline-offset: 0.18em;
       word-break: break-word;
     }
@@ -824,16 +822,46 @@ img.img-w-10 {
   }
 
   /* 圖片尺寸控制 */
-  img[src$="#100"], img.img-w-100 { width: 100% !important; }
-  img[src$="#90"],  img.img-w-90  { width: 90%  !important; }
-  img[src$="#80"],  img.img-w-80  { width: 80%  !important; }
-  img[src$="#70"],  img.img-w-70  { width: 70%  !important; }
-  img[src$="#60"],  img.img-w-60  { width: 60%  !important; }
-  img[src$="#50"],  img.img-w-50  { width: 50%  !important; }
-  img[src$="#40"],  img.img-w-40  { width: 40%  !important; }
-  img[src$="#30"],  img.img-w-30  { width: 30%  !important; }
-  img[src$="#20"],  img.img-w-20  { width: 20%  !important; }
-  img[src$="#10"],  img.img-w-10  { width: 15%  !important; }
+  img[src$="#100"],
+  img.img-w-100 {
+    width: 100% !important;
+  }
+  img[src$="#90"],
+  img.img-w-90 {
+    width: 90% !important;
+  }
+  img[src$="#80"],
+  img.img-w-80 {
+    width: 80% !important;
+  }
+  img[src$="#70"],
+  img.img-w-70 {
+    width: 70% !important;
+  }
+  img[src$="#60"],
+  img.img-w-60 {
+    width: 60% !important;
+  }
+  img[src$="#50"],
+  img.img-w-50 {
+    width: 50% !important;
+  }
+  img[src$="#40"],
+  img.img-w-40 {
+    width: 40% !important;
+  }
+  img[src$="#30"],
+  img.img-w-30 {
+    width: 30% !important;
+  }
+  img[src$="#20"],
+  img.img-w-20 {
+    width: 20% !important;
+  }
+  img[src$="#10"],
+  img.img-w-10 {
+    width: 15% !important;
+  }
 
   /* 隱藏無關 UI 元素 */
   #site-header,
@@ -857,7 +885,7 @@ img.img-w-10 {
   button[aria-label="滚到底部"],
   button[aria-label="展开/收起工具栏"],
   .grid.grid-cols-2.tablet\:grid-cols-1.gap-4,
-  .flex-center.tablet\:flex.fixed.top-0.left-3.z-52.hidden.h-14.transition-transform{
+  .flex-center.tablet\:flex.fixed.top-0.left-3.z-52.hidden.h-14.transition-transform {
     display: none !important;
   }
 
@@ -957,7 +985,7 @@ ruby {
 rt {
   /* 平假名字體大小 - 可以調整這個值 */
   font-size: 0.65em;
-  
+
   /* 使用正常字體顏色 */
   color: inherit;
   line-height: 1;

@@ -263,6 +263,7 @@ export default defineConfig({
     },
     optimizeDeps: {
       include: ['@antv/infographic'],
+      exclude: ['chunk-EXOVBCMP.js'],
     },
   },
   trailingSlash: 'ignore',
