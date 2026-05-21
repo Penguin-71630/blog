@@ -16,7 +16,7 @@ site:
   subtitle: 偶爾會發些學東西的筆記或生活日記 # 网站副标题
   name: Gino # 作者名称 - 请修改为你的名字
   description: 座標交大資工，喜歡窩在角落躲起來的宅宅 # 网站描述
-  avatar: /img/avatars/Gino_2026_02.webp # 网站头像
+  avatar: /img/avatars/aethoro2_cropped.webp # 网站头像
   # 站点横幅图片配置 - 支持两种格式：
   # 1. 单图模式（字符串）: siteImageFileBaseName: Hikari_Tairitsu_Flowzon_Note
   # 2. 双图模式（light/dark 主题）:

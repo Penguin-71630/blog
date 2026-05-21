@@ -6,13 +6,13 @@ categories:
 draft: true
 ---
 
-import whatWeAreLearning from './CO-note/what_we_are_learning.png?url';
-import whatWeAreLearningDark from './CO-note/what_we_are_learning_dark.png?url';
-import JType from './CO-note/J-Type.png?url';
-import JTypeDark from './CO-note/J-Type-dark.png?url';
-import ImmediateAddressing from './CO-note/immediate-addressing.png?url';
-import RegisterAddressing from './CO-note/register-addressing.png?url';
-import MIPSAddressingModes from './CO-note/mips-addressing-modes.svg?url';
+import whatWeAreLearning from './CO-note-L2/what_we_are_learning.png?url';
+import whatWeAreLearningDark from './CO-note-L2/what_we_are_learning_dark.png?url';
+import JType from './CO-note-L2/J-Type.png?url';
+import JTypeDark from './CO-note-L2/J-Type-dark.png?url';
+import ImmediateAddressing from './CO-note-L2/immediate-addressing.png?url';
+import RegisterAddressing from './CO-note-L2/register-addressing.png?url';
+import MIPSAddressingModes from './CO-note-L2/mips-addressing-modes.svg?url';
 
 {/* ============================================================================ */}
 
@@ -166,7 +166,7 @@ $$
 | 跳躍指令 | `jr $ra` | `000000 ra -- -- 00000 001000` | `PC` 設為 `$ra` 的值 |
 </Table>
 
-關於 MIPS 的定址方式，請見 [MIPS 定址方式](/post/coursenote/co-note#mips-%E5%AE%9A%E5%9D%80%E6%96%B9%E5%BC%8F)。
+關於 MIPS 的定址方式，請見 [MIPS 定址方式](/post/coursenote/co-note-l2#mips-%E5%AE%9A%E5%9D%80%E6%96%B9%E5%BC%8F)。
 </InfoBox>
 
 
@@ -207,7 +207,7 @@ $$
 |  | `bgtz $s1, 25` | `000111 s1 -- 0...00011001` | `if (s1 > 0)`<br /> `PC := (PC+4) + (offset * 4)` |
 </Table>
 
-關於 MIPS 的定址方式，請見 [MIPS 定址方式](/post/coursenote/co-note#mips-%E5%AE%9A%E5%9D%80%E6%96%B9%E5%BC%8F)。
+關於 MIPS 的定址方式，請見 [MIPS 定址方式](/post/coursenote/co-note-l2#mips-%E5%AE%9A%E5%9D%80%E6%96%B9%E5%BC%8F)。
 
 </InfoBox>
 
@@ -234,7 +234,7 @@ $$
 | 呼叫函式 | `jal 10000` | `000011 00000000000010011100010000` | `$ra := PC+4`（存 return address）<br/>`PC := (PC+4)[31:28] \| (address * 4)` |
 </Table>
 
-關於 MIPS 的定址方式，請見 [MIPS 定址方式](/post/coursenote/co-note#mips-%E5%AE%9A%E5%9D%80%E6%96%B9%E5%BC%8F)。
+關於 MIPS 的定址方式，請見 [MIPS 定址方式](/post/coursenote/co-note-l2#mips-%E5%AE%9A%E5%9D%80%E6%96%B9%E5%BC%8F)。
 
 </InfoBox>
 
