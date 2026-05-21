@@ -14,6 +14,7 @@
 import path from 'node:path';
 import type { Image, Root } from 'mdast';
 import { visit } from 'unist-util-visit';
+import { getLqipStyle } from '../lqip.ts';
 
 export function remarkMdImagePath() {
   return (tree: Root, file: any) => {
@@ -32,8 +33,10 @@ export function remarkMdImagePath() {
       // Get the directory of the current markdown file
       const fileDir = path.dirname(filePath);
 
+      const [imageUrl, hash] = node.url.split('#');
+
       // Resolve the absolute path
-      const absolutePath = path.join(fileDir, node.url);
+      const absolutePath = path.join(fileDir, imageUrl);
 
       // Convert to a path relative to the project root
       // This assumes the project root is the parent of src/
@@ -41,7 +44,20 @@ export function remarkMdImagePath() {
       const relativePath = path.relative(projectRoot, absolutePath);
 
       // Convert to URL format (forward slashes, starting with /)
-      node.url = '/' + relativePath.split(path.sep).join('/');
+      const resolvedUrl = '/' + relativePath.split(path.sep).join('/');
+      const lqipStyle = getLqipStyle(resolvedUrl);
+
+      node.url = hash ? `${resolvedUrl}#${hash}` : resolvedUrl;
+      if (lqipStyle) {
+        node.data = {
+          ...node.data,
+          hProperties: {
+            ...((node.data?.hProperties as Record<string, unknown>) ?? {}),
+            'data-lqip-style': lqipStyle,
+            style: lqipStyle,
+          },
+        };
+      }
     });
   };
 }

@@ -2,7 +2,7 @@
  * Generate simple LQIP (Low Quality Image Placeholders) for images
  *
  * This script:
- * 1. Reads all images from public/img/
+ * 1. Reads all images from public/img/ and src/content/blog/
  * 2. Extracts dominant colors from 4 quadrants
  * 3. Outputs CSS gradient strings to src/assets/lqips.json
  */
@@ -14,7 +14,7 @@ import { glob } from 'glob';
 import sharp from 'sharp';
 
 // --------- Configuration ---------
-const IMAGE_GLOB = 'public/img/**/*.{webp,jpg,jpeg,png}';
+const IMAGE_GLOBS = ['public/img/**/*.{webp,jpg,jpeg,png}', 'src/content/blog/**/*.{webp,jpg,jpeg,png}'];
 const OUTPUT_FILE = 'src/assets/lqips.json';
 
 // --------- Type Definitions ---------
@@ -76,11 +76,18 @@ async function processImage(imagePath: string): Promise<string | null> {
 }
 
 /**
- * Convert file path to short key (relative to /img/)
+ * Convert file path to lookup key.
+ *
+ * public/img/cover/1.webp is kept as cover/1.webp for existing /img/* callers.
+ * src/content/blog/foo/bar.png is stored with its project-relative path so
+ * markdown images resolved from co-located content can find their placeholder.
  */
 function filePathToKey(filePath: string): string {
   // public/img/cover/1.webp → cover/1.webp
-  return filePath.replace(/^public\/img\//, '');
+  return filePath
+    .replace(/^public\/img\//, '')
+    .split(path.sep)
+    .join('/');
 }
 
 // --------- Main Execution ---------
@@ -90,7 +97,7 @@ async function main() {
   try {
     console.log(chalk.cyan('=== LQIP Generator ===\n'));
 
-    const files = await glob(IMAGE_GLOB);
+    const files = await glob(IMAGE_GLOBS);
     if (!files.length) {
       console.log(chalk.yellow('No image files found.'));
       return;

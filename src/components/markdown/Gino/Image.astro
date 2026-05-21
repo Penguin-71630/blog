@@ -1,4 +1,6 @@
 ---
+import { getLqipStyle } from '@lib/lqip';
+
 interface Props {
   img: string;
   darkImg?: string;
@@ -6,9 +8,10 @@ interface Props {
 }
 
 const { img, darkImg, width } = Astro.props;
+const lqipStyle = getLqipStyle(img);
 ---
 
-<figure class="markdown-image-wrapper">
+<figure class="markdown-image-wrapper" style={lqipStyle}>
   {
     darkImg ? (
       <>

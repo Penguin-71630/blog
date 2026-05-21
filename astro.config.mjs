@@ -25,6 +25,7 @@ import { rehypeEncryptedBlock } from './src/lib/markdown/rehype-encrypted-block.
 import { rehypeImagePlaceholder } from './src/lib/markdown/rehype-image-placeholder.ts';
 import { rehypeShokaAttrs } from './src/lib/markdown/rehype-shoka-attrs.ts';
 import { remarkEncryptedDirective } from './src/lib/markdown/remark-encrypted-directive.ts';
+import { remarkImageLqip } from './src/lib/markdown/remark-image-lqip.ts';
 import { remarkImageWidth } from './src/lib/markdown/remark-image-width.ts';
 import { remarkLinkEmbed } from './src/lib/markdown/remark-link-embed.ts';
 import { remarkMdImagePath } from './src/lib/markdown/remark-md-image-path.ts';
@@ -156,6 +157,8 @@ if (contentConfig.enableEncryptedBlock) {
 remarkPlugins.push(remarkMdImagePath);
 // Image width syntax (#50) — must run before Astro's image pipeline
 remarkPlugins.push(remarkImageWidth);
+// LQIP placeholders for co-located markdown images — must run before Astro rewrites image URLs
+remarkPlugins.push(remarkImageLqip);
 // Link embed is always on (existing feature)
 remarkPlugins.push([
   remarkLinkEmbed,
