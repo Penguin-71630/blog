@@ -1,0 +1,284 @@
+---
+title: Memory and Storage HW3
+date: 2026-05-22
+categories: 
+  - 課業筆記
+---
+
+
+{/* 
+
+// Check GPU and Python Version
+
+Thu May 21 18:55:03 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.82.07              Driver Version: 580.82.07      CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |
+| N/A   38C    P8             10W /   70W |       0MiB /  15360MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+Python 3.12.13
+PyTorch: 2.10.0+cu128
+CUDA available: True
+GPU: Tesla T4
+VRAM: 14912 MB
+               total        used        free      shared  buff/cache   available
+Mem:           12975        1177        7490           2        4307       11512
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         113G   43G   70G  39% /
+
+*/}
+
+
+## Hardware / Environment
+
+- Path: Google Colab
+- GPU: NVIDIA Tesla T4
+- GPU VRAM: $14912$ MB
+- CPU: Google Colab default runtime CPU
+- CPU RAM: $12975$ MB
+- Disk: Colab overlay storage, $113$ GB total
+- Python: `3.12.13`
+- PyTorch: `2.10.0 + cu128`
+- CUDA: available, CUDA version `13.0` reported by `nvidia-smi`
+- Observed disk read bandwidth (from Q4): peak $252500$ KB/s $\approx$ $252$ MB/s
+
+
+
+## Q1. Progressive Offload Sweep
+
+<InfoBox style="info">
+(10%) Tabulate **total throughput** and **peak gpu mem** for the 5 datapoints.
+</InfoBox>
+
+<Table>
+| Setting | `--percent` | Weight Distribution | Throughput | Peak GPU Mem |
+|:---:|:---:|:---:|:---:|:---:|
+| (1) | `100 0 100 0 100 0` | 100% GPU | 65.771 token/s | 2.807 GB |
+| (2) | `50 50 100 0 100 0` | 50% GPU + 50% CPU | 28.908 token/s | 1.682 GB |
+| (3) | `50 0 100 0 100 0` | 50% GPU + 50% Disk | 0.814 token/s | 1.713 GB |
+| (4) | `0 50 100 0 100 0` | 50% CPU + 50% Disk | 0.705 token/s | 0.588 GB |
+| (5) | `0 0 100 0 100 0` | 100% Disk | 0.357 token/s | 0.588 GB |
+</Table>
+
+<InfoBox style="info">
+(20%) Complete the table mentioned in the spec and answer (a) and (b).
+
+<Note>"Disk" refers to your storage medium (NVMe / SATA SSD / Colab overlay / etc.). Determine its bandwidth order of magnitude based on your actual hardware.</Note>
+
+<Note>Front pair = (1)→(2), (2)→(3); back pair = (3)→(4), (4)→(5).</Note>
+</InfoBox>
+
+<Table>
+| Boundary | Ratio | Dominant Bottleneck (PCIe / Disk) |
+|:---:|:---:|:---:|
+| (1)→(2) | `(1) / (2)` = 2.28 | PCIe |
+| (2)→(3) | `(2) / (3)` = 35.51 | Disk |
+| (3)→(4) | `(3) / (4)` = 1.15 | PCIe |
+| (4)→(5) | `(4) / (5)` = 1.97 | Disk |
+</Table>
+
+<InfoBox>
+(a) **Within-class comparison**: Are the two PCIe boundary ratios close to each other? What about the two Disk boundary ratios? If there's a gap, is the front-pair ratio larger or the back-pair ratio larger? Why?
+</InfoBox>
+
+Not quite close to each other:
+- (1)→(2) is 2.28
+- (3)→(4) is 1.15
+
+(1) 到 (2) 的主要影響因素是 GPU 從 100% 掉到 50%，效率會掉非常多。而 (3) 與 (4) 的 dominant factor 已經是 disk I/O 了（兩個都已經有至少 50% 的 disk offload），因此效率再掉也不會掉太多。
+
+
+<InfoBox>
+(b) **Cross-class within-pair comparison**: In the front pair (1)→(2) PCIe vs (2)→(3) Disk, and in the back pair (3)→(4) PCIe vs (4)→(5) Disk, **within each pair**, which has the larger ratio — PCIe or Disk? Explain using bandwidth orders of magnitude.
+</InfoBox>
+
+```text
+Front pair:             |  Back pair:
+PCIe: (1)→(2) = 2.28    |  PCIe: (3)→(4) = 1.15
+Disk: (2)→(3) = 35.51   |  Disk: (4)→(5) = 1.97
+```
+
+兩個 pair 內都是 disk 的 ratio 較大，因為 PCIe（CPU RAM $\leftrightarrow$ GPU）的頻寬遠高於 disk（~252 MB/s），同樣是把 50% weights 移到更慢的 tier，從 CPU 移到 disk 造成的 throughput 下降幅度遠大於從 GPU 移到 CPU。
+
+
+
+
+## Q2. Batch Size and I/O Amortization
+
+<InfoBox style="info">
+(10%) Tabulate **wall time, throughput, peak gpu mem** for the three batches (1, 4, 16).
+</InfoBox>
+
+<Table>
+| Batch Size | Wall Time | Throughput | Peak GPU Mem |
+|:---:|:---:|:---:|:---:|
+| 1 | 179.205 s | 0.089 token/s | 0.489 GB |
+| 4 | 179.329 s | 0.357 token/s | 0.588 GB |
+| 16 | 179.350 s | 1.427 token/s | 1.051 GB |
+</Table>
+
+
+
+
+<InfoBox style="info">
+(5%) Compute the throughput ratios between adjacent batches: `b4/b1 ≈ 4.01`, `b16/b4 ≈ 4.00`. How do the measured ratios compare to the theoretical 4× (since batch ×4)? **Cross-reference how wall time changes with batch** to explain what you observe.
+</InfoBox>
+
+Measured ratios 幾乎完美吻合理論 ratio（4 倍）。
+
+首先是 batch size（也就是模型需要一次回答幾個 prompt）不管有多大，「將權重從 disk 搬進 CPU RAM 再送進 GPU 給 tensor core 運算」這件事情只會發生一次。
+
+另外還可以發現 wall time 都幾乎不變，這代表權重搬運幾乎主導了所有的執行時間。導致 CPU time, GPU time 等的耗時幾乎可忽略，因此才能看到 throughput 幾乎就是跟 batch size 成正比。
+
+
+
+
+
+<InfoBox style="info">
+(5%) Looking at how peak GPU mem changes with batch, can batch be scaled indefinitely? Why?
+</InfoBox>
+
+不能。batch size 變大時，模型需要拿來存 KV cache 的空間也會越大（而且 KV cache 通常全都是放在 GPU 內）。繼續 scale 下去會導致 OOM。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Q3. Weight Compression and Tier Interaction
+
+<InfoBox style="info">
+(10%) Tabulate the throughput and peak gpu mem under (α) and (β), with and without compression.
+
+The non-compressed reference data can be reused from Q1 datapoint (1) and (5).
+</InfoBox>
+
+<Table>
+| Scenario | Compression | Throughput | Peak GPU Mem |
+|:---:|:---:|:---:|:---:|
+| (α) 100% GPU | without | 65.771 token/s | 2.807 GB |
+| (α) 100% GPU | with `--compress-weight` | 24.107 token/s | 1.104 GB |
+| (β) 100% Disk | without | 0.357 token/s | 0.588 GB |
+| (β) 100% Disk | with `--compress-weight` | 1.667 token/s | 0.470 GB |
+</Table>
+
+
+
+
+<InfoBox style="info">
+(10%) Compare the throughput change (direction + magnitude) when `--compress-weight` is enabled in (α) vs (β). From your data, answer:
+</InfoBox>
+
+<InfoBox>
+(a) What cost does compression reduce? What cost does it add? Which dominates in each scenario, and how does that determine whether throughput speeds up or slows down?
+</InfoBox>
+
+Compression 壓縮的是 I/O 的成本，但代價是需要多花時間處理 quantization / dequantization。
+
+對於 100% GPU 來說，dominate throughput 的主要是 GPU time 而不是 I/O，所以加上 compression 反而會讓 GPU 要花更多時間做 FP quantization / dequantization。
+
+對於 100% disk 來說，dominate throughput 的主要就是 I/O，因此加上 compression 這類降低資料通訊的成本的優化可以顯著提升 throughput。
+
+
+
+<InfoBox>
+(b) Why is the magnitude of the change (whether speedup or slowdown) not close to the 4× compression ratio?
+</InfoBox>
+
+整個流程除了 weight I/O 之外，還有 KV cache 的讀寫、Attention 計算、Activation 的處理等等，這些也佔不少時間但並不與 weight compression 這個優化相關。
+
+
+
+
+
+
+
+## Q4. I/O Behavior + Bottleneck Analysis under Disk Offload
+
+<InfoBox style="success">
+Part 1: sample disk I/O under 100% Disk Offload (Q1 dp(5)). Fill in the peak `iostat` values.
+</InfoBox>
+
+<Table>
+| iostat (disk offload) | Value |
+|:---:|:---:|
+| r/s peak | 2555 req/s |
+| rkB/s peak | 252500 KB/s |
+| rareq-sz peak | 128.00 KB/req |
+| %util peak | 89.4 % |
+</Table>
+
+
+
+
+
+
+<InfoBox style="info">
+(15%) After filling in the table, classify FlexGen's behavior into one of the following and justify your choice using your experimental data:
+
+- **A. Sequential, large blocks**: `rareq-sz peak` ≥ 32 KB (kernel readahead batched consecutive pages into large requests).
+- **B. Random, small blocks**: `rareq-sz peak` < 32 KB with high `r/s` (each request independent, kernel can't batch).
+- **C. Page cache hit**: `rareq-sz peak` ≈ 4 KB and `rkB/s peak` much lower than your disk's spec (reads don't actually reach the disk).
+</InfoBox>
+
+A. Sequential I/O
+
+`rareq-sz peak` $=$ $128$ KB $\geq$ $32$ KB
+
+
+
+
+
+<InfoBox style="success">
+Part 2: run `--debug-mode breakdown` for both 100% GPU baseline and 100% Disk offload. Only look at `load_weight` and `compute_layer_decoding`; do not compare these throughput numbers to Q1.
+</InfoBox>
+
+<Table>
+| Scenario | load_weight (per-layer, sec) | compute_layer_decoding (per-batch, sec) | load / compute ratio |
+|:---:|:---:|:---:|:---:|
+| (1) Baseline | 0.000033 s | 0.006085 s | 0.0054 |
+| (5) Disk offload | 0.222332 s | 0.006635 s | 33.51 |
+</Table>
+
+
+
+
+
+<InfoBox style="info">
+After filling in the table:
+
+- (a) Compare `compute_layer_decoding` across baseline and disk offload — what do you observe? What does this tell us? (Hint: what does offload change? Is it related to GPU compute volume?)
+- (b) Compare `load_weight` across the two scenarios — by how many orders of magnitude do they differ? What aspect of the system does offload change, based on this?
+</InfoBox>
+
+
+(a) `compute_layer_decoding` 幾乎相同，非常合理，因為 data offloading 不影響 GPU 要進行的運算量。
+(b) `load_weight` 相差約 $6700$ 倍（約是 4 個數量級）。綜合 (a) 來看代表 offloading 只改變了資料的搬運路徑：
+- baseline 的 weights 都已經在 GPU VRAM 裡面，所以幾乎沒有資料搬運的成本。
+- disk offload 的 weights 必須從 disk 搬到 CPU RAM 再搬到 GPU VRAM，I/O 成本暴增。
+
+
+
+
+
+
+
