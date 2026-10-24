@@ -1,0 +1,40 @@
+---
+title: 記憶體與儲存系統 - Final Research Proposal
+date: 2026-06-08
+categories:
+  - 學習筆記 
+draft: true
+---
+
+
+## Background
+
+首先是 background。假設要在一張超級大的圖上跑演算法（例如 BFS、PageRank）的話，不可能把整張圖都存在 DRAM，一定要存在硬碟。
+
+然後傳統的做法通常有兩種。
+
+- 第一種是 subgraph model，方法就是直接把圖切成很多子圖。大概像這樣<Mark color="blue">（簡報下一頁）</Mark>然後讀一個點的時候要把一整個子圖都讀進來。
+
+- <Mark color="blue">（簡報下一頁）</Mark>第二種是 page-centric model，方法滿單純，就是把所有節點的 adjacency list 接在一起之後切成一個個 page 存起來。
+
+但是這兩個方法都有一些問題。<Mark color="blue">（簡報回到 Background）</Mark>
+
+首先是 subgraph model。
+- 它的設計動機是其實是為了順應 HDD 喜歡 sequential access 的特性。
+- 但對於 SSD 來說 sequential 跟 random 根本沒差，反而因為要讀一整個子圖所以 I/O utilization 會超級差。
+- 然後為了要處理跨子圖的邊，會需要做很多 subgraph synchronization。這個就非常災難了，不只是效率上的災難，你的演算法也要大改或幾乎得重寫。
+
+然後 page-centric model 也會一些問題。
+- 讀一個 degree 很小節點的時候要把一整個 page 讀進來。會有 I/O amplification 跟 vertex cutting 的問題
+- 另外對於大節點它的 adjacency list 會佔用很多 page，但這些 page 永遠都是同時被讀取的所以根本不需要佔用那麼多的 metadata。佔用太多 metadata 除了效率變差還會污染 CPU 的 TLB。
+
+
+
+## Related Works
+
+這個時候呢，我們找到了 ChunkGraph，這篇論文可以解決以上的問題。
+
+
+
+
+
