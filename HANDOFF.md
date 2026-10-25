@@ -1,6 +1,8 @@
 # Handoff — Gino's Blog（Astro 新版）
 
-更新：2026-10-25｜branch：`claude-design`｜**尚未 commit**
+更新：2026-10-25｜branch：`claude-design`｜已 push（`6bbcb20` 之後）
+
+**下一步**：在 Cloudflare Pages 試部署一次（見「部署」），之後照「之後的移植順序」做 layout。
 
 > 給接手的 session：使用者正在忙學校作業，回覆請**簡短、一次只問一件事**，用繁體中文。
 
