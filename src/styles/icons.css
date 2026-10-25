@@ -1,0 +1,5 @@
+/* Inline SVG icons stand in for the Remix / Lucide icon fonts: an <i> wrapper keeps the
+   existing selectors (.gb-nav-item i, .gb-callout-title>i[class^="icon-"], .gb-markers>li>i…)
+   working, and the SVG renders at 1em in currentColor like a font glyph would. */
+i.gb-icon{display:inline-flex;align-items:center;justify-content:center;font-style:normal;line-height:1}
+i.gb-icon>svg{display:block;width:1em;height:1em;flex-shrink:0}

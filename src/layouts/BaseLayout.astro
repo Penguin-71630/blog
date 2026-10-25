@@ -1,0 +1,24 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+}
+
+const { title = "Gino's Blog" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-Hant-TW" data-theme="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		{/* CJK fonts (src/styles/cjk.css) are split into many unicode-range slices: never preload them. */}
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>

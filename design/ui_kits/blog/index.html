@@ -1,0 +1,46 @@
+<!-- @dsCard group="Blog website" viewport="1280x820" name="Gino's Blog — click-through" subtitle="Articles, post, Categories, category, Archives, About Me" -->
+<!doctype html>
+<html lang="zh-Hant-TW" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gino's Blog</title>
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<script src="data.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="DotGraph.jsx"></script>
+<script type="text/babel" src="PostCache.jsx"></script>
+<script type="text/babel" src="PostMatching.jsx"></script>
+<script type="text/babel" src="Screens.jsx"></script>
+<script type="text/babel">
+const NAV = { articles: 'articles', post: 'articles', about: 'about', categories: 'categories', category: 'categories', archives: 'archives' };
+function App() {
+  const [route, setRoute] = React.useState(() => { try { return JSON.parse(localStorage.getItem('gb-kit-route')) || { page: 'articles' }; } catch (e) { return { page: 'articles' }; } });
+  React.useEffect(() => { document.documentElement.dataset.theme = 'dark'; }, []);
+  React.useEffect(() => { localStorage.setItem('gb-kit-route', JSON.stringify(route)); }, [route]);
+  const go = (r) => { setRoute(r); window.scrollTo(0, 0); };
+  const onNavigate = (k) => go({ page: k });
+  let screen;
+  switch (route.page) {
+    case 'post': screen = <PostScreen slug={route.slug} go={go} />; break;
+    case 'categories': screen = <CategoriesScreen go={go} />; break;
+    case 'category': screen = <CategoryScreen cat={route.cat} go={go} />; break;
+    case 'archives': screen = <ArchivesScreen go={go} />; break;
+    case 'about': screen = <AboutScreen />; break;
+    default: screen = <ArticlesScreen go={go} />;
+  }
+  const post = route.page === 'post' ? (GB_DATA.posts.find((p) => p.slug === route.slug) || GB_DATA.posts[0]) : null;
+  const seriesCat = route.page === 'category' ? (route.cat || 'computer-organization') : post ? post.primarySlug : null;
+  return <Shell nav={NAV[route.page] || 'articles'} onNavigate={onNavigate} wide={route.page === 'post'} seriesCat={seriesCat} activeSlug={post ? post.slug : null}
+    onCategory={(cat) => go({ page: 'category', cat })} onPost={(slug) => go({ page: 'post', slug })}>{screen}</Shell>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

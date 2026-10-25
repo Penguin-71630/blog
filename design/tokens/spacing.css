@@ -1,0 +1,28 @@
+/* Gino's Blog — spacing, layout, radius, motion. Layout mirrors wiwiho-blog-reference. */
+:root{
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;--space-6:24px;--space-8:32px;--space-10:40px;--space-12:48px;--space-20:80px;
+
+  --container-max:1024px;    /* list pages (max-w-5xl) */
+  --container-post:1240px;   /* post page: sidebar + prose + sticky TOC */
+  --sidebar-width:208px;     /* w-60 */
+  --sidebar-top:40px;        /* sticky top-10 */
+  --column-gap:32px;         /* md:gap-8 */
+  --prose-max:812px;
+  --toc-width:168px;
+  --mobile-bar-h:64px;       /* h-16 */
+  --card-list-gap:32px;
+  --icon-category:42px;      /* list card icon next to 24px title */
+  --icon-category-mobile:32px;
+
+  --radius-xs:2px;
+  --radius-sm:4px;           /* callouts, images, inline code */
+  --radius-md:6px;           /* code blocks, tables */
+  --radius-lg:8px;           /* article card hover, tiles */
+  --radius-xl:12px;          /* nav item (right side), theme toggle */
+  --radius-full:999px;
+
+  --ease:cubic-bezier(.2,.6,.2,1); /* @kind other */
+  --dur-fast:150ms; /* @kind other */
+  --dur:250ms; /* @kind other */
+  --dur-fade:400ms; /* @kind other */          /* slider / carousel cross-dissolve */
+}

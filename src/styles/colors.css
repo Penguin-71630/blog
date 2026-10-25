@@ -1,0 +1,99 @@
+/* Gino's Blog — color tokens.
+   Base values are the finalized palette "1b Mint Chalk" (palette/palette-mint-chalk.css), copied verbatim.
+   Concept: 黑板與粉筆 (dark, default) / 紙張與墨水 (light). Put data-theme on <html>. */
+:root,[data-theme="dark"]{
+  --bg:#11161d;
+  --surface:oklch(0.265 0.022 250);        /* #1d2630 · re-tinted from #11161d */
+  --surface-hover:oklch(0.305 0.023 250);  /* #26303a */
+  --border:oklch(0.37 0.022 248);          /* #37414b */
+  --text:oklch(0.91 0.012 230);            /* #dae3e8 */
+  --muted:oklch(0.72 0.028 235);           /* #94a8b4 */
+  --faint:oklch(0.52 0.022 235);           /* dimmer meta text (dates) · ~3.7:1 bg / ~3.1:1 surface */
+  --accent:#d1c09f;                        /* yellow-orange chalk · hsl(40 35% 72%) — sat from bg, lightness from old mint */
+  --accent-soft:rgb(209 192 159 / 0.10);
+  --accent-line:rgb(209 192 159 / 0.45);
+  --quote:oklch(0.79 0.035 215);
+  --quote-line:oklch(0.79 0.035 215 / 0.6);
+  --callout-l:0.80; /* @kind other */
+  --callout-c:0.09; /* @kind other */
+  --callout-bg-a:0.09; /* @kind other */
+  --callout-bd-a:0.38; /* @kind other */
+  --chalk-filter:none; /* @kind other */                     /* hand-drawn white line art shown as-is */
+  --header-glass:oklch(0.17 0.02 255 / 0.8);
+  --shadow-image:0 1px 2px rgb(0 0 0 / 0.35),0 4px 14px rgb(0 0 0 / 0.28);
+  --shadow-pop:0 8px 28px rgb(0 0 0 / 0.45);
+  --overlay:rgb(8 12 18 / 0.86);
+  color-scheme:dark;
+}
+[data-theme="light"]{
+  --bg:oklch(0.977 0.005 230);             /* #f4f8fa paper */
+  --surface:oklch(0.947 0.009 230);        /* #e8eff2 */
+  --surface-hover:oklch(0.925 0.011 230);  /* #dfe8ec */
+  --border:oklch(0.875 0.012 230);         /* #ced7dc */
+  --text:oklch(0.24 0.035 252);            /* #13202f ink */
+  --muted:oklch(0.47 0.03 245);            /* #4d5d6b */
+  --faint:oklch(0.47 0.03 245);            /* light: same as muted to keep contrast */
+  --accent:#534428;                         /* ink ochre · hsl(40 35% 24%) */
+  --accent-soft:rgb(83 68 40 / 0.09);
+  --accent-line:rgb(83 68 40 / 0.45);
+  --quote:oklch(0.46 0.04 215);
+  --quote-line:oklch(0.46 0.04 215 / 0.6);
+  --callout-l:0.48; /* @kind other */
+  --callout-c:0.11; /* @kind other */
+  --callout-bg-a:0.07; /* @kind other */
+  --callout-bd-a:0.35; /* @kind other */
+  --chalk-filter:invert(1) brightness(0.18); /* @kind other */  /* white chalk art → dark ink lines */
+  --header-glass:oklch(0.977 0.005 230 / 0.82);
+  --shadow-image:0 1px 2px rgb(19 32 47 / 0.10),0 4px 14px rgb(19 32 47 / 0.08);
+  --shadow-pop:0 8px 28px rgb(19 32 47 / 0.16);
+  --overlay:rgb(244 248 250 / 0.92);
+  color-scheme:light;
+}
+/* Derived tokens — redeclared on every theme scope so they recompute per theme. */
+:root,[data-theme]{
+  /* chalk hues (callout groups + syntax) */
+  --hue-blue:250; /* @kind other */
+  --hue-cyan:200; /* @kind other */
+  --hue-green:150; /* @kind other */
+  --hue-yellow:88; /* @kind other */
+  --hue-red:25; /* @kind other */
+  --hue-purple:305; /* @kind other */
+  --chalk-blue:oklch(var(--callout-l) var(--callout-c) 250);
+  --chalk-cyan:oklch(var(--callout-l) var(--callout-c) 200);
+  --chalk-green:oklch(var(--callout-l) var(--callout-c) 150);
+  --chalk-yellow:oklch(var(--callout-l) var(--callout-c) 88);
+  --chalk-red:oklch(var(--callout-l) var(--callout-c) 25);
+  --chalk-purple:oklch(var(--callout-l) var(--callout-c) 305);
+  --chalk-gray:oklch(var(--callout-l) 0.012 250);
+  /* semantic aliases */
+  --surface-page:var(--bg);
+  --surface-card:var(--surface);
+  --surface-card-hover:var(--surface-hover);
+  --surface-code:var(--surface);
+  --surface-code-inline:var(--surface);
+  --surface-sidebar:var(--bg);
+  --text-body:var(--text);
+  --text-heading:var(--text);       /* H1–H5: same as body, never colored */
+  --text-h6:var(--muted);
+  --text-secondary:var(--muted);
+  --text-date:var(--faint);
+  --text-link:var(--accent);
+  --text-strong:var(--text);        /* bold/italic: never colored */
+  --border-subtle:var(--border);
+  --nav-active-bg:var(--accent-soft);
+  --nav-active-fg:var(--accent);
+  --nav-active-bar:var(--accent);
+  --mark-bg:oklch(var(--callout-l) var(--callout-c) 88 / 0.22);
+  /* syntax highlighting */
+  --syntax-keyword:var(--chalk-purple);
+  --syntax-function:var(--chalk-blue);
+  --syntax-number:var(--chalk-yellow);
+  --syntax-string:var(--chalk-green);
+  --syntax-type:var(--chalk-cyan);
+  --syntax-comment:var(--muted);
+  /* custom list markers */
+  --marker-info:var(--chalk-blue);
+  --marker-key:var(--chalk-yellow);
+  --marker-pro:var(--chalk-green);
+  --marker-con:var(--chalk-red);
+}

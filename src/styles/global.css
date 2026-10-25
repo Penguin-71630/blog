@@ -1,0 +1,10 @@
+/* Entry point — same order as design/styles.css. Icons are inline SVG (src/components/Icon.astro), no icon fonts. */
+@import "katex/dist/katex.min.css";
+@import "./fonts.css";
+@import "./cjk.css";
+@import "./colors.css";
+@import "./typography.css";
+@import "./spacing.css";
+@import "./prose.css";
+@import "./components.css";
+@import "./icons.css";

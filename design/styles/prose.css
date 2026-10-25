@@ -1,0 +1,61 @@
+/* Gino's Blog — base + rendered-Markdown prose. Wrap post bodies in .gb-prose. */
+html{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:var(--weight-body);-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--text);transition:background-color var(--dur) var(--ease),color var(--dur) var(--ease)}
+a{color:var(--accent);text-decoration:underline;text-decoration-color:var(--accent-line);text-underline-offset:3px;text-decoration-thickness:1px;transition:color var(--dur-fast),text-decoration-color var(--dur-fast)}
+a:hover{text-decoration-color:var(--accent)}
+::selection{background:rgb(209 192 159 / 0.28)}
+
+.gb-prose{font-size:var(--size-body);line-height:var(--leading-body);font-weight:var(--weight-body);color:var(--text);text-wrap:pretty;overflow-wrap:break-word;min-width:0}
+.gb-prose>*:first-child{margin-top:0}
+.gb-prose p{margin:0 0 .9em}
+.gb-prose strong,.gb-prose b{font-weight:var(--weight-body-strong);color:inherit}
+.gb-prose em{font-style:italic;color:inherit}
+.gb-prose mark{background:var(--mark-bg);color:inherit;padding:.05em .2em;border-radius:var(--radius-xs)}
+.gb-prose del{color:var(--muted)}
+
+/* H2–H6: Pagella Bold + Noto Serif TC Bold, never colored. Small caps off (trial) — restore: font-variant-caps:small-caps;font-feature-settings:"smcp" 1 */
+.gb-prose :is(h2,h3,h4,h5,h6),.gb-heading{font-family:var(--font-heading);font-weight:var(--weight-heading);color:var(--text-heading);line-height:var(--leading-heading);font-synthesis:none;letter-spacing:.01em;margin:1.8em 0 .6em;scroll-margin-top:24px}
+.gb-prose h2{font-size:var(--h2);padding-bottom:.3em;border-bottom:1px solid var(--border)}
+.gb-prose h3{font-size:var(--h3)}
+.gb-prose h4{font-size:var(--h4)}
+.gb-prose h5{font-size:var(--h5)}
+.gb-prose h6{font-size:var(--h6);color:var(--text-h6)}
+/* math inside headings keeps its own glyphs */
+.gb-prose :is(h2,h3,h4,h5,h6) :is(.katex,.katex *,.math,.math *){font-variant-caps:normal;font-feature-settings:normal;text-transform:none}
+
+.gb-prose ul,.gb-prose ol{margin:0 0 .9em;padding-left:1.5em}
+.gb-prose li{margin:.2em 0}
+.gb-prose li::marker{color:var(--muted)}
+
+.gb-prose blockquote{margin:1em 0;padding:.2em 0 .45em 1em;border-left:3px solid var(--quote-line);color:var(--quote);font-style:italic}
+.gb-prose blockquote :is(strong,em,.katex){color:inherit}
+.gb-prose blockquote>*:last-child{margin-bottom:0}
+.gb-prose blockquote>*:first-child{margin-top:0}
+
+.gb-prose code{font-family:var(--font-mono);font-size:var(--size-code);font-weight:400;background:var(--surface-code-inline);border-radius:var(--radius-sm);padding:.12em .38em}
+.gb-prose pre{font-family:var(--font-mono);font-size:14.5px;line-height:1.6;background:var(--surface-code);border-radius:var(--radius-md);padding:14px 18px;margin:1em 0 1.2em;overflow-x:auto;tab-size:4}
+.gb-prose pre code{background:none;padding:0;font-size:inherit;border-radius:0}
+
+.gb-prose hr{border:0;border-top:1px solid var(--border);margin:2em 0}
+.gb-prose .katex{font-size:1.05em}
+.gb-prose .katex-display{overflow-x:auto;overflow-y:hidden;padding:.2em 0}
+
+/* tables: centered, content-width, alignment from :---: */
+.gb-table-wrap{overflow-x:auto;margin:1.2em 0;display:flex}
+.gb-table-wrap>table{margin:0 auto}
+.gb-prose table{border-collapse:collapse;font-size:15.5px;line-height:1.55}
+.gb-prose th{font-weight:var(--weight-body-strong);text-align:left;border-bottom:1px solid var(--muted);padding:6px 12px}
+.gb-prose td{border-bottom:1px solid var(--border);padding:6px 12px;vertical-align:top}
+.gb-prose tbody tr:last-child td{border-bottom:0}
+
+/* syntax tokens (hljs-compatible class names) */
+.gb-prose :is(.hljs-keyword,.tok-k){color:var(--syntax-keyword)}
+.gb-prose :is(.hljs-title,.hljs-title.function_,.tok-f){color:var(--syntax-function)}
+.gb-prose :is(.hljs-number,.tok-n){color:var(--syntax-number)}
+.gb-prose :is(.hljs-string,.tok-s){color:var(--syntax-string)}
+.gb-prose :is(.hljs-type,.hljs-built_in,.tok-t){color:var(--syntax-type)}
+.gb-prose :is(.hljs-comment,.tok-c){color:var(--syntax-comment);font-style:italic}
+
+/* ruby */
+.gb-prose ruby rt{font-size:.55em;color:var(--muted);font-weight:400;letter-spacing:.02em}
+.gb-prose ruby{ruby-position:over}

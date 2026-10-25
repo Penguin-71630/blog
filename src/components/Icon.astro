@@ -1,0 +1,26 @@
+---
+// Inline SVG icon. `name` is the class the design used for the icon-font glyph
+// (`ri-…` for Remix, `icon-…` for Lucide), so markup ported from the mockup keeps its selectors.
+import { icons, type IconName } from '../icons';
+
+interface Props {
+	name: IconName;
+	class?: string;
+	label?: string;
+}
+
+const { name, class: className, label } = Astro.props;
+
+const svg = icons[name]
+	.replace(/<!--[\s\S]*?-->/g, '')
+	.replace(/\s(?:width|height|class)="[^"]*"/g, '')
+	.trim();
+---
+
+<i
+	class:list={['gb-icon', name, className]}
+	aria-hidden={label ? undefined : 'true'}
+	aria-label={label}
+	role={label ? 'img' : undefined}
+	set:html={svg}
+/>
