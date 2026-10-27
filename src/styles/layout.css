@@ -1,0 +1,22 @@
+.gb-topbar-start{display:flex;align-items:center;gap:8px}
+.gb-drawer .gb-icon-btn.is-bare{top:0}
+.gb-page-title.is-page{margin-bottom:32px}
+.gb-page-about .gb-page-title.is-page{margin-bottom:24px}
+.gb-page-archives .gb-page-title.is-page{margin-bottom:0}
+.gb-page-archives .gb-page-placeholder{margin-top:8px}
+.gb-page-placeholder{margin:0;color:var(--muted)}
+
+@media (min-width:768px){
+  .gb-shell{max-width:var(--container-post);margin:0 auto;padding:32px 32px 0;min-height:100vh;box-sizing:border-box;display:flex;flex-direction:column}
+  .gb-shell-body{flex:1;display:flex;gap:var(--column-gap)}
+  .gb-main{flex:1;min-width:0;padding-top:16px;max-width:var(--prose-max)}
+  .gb-main.is-wide{max-width:none}
+  .gb-topbar,.gb-drawer,.gb-drawer-scrim{display:none}
+}
+
+@media (max-width:767.98px){
+  .gb-sidebar{display:none}
+  .gb-shell{min-height:calc(100vh - var(--mobile-bar-h));display:flex;flex-direction:column;padding:0 16px;box-sizing:border-box}
+  .gb-shell-body{flex:1;display:flex;min-width:0}
+  .gb-main{flex:1;min-width:0;padding-top:24px;max-width:none}
+}

@@ -1,0 +1,28 @@
+---
+import NavItem from './NavItem.astro';
+import SiteTitle from './SiteTitle.astro';
+import { NAV_ITEMS, type NavKey } from './nav';
+
+interface Props {
+	active: NavKey;
+}
+
+const { active } = Astro.props;
+---
+
+<aside class="gb-sidebar">
+	<div class="gb-brand">
+		<div class="gb-brand-row">
+			<SiteTitle />
+		</div>
+		<p class="gb-tagline">心之所向，身之所往。</p>
+	</div>
+	<nav class="gb-nav" aria-label="主要導覽">
+		{
+			NAV_ITEMS.map(({ key, label, href, icon }) => (
+				<NavItem icon={icon} label={label} href={href} active={active === key} />
+			))
+		}
+	</nav>
+	<slot />
+</aside>

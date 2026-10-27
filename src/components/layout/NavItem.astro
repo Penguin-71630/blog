@@ -1,0 +1,18 @@
+---
+import Icon from '../Icon.astro';
+import type { IconName } from '../../icons';
+
+interface Props {
+	icon: IconName;
+	label: string;
+	href: string;
+	active?: boolean;
+}
+
+const { icon, label, href, active = false } = Astro.props;
+---
+
+<a class="gb-nav-item" href={href} aria-current={active ? 'page' : undefined}>
+	<Icon name={icon} />
+	<span>{label}</span>
+</a>

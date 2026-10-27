@@ -1,0 +1,89 @@
+---
+import Icon from '../Icon.astro';
+import NavItem from './NavItem.astro';
+import SiteTitle from './SiteTitle.astro';
+import { NAV_ITEMS, type NavKey } from './nav';
+
+interface Props {
+	active: NavKey;
+}
+
+const { active } = Astro.props;
+---
+
+<header class="gb-topbar">
+	<div class="gb-topbar-start">
+		<button
+			type="button"
+			class="gb-icon-btn is-ghost"
+			aria-label="開啟導覽選單"
+			aria-expanded="false"
+			aria-controls="gb-drawer"
+		>
+			<Icon name="ri-menu-line" />
+		</button>
+		<SiteTitle />
+	</div>
+</header>
+<div class="gb-drawer-scrim" aria-hidden="true"></div>
+<aside id="gb-drawer" class="gb-drawer" aria-hidden="true" inert>
+	<div class="gb-brand">
+		<div class="gb-brand-row">
+			<SiteTitle />
+			<button type="button" class="gb-icon-btn is-bare" aria-label="關閉導覽選單">
+				<Icon name="ri-close-line" />
+			</button>
+		</div>
+		<p class="gb-tagline">心之所向，身之所往。</p>
+	</div>
+	<nav class="gb-nav" aria-label="主要導覽">
+		{
+			NAV_ITEMS.map(({ key, label, href, icon }) => (
+				<NavItem icon={icon} label={label} href={href} active={active === key} />
+			))
+		}
+	</nav>
+	<slot />
+</aside>
+
+<script>
+	const menuButton = document.querySelector<HTMLButtonElement>(
+		'.gb-topbar [aria-controls="gb-drawer"]',
+	);
+	const drawer = document.getElementById('gb-drawer');
+	const scrim = document.querySelector('.gb-drawer-scrim');
+	const closeButton = drawer?.querySelector<HTMLButtonElement>('.gb-icon-btn.is-bare');
+	let previousOverflow = '';
+
+	function closeDrawer() {
+		if (!drawer?.classList.contains('is-open')) return;
+		drawer.classList.remove('is-open');
+		scrim?.classList.remove('is-open');
+		drawer.setAttribute('aria-hidden', 'true');
+		drawer.setAttribute('inert', '');
+		menuButton?.setAttribute('aria-expanded', 'false');
+		document.body.style.overflow = previousOverflow;
+		menuButton?.focus();
+	}
+
+	menuButton?.addEventListener('click', () => {
+		if (!drawer || drawer.classList.contains('is-open')) return;
+		previousOverflow = document.body.style.overflow;
+		drawer.classList.add('is-open');
+		scrim?.classList.add('is-open');
+		drawer.removeAttribute('inert');
+		drawer.setAttribute('aria-hidden', 'false');
+		menuButton.setAttribute('aria-expanded', 'true');
+		document.body.style.overflow = 'hidden';
+		closeButton?.focus();
+	});
+
+	closeButton?.addEventListener('click', closeDrawer);
+	scrim?.addEventListener('click', closeDrawer);
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') closeDrawer();
+	});
+	drawer?.addEventListener('click', (event) => {
+		if (event.target instanceof Element && event.target.closest('a')) closeDrawer();
+	});
+</script>

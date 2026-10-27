@@ -1,0 +1,26 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Footer from '../components/layout/Footer.astro';
+import MobileTopBar from '../components/layout/MobileTopBar.astro';
+import Sidebar from '../components/layout/Sidebar.astro';
+import type { NavKey } from '../components/layout/nav';
+
+interface Props {
+	title?: string;
+	nav: NavKey;
+	wide?: boolean;
+}
+
+const { title, nav, wide = false } = Astro.props;
+---
+
+<BaseLayout title={title}>
+	<MobileTopBar active={nav}><slot name="sidebar" /></MobileTopBar>
+	<div class="gb-shell">
+		<div class="gb-shell-body">
+			<Sidebar active={nav}><slot name="sidebar" /></Sidebar>
+			<main class:list={['gb-main', { 'is-wide': wide }]}><slot /></main>
+		</div>
+		<Footer />
+	</div>
+</BaseLayout>
