@@ -1,5 +1,6 @@
 .gb-topbar-start{display:flex;align-items:center;gap:8px}
-.gb-drawer .gb-icon-btn.is-bare{top:0}
+.gb-drawer{width:60vw}
+.gb-drawer:focus{outline:none}
 .gb-page-title.is-page{margin-bottom:32px}
 .gb-page-about .gb-page-title.is-page{margin-bottom:24px}
 .gb-page-archives .gb-page-title.is-page{margin-bottom:0}
