@@ -2066,7 +2066,7 @@ try { (() => {
 window.GB_DATA = {
   icon: '../../assets/placeholders/notes.png',
   titleImage: '../../assets/brand/site-title-chalk.webp',
-  categories: [['Operating System', 'operating-system'], ['Computer Organization', 'computer-organization'], ['DS, Algorithms', 'dsa-cp'], ['Linear Algebra', 'linear-algebra'], ['Discrete Mathematics', 'discrete-mathematics'], ['Parallel Programming', 'parallel-programming'], ['Compiler (Frontend)', 'compiler-frontend'], ['Formal Language', 'formal-language'], ['Language Learning', 'language-learning'], ['Other Course Notes', 'other-course-notes'], ['Life Logs', 'life-logs'], ['Rhythm Game', 'rhythm-game'], ['Miscellaneous', 'miscellaneous']].map(([name, slug], i) => ({
+  categories: [['Operating System', 'operating-system'], ['Computer Organization', 'computer-organization'], ['DS, Algorithms', 'ds-algo'], ['Linear Algebra', 'linear-algebra'], ['Discrete Mathematics', 'discrete-mathematics'], ['Parallel Programming', 'parallel-programming'], ['Compiler (Frontend)', 'compiler-frontend'], ['Formal Language', 'formal-language'], ['Language Learning', 'language-learning'], ['Other Course Notes', 'other-course-notes'], ['Life Logs', 'life-logs'], ['Rhythm Game', 'rhythm-game'], ['Miscellaneous', 'miscellaneous']].map(([name, slug], i) => ({
     name,
     slug,
     icon: `../../assets/category-icons/${slug}.svg`,
