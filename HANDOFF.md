@@ -12,6 +12,7 @@
 - **設計稿**：`design/` 是 Claude Design 匯出的原型，只當參考，不會打包。
   - 開原型：`python3 -m http.server 8765 -d design`，再開 `/ui_kits/blog/`
   - `design/readme.md` 有完整的設計規範
+  - `design/DESIGN-SPEC.md` 是使用者的原始規格（§0 優先於其他段落），分類代稱、frontmatter 都以這份為準
 - **樣式**（`src/styles/`）：
   - `colors`、`typography`、`spacing`、`prose`、`components` 從 `design/` 照抄
   - 唯一改動：中文字型名稱改用 `var(--font-noto-sans-tc)`、`var(--font-noto-serif-tc)`

@@ -6,7 +6,7 @@ Visual concept: **黑板與粉筆 (chalkboard & chalk)** — dark mode is the de
 
 ## Sources
 - Codebase mount `Blog/` (read-only, local folder):
-  - `Blog/obsidian-blog-reference/DESIGN-SPEC.md` — **§0 is the final word**, overrides everything else. `README.md`, `SYNTAX-EXAMPLES.md`, `obsidian/` (Things 2.2.4 theme + `my-own.css`, visual reference for prose only), `legacy-components/` (old Astro components — inventory reference only, not reused).
+  - `Blog/obsidian-blog-reference/DESIGN-SPEC.md` (latest copy: `design/DESIGN-SPEC.md`) — **§0 is the final word**, overrides everything else. `README.md`, `SYNTAX-EXAMPLES.md`, `obsidian/` (Things 2.2.4 theme + `my-own.css`, visual reference for prose only), `legacy-components/` (old Astro components — inventory reference only, not reused).
   - `Blog/palette/palette-mint-chalk.css` — finalized palette "1b Mint Chalk" (copied verbatim into `tokens/colors.css`).
   - `Blog/blogpost-example/` — two real posts (Computer Organization/Cache, Discrete Mathematics/Graph Theory) + images → `assets/posts/`.
   - `Blog/wiwiho-blog-reference/` — friend's blog (https://wiwiho.me), built HTML/CSS + screenshots. **Layout and density only**; not its colors or fonts.
