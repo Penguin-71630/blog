@@ -16,7 +16,7 @@
 
 @media (max-width:767.98px){
   .gb-sidebar{display:none}
-  .gb-shell{min-height:calc(100vh - var(--mobile-bar-h));display:flex;flex-direction:column;padding:0 16px;box-sizing:border-box}
+  .gb-shell{min-height:calc(100vh - var(--mobile-bar-h) - 1px);display:flex;flex-direction:column;padding:0 16px;box-sizing:border-box}
   .gb-shell-body{flex:1;display:flex;min-width:0}
   .gb-main{flex:1;min-width:0;padding-top:24px;max-width:none}
 }
