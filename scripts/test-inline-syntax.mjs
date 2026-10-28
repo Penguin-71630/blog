@@ -192,6 +192,25 @@ const mermaid = await render([
 assert.match(mermaid.code, /<pre><code class="language-mermaid">/);
 assert.doesNotMatch(mermaid.code, /class="astro-code|class="line"/);
 
+const standaloneImage = await render('![Remote image](https://example.com/remote.png)');
+assert.match(standaloneImage.code, /<figure class="gb-figure"><img\b[^>]*alt="Remote image"[^>]*style="max-width:100%;height:auto"[^>]*><\/figure>/);
+assert.doesNotMatch(standaloneImage.code, /<figcaption>/);
+
+const inlineImage = await render('Text before ![Inline image](https://example.com/inline.png) and after.');
+assert.match(inlineImage.code, /<p>Text before <img\b[^>]*alt="Inline image"[^>]*> and after\.<\/p>/);
+assert.doesNotMatch(inlineImage.code, /<figure class="gb-figure"/);
+
+const multipleImages = await render('![First](https://example.com/first.png)\n![Second](https://example.com/second.png)');
+assert.equal((multipleImages.code.match(/<figure class="gb-figure">/g) ?? []).length, 2);
+assert.equal((multipleImages.code.match(/<img\b/g) ?? []).length, 2);
+
+const titledImage = await render('![Accessible alt](https://example.com/titled.png "Visible caption")');
+assert.match(titledImage.code, /<figure class="gb-figure"><img\b[^>]*alt="Accessible alt"[^>]*><figcaption>Visible caption<\/figcaption><\/figure>/);
+
+const obsidianImage = await render('![[Maimai-april-shower-15.png]]');
+assert.equal((obsidianImage.code.match(/<figure class="gb-figure">/g) ?? []).length, 1);
+assert.doesNotMatch(obsidianImage.code, /<figure class="gb-figure"><figure class="gb-figure">/);
+
 const carousel = await render([
 	'> [!carousel|fade]',
 	'> ![[Maimai-april-shower-15.png]]',

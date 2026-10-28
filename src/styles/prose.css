@@ -8,6 +8,7 @@ a:hover{text-decoration-color:var(--accent)}
 .gb-prose{font-size:var(--size-body);line-height:var(--leading-body);font-weight:var(--weight-body);color:var(--text);text-wrap:pretty;overflow-wrap:break-word;min-width:0}
 .gb-prose>*:first-child{margin-top:0}
 .gb-prose p{margin:0 0 .9em}
+.gb-prose img{max-width:100%;height:auto}
 .gb-prose strong,.gb-prose b{font-weight:var(--weight-body-strong);color:inherit}
 .gb-prose em{font-style:italic;color:inherit}
 .gb-prose mark{background:var(--mark-bg);color:inherit;padding:.05em .2em;border-radius:var(--radius-xs)}

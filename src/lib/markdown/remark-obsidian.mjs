@@ -336,6 +336,30 @@ function makeFigure(file, reference) {
 	};
 }
 
+function makeMarkdownFigure(image) {
+	const properties = image.data?.hProperties ?? {};
+	image.data = {
+		...image.data,
+		hProperties: {
+			...properties,
+			style: [properties.style, 'max-width:100%;height:auto'].filter(Boolean).join(';'),
+		},
+	};
+	const children = [image];
+	if (image.title) {
+		children.push({
+			type: 'paragraph',
+			data: { hName: 'figcaption' },
+			children: [{ type: 'text', value: image.title }],
+		});
+	}
+	return {
+		type: 'paragraph',
+		data: { hName: 'figure', hProperties: { className: ['gb-figure'] } },
+		children,
+	};
+}
+
 function transformEmbeds(parent, file) {
 	if (!Array.isArray(parent.children)) return;
 
@@ -384,6 +408,26 @@ function transformEmbeds(parent, file) {
 			}
 		}
 		flushParagraph();
+	}
+	parent.children = expanded;
+}
+
+function transformStandaloneImages(parent) {
+	if (!Array.isArray(parent.children)) return;
+
+	const expanded = [];
+	for (const child of parent.children) {
+		if (child.type === 'paragraph' && child.data?.hName !== 'figure') {
+			const meaningful = (child.children ?? []).filter(
+				(node) => !(node.type === 'break' || (node.type === 'text' && !node.value.trim())),
+			);
+			if (meaningful.length && meaningful.every((node) => node.type === 'image')) {
+				expanded.push(...meaningful.map(makeMarkdownFigure));
+				continue;
+			}
+		}
+		transformStandaloneImages(child);
+		expanded.push(child);
 	}
 	parent.children = expanded;
 }
@@ -832,6 +876,7 @@ export default function remarkObsidian() {
 		normalizeCodeLanguages(tree);
 		replaceInlineSyntax(tree, file);
 		transformEmbeds(tree, file);
+		transformStandaloneImages(tree);
 		transformCallouts(tree, file, lineStarts);
 		transformSpecialCallouts(tree);
 		transformCarousels(tree);
