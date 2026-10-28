@@ -14,8 +14,7 @@ const { posts, current, total } = Astro.props;
 ---
 
 <PageTitle>Articles</PageTitle>
-<Pagination current={current} total={total} base="/" position="top" />
 <div class="gb-article-list">
 	{posts.map((post) => <ArticleCard post={post} />)}
 </div>
-<Pagination current={current} total={total} base="/" position="bottom" />
+<Pagination current={current} total={total} base="/" />

@@ -128,6 +128,20 @@ assert.equal((cpp.code.match(/role="tab"/g) ?? []).length, 3);
 assert.equal((cpp.code.match(/class="gb-tabpanel"/g) ?? []).length, 3);
 assert.doesNotMatch(cpp.code, /data-fade/);
 
+const cppCode = await render('```cpp\nint main() {\n  return 0;\n}\n```');
+assert.match(cppCode.code, /<div class="gb-code"><span class="gb-code-lang">cpp<\/span><button type="button" class="gb-code-copy" aria-label="Copy code" title="Copy">/);
+assert.match(cppCode.code, /<svg class="ri-file-copy-line"[\s\S]*<svg class="ri-check-line"/);
+assert.match(cppCode.code, /<\/button><pre class="astro-code/);
+
+const plaintext = await render('```plaintext\nPlain text.\n```');
+assert.match(plaintext.code, /<div class="gb-code"><button type="button" class="gb-code-copy"/);
+assert.match(plaintext.code, /<\/button><pre class="astro-code[^>]*data-language="plaintext"/);
+assert.doesNotMatch(plaintext.code, /gb-code-lang/);
+
+const noLanguage = await render('```\nUnlabelled text.\n```');
+assert.match(noLanguage.code, /<div class="gb-code"><button type="button" class="gb-code-copy"/);
+assert.doesNotMatch(noLanguage.code, /gb-code-lang/);
+
 const chapter3Nested = [
 	'> [!tabs]',
 	'> > [!panel] 正常範例',
@@ -178,6 +192,7 @@ const abc = await render([
 ].join('\n'));
 assert.match(abc.code, /<pre><code class="language-abc">/);
 assert.doesNotMatch(abc.code, /class="astro-code|class="line"/);
+assert.doesNotMatch(abc.code, /class="gb-code"/);
 
 const mermaid = await render([
 	'```mermaid',
@@ -191,6 +206,7 @@ const mermaid = await render([
 ].join('\n'));
 assert.match(mermaid.code, /<pre><code class="language-mermaid">/);
 assert.doesNotMatch(mermaid.code, /class="astro-code|class="line"/);
+assert.doesNotMatch(mermaid.code, /class="gb-code"/);
 
 const standaloneImage = await render('![Remote image](https://example.com/remote.png)');
 assert.match(standaloneImage.code, /<figure class="gb-figure"><img\b[^>]*alt="Remote image"[^>]*style="max-width:100%;height:auto"[^>]*><\/figure>/);

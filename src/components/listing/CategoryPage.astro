@@ -79,7 +79,6 @@ const base = `/categories/${category.slug}/`;
 			))}
 		</nav>
 	)}
-	<Pagination current={page.current} total={page.total} base={base} position="top" />
 	{posts.length === 0 ? (
 		<p class="gb-category-empty">這個分類還沒有文章。</p>
 	) : (
@@ -92,5 +91,5 @@ const base = `/categories/${category.slug}/`;
 			</section>
 		))
 	)}
-	<Pagination current={page.current} total={page.total} base={base} position="bottom" />
+	<Pagination current={page.current} total={page.total} base={base} />
 </SiteLayout>

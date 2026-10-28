@@ -86,10 +86,12 @@ const categoryPosts = (await getPublishedPosts()).filter((item) => item.primary 
 
 <script>
 	import { initCarousels } from '../../scripts/carousel.js';
+	import { initCodeCopy } from '../../scripts/code-copy.js';
 	import { initLightbox } from '../../scripts/lightbox.js';
 	import { initMarkdownComponents } from '../../scripts/markdown-components.js';
 
 	initCarousels();
+	initCodeCopy();
 	initMarkdownComponents();
 	initLightbox();
 </script>
