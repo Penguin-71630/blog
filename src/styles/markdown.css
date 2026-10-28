@@ -1,0 +1,51 @@
+.gb-prose pre.astro-code,
+.gb-prose pre.shiki {
+	--astro-code-color-text: var(--text);
+	--astro-code-color-background: var(--surface-code);
+	--shiki-color-text: var(--text);
+	--shiki-color-background: var(--surface-code);
+	--astro-code-token-constant: var(--syntax-number);
+	--shiki-token-constant: var(--syntax-number);
+	--astro-code-token-string: var(--syntax-string);
+	--shiki-token-string: var(--syntax-string);
+	--astro-code-token-comment: var(--syntax-comment);
+	--shiki-token-comment: var(--syntax-comment);
+	--astro-code-token-keyword: var(--syntax-keyword);
+	--shiki-token-keyword: var(--syntax-keyword);
+	--astro-code-token-function: var(--syntax-function);
+	--shiki-token-function: var(--syntax-function);
+	--astro-code-token-operator: var(--syntax-punctuation);
+	--shiki-token-operator: var(--syntax-punctuation);
+	--astro-code-token-punctuation: var(--syntax-punctuation);
+	--shiki-token-punctuation: var(--syntax-punctuation);
+	--astro-code-token-parameter: var(--syntax-variable);
+	--shiki-token-parameter: var(--syntax-variable);
+	--astro-code-token-variable: var(--syntax-variable);
+	--shiki-token-variable: var(--syntax-variable);
+	--astro-code-token-type: var(--syntax-type);
+	--shiki-token-type: var(--syntax-type);
+}
+
+.gb-callout.is-foldable:not([open]) .gb-fold {
+	transform: rotate(-90deg);
+}
+
+.gb-callout-title {
+	list-style: none;
+}
+
+.gb-callout-title::-webkit-details-marker {
+	display: none;
+}
+
+@media (min-width: 1180px) {
+	.gb-toc-mobile {
+		display: none;
+	}
+}
+
+@media (max-width: 1179.98px) {
+	.gb-toc:not(.is-mobile) {
+		display: none;
+	}
+}
