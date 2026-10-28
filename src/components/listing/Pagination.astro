@@ -1,0 +1,36 @@
+---
+import Icon from '../Icon.astro';
+import { pageHref } from '../../lib/pagination';
+
+interface Props {
+	current: number;
+	total: number;
+	base: string;
+	position: 'top' | 'bottom';
+}
+
+const { current, total, base, position } = Astro.props;
+const pages = Array.from({ length: total }, (_, index) => index + 1);
+---
+
+{total > 1 && (
+	<nav class:list={['gb-pager', { 'gb-pager--top': position === 'top' }]} aria-label="分頁">
+		{current <= 1 ? (
+			<span class="is-disabled" aria-hidden="true"><Icon name="ri-arrow-left-s-line" /></span>
+		) : (
+			<a href={pageHref(base, current - 1)} aria-label="上一頁" rel="prev">
+				<Icon name="ri-arrow-left-s-line" />
+			</a>
+		)}
+		{pages.map((page) => (
+			<a href={pageHref(base, page)} aria-current={page === current ? 'page' : undefined}>{page}</a>
+		))}
+		{current >= total ? (
+			<span class="is-disabled" aria-hidden="true"><Icon name="ri-arrow-right-s-line" /></span>
+		) : (
+			<a href={pageHref(base, current + 1)} aria-label="下一頁" rel="next">
+				<Icon name="ri-arrow-right-s-line" />
+			</a>
+		)}
+	</nav>
+)}

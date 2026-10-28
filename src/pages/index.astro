@@ -1,15 +1,12 @@
 ---
-import ArticleCard from '../components/listing/ArticleCard.astro';
-import PageTitle from '../components/layout/PageTitle.astro';
+import ArticlesPage from '../components/listing/ArticlesPage.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { getPublishedPosts } from '../lib/posts';
+import { paginate } from '../lib/pagination';
 
-const posts = await getPublishedPosts();
+const page = paginate(await getPublishedPosts(), 1);
 ---
 
 <SiteLayout nav="articles">
-	<PageTitle>Articles</PageTitle>
-	<div class="gb-article-list">
-		{posts.map((post) => <ArticleCard post={post} />)}
-	</div>
+	<ArticlesPage posts={page.items} current={page.current} total={page.total} />
 </SiteLayout>

@@ -1,0 +1,22 @@
+---
+import CategoryPage from '../../../../components/listing/CategoryPage.astro';
+import { CATEGORIES } from '../../../../lib/categories';
+import { getPublishedPosts } from '../../../../lib/posts';
+import { paginate } from '../../../../lib/pagination';
+
+export async function getStaticPaths() {
+	const posts = await getPublishedPosts();
+	return CATEGORIES.flatMap((category) => {
+		const categoryPosts = posts.filter((post) => post.primarySlug === category.slug);
+		const { total } = paginate(categoryPosts, 1);
+		return Array.from({ length: Math.max(0, total - 1) }, (_, index) => ({
+			params: { slug: category.slug, page: String(index + 2) },
+			props: { category, posts: categoryPosts, current: index + 2 },
+		}));
+	});
+}
+
+const { category, posts, current } = Astro.props;
+---
+
+<CategoryPage category={category} posts={posts} current={current} />

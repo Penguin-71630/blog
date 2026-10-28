@@ -1,0 +1,96 @@
+---
+import GithubSlugger from 'github-slugger';
+import ArticleCard from './ArticleCard.astro';
+import CategoryIcon from './CategoryIcon.astro';
+import GroupDivider from './GroupDivider.astro';
+import Pagination from './Pagination.astro';
+import SeriesTree from './SeriesTree.astro';
+import Icon from '../Icon.astro';
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import type { Category } from '../../lib/categories';
+import type { Post } from '../../lib/posts';
+import { pageHref, paginate, PAGE_SIZE } from '../../lib/pagination';
+import { compareNaturally } from '../../lib/sorting';
+
+interface Props {
+	category: Category;
+	posts: Post[];
+	current: number;
+}
+
+const { category, posts, current } = Astro.props;
+const groupedPosts = new Map<string, Post[]>();
+
+for (const post of posts) {
+	const group = post.secondary ?? 'Others';
+	groupedPosts.set(group, [...(groupedPosts.get(group) ?? []), post]);
+}
+
+let offset = 0;
+const slugger = new GithubSlugger();
+const groups = [...groupedPosts.entries()]
+	.sort(([left], [right]) =>
+		left === 'Others' ? (right === 'Others' ? 0 : 1) : right === 'Others' ? -1 : compareNaturally(left, right),
+	)
+	.map(([name, groupPosts]) => {
+		const orderedPosts = groupPosts.sort((left, right) => compareNaturally(left.title, right.title));
+		const firstPage = Math.floor(offset / PAGE_SIZE) + 1;
+		offset += orderedPosts.length;
+		return {
+			name,
+			id: `g-${slugger.slug(name)}`,
+			firstPage,
+			posts: orderedPosts,
+		};
+	});
+const flattenedPosts = groups.flatMap((group) => group.posts);
+const page = paginate(flattenedPosts, current);
+const pagePostSet = new Set(page.items);
+const pageGroups = groups
+	.map((group) => ({ ...group, posts: group.posts.filter((post) => pagePostSet.has(post)) }))
+	.filter((group) => group.posts.length > 0);
+const base = `/categories/${category.slug}/`;
+---
+
+<SiteLayout
+	title={page.current > 1 ? `${category.name} · 第 ${page.current} 頁 · Gino's Blog` : `${category.name} · Gino's Blog`}
+	nav="categories"
+>
+	<Fragment slot="sidebar">
+		<SeriesTree title={category.name} categorySlug={category.slug} posts={posts} isActive />
+	</Fragment>
+	<a class="gb-category-back" href="/categories/">
+		<Icon name="ri-arrow-left-s-line" />
+		Categories
+	</a>
+	<header class="gb-category-header">
+		<CategoryIcon slug={category.slug} size={58} />
+		<div class="gb-category-heading">
+			<h1 class="gb-page-title gb-category-title">{category.name}</h1>
+			<p class="gb-category-count">{posts.length} 篇文章</p>
+		</div>
+	</header>
+	{groups.length > 1 && (
+		<nav class="gb-category-jumps" aria-label="分類文章群組">
+			{groups.map((group) => (
+				<a href={group.firstPage === page.current ? `#${group.id}` : `${pageHref(base, group.firstPage)}#${group.id}`}>
+					{group.name}
+				</a>
+			))}
+		</nav>
+	)}
+	<Pagination current={page.current} total={page.total} base={base} position="top" />
+	{posts.length === 0 ? (
+		<p class="gb-category-empty">這個分類還沒有文章。</p>
+	) : (
+		pageGroups.map((group) => (
+			<section>
+				<GroupDivider label={group.name} id={group.id} />
+				<div class="gb-article-list">
+					{group.posts.map((post) => <ArticleCard post={post} />)}
+				</div>
+			</section>
+		))
+	)}
+	<Pagination current={page.current} total={page.total} base={base} position="bottom" />
+</SiteLayout>

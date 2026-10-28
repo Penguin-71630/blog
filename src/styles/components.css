@@ -101,6 +101,7 @@
 .gb-pager a:hover{color:var(--accent);background:var(--surface)}
 .gb-pager [aria-current="page"]{color:var(--accent)}
 .gb-pager .is-disabled{opacity:.35;pointer-events:none}
+.gb-pager--top{margin:0 0 28px}
 
 /* ---------- TOC ---------- */
 .gb-toc{position:sticky;top:var(--sidebar-top);width:var(--toc-width);flex-shrink:0;align-self:flex-start;font-size:13.5px;line-height:1.5}

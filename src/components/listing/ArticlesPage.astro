@@ -1,0 +1,21 @@
+---
+import ArticleCard from './ArticleCard.astro';
+import PageTitle from '../layout/PageTitle.astro';
+import Pagination from './Pagination.astro';
+import type { Post } from '../../lib/posts';
+
+interface Props {
+	posts: Post[];
+	current: number;
+	total: number;
+}
+
+const { posts, current, total } = Astro.props;
+---
+
+<PageTitle>Articles</PageTitle>
+<Pagination current={current} total={total} base="/" position="top" />
+<div class="gb-article-list">
+	{posts.map((post) => <ArticleCard post={post} />)}
+</div>
+<Pagination current={current} total={total} base="/" position="bottom" />

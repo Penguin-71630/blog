@@ -1,19 +1,7 @@
 ---
-import GithubSlugger from 'github-slugger';
-import ArticleCard from '../../components/listing/ArticleCard.astro';
-import CategoryIcon from '../../components/listing/CategoryIcon.astro';
-import GroupDivider from '../../components/listing/GroupDivider.astro';
-import SeriesTree from '../../components/listing/SeriesTree.astro';
-import Icon from '../../components/Icon.astro';
-import SiteLayout from '../../layouts/SiteLayout.astro';
-import { CATEGORIES, type Category } from '../../lib/categories';
-import { getPublishedPosts, type Post } from '../../lib/posts';
-import { compareNaturally } from '../../lib/sorting';
-
-interface Props {
-	category: Category;
-	posts: Post[];
-}
+import CategoryPage from '../../components/listing/CategoryPage.astro';
+import { CATEGORIES } from '../../lib/categories';
+import { getPublishedPosts } from '../../lib/posts';
 
 export async function getStaticPaths() {
 	const posts = await getPublishedPosts();
@@ -22,57 +10,12 @@ export async function getStaticPaths() {
 		props: {
 			category,
 			posts: posts.filter((post) => post.primarySlug === category.slug),
+			current: 1,
 		},
 	}));
 }
 
-const { category, posts } = Astro.props;
-const groupedPosts = new Map<string, Post[]>();
-
-for (const post of posts) {
-	const group = post.secondary ?? 'Others';
-	groupedPosts.set(group, [...(groupedPosts.get(group) ?? []), post]);
-}
-
-const slugger = new GithubSlugger();
-const groups = [...groupedPosts.entries()]
-	.sort(([left], [right]) =>
-		left === 'Others' ? (right === 'Others' ? 0 : 1) : right === 'Others' ? -1 : compareNaturally(left, right),
-	)
-	.map(([name, groupPosts]) => ({
-		name,
-		id: `g-${slugger.slug(name)}`,
-		posts: groupPosts.sort((left, right) => compareNaturally(left.title, right.title)),
-	}));
+const { category, posts, current } = Astro.props;
 ---
 
-<SiteLayout title={`${category.name} · Gino's Blog`} nav="categories">
-	<Fragment slot="sidebar">
-		<SeriesTree title={category.name} categorySlug={category.slug} posts={posts} isActive />
-	</Fragment>
-	<a class="gb-category-back" href="/categories/">
-		<Icon name="ri-arrow-left-s-line" />
-		Categories
-	</a>
-	<header class="gb-category-header">
-		<CategoryIcon slug={category.slug} size={58} />
-		<div class="gb-category-heading">
-			<h1 class="gb-page-title gb-category-title">{category.name}</h1>
-			<p class="gb-category-count">{posts.length} 篇文章</p>
-		</div>
-	</header>
-	{groups.length > 1 && (
-		<nav class="gb-category-jumps" aria-label="分類文章群組">
-			{groups.map((group) => <a href={`#${group.id}`}>{group.name}</a>)}
-		</nav>
-	)}
-	{posts.length === 0 && <p class="gb-category-empty">這個分類還沒有文章。</p>}
-	{groups.map((group) => (
-		<section>
-			<GroupDivider label={group.name} id={group.id} />
-			<div class="gb-article-list">
-				{group.posts.map((post) => <ArticleCard post={post} />)}
-			</div>
-		</section>
-	))}
-</SiteLayout>
+<CategoryPage category={category} posts={posts} current={current} />
