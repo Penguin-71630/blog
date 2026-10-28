@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { images, fade = false, label = '圖片輪播' } = Astro.props;
-const height = Math.max(0, ...images.map((image) => image.height));
+const aspectRatio = Math.max(1, ...images.map((image) => image.height / image.width));
 ---
 
 <div
@@ -18,7 +18,7 @@ const height = Math.max(0, ...images.map((image) => image.height));
 	tabindex="0"
 	role="group"
 	aria-label={label}
-	style={`--carousel-height:${height}px`}
+	style={`--carousel-ratio:${aspectRatio}`}
 >
 	<div class="gb-carousel-frame">
 		{images.map((image, index) => (

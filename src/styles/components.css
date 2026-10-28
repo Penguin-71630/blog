@@ -187,8 +187,8 @@
 .gb-stepper-stage{position:relative;padding:14px 18px;display:grid}
 .gb-stepper-stage>*{grid-area:1/1}
 .gb-stepper-pane>*:last-child{margin-bottom:0}
-.gb-carousel{margin:1.2em 0}
-.gb-carousel-frame{position:relative;display:grid;place-items:center;height:var(--carousel-height);max-width:100%;overflow:hidden}
+.gb-carousel{width:100%;max-width:100%;min-width:0;margin:1.2em 0}
+.gb-carousel-frame{position:relative;display:grid;place-items:center;width:100%;max-width:100%;min-width:0;aspect-ratio:1 / var(--carousel-ratio);max-height:70vh;overflow:hidden}
 .gb-carousel-image{position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;opacity:0;pointer-events:none}
 .gb-carousel-image.is-active{opacity:1;pointer-events:auto}
 .gb-carousel.has-fade .gb-carousel-image{transition:opacity 400ms ease}
