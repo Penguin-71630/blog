@@ -21,7 +21,8 @@
   .gb-shell-body{flex:1;display:flex;min-width:0}
   .gb-main{flex:1;min-width:0;padding-top:24px;max-width:none}
 }
-.gb-about-intro{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;align-items:center;margin-bottom:1.6em}
-.gb-about-avatar{width:200px;height:200px;object-fit:cover;object-position:50% 25%;border-radius:50%;border:1px solid var(--border);margin:0}
+.gb-about-intro{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:28px;align-items:center;margin-bottom:1.6em}
+.gb-about-avatar{width:200px;height:200px;object-fit:cover;object-position:50% 25%;border-radius:50%;border:1px solid var(--border);margin:0;grid-column:2;grid-row:1}
+.gb-about-intro-text{grid-column:1;grid-row:1}
 .gb-about-intro-text>:last-child{margin-bottom:0}
-@media (max-width:767.98px){.gb-about-intro{grid-template-columns:1fr;justify-items:center;gap:18px}.gb-about-avatar{width:150px;height:150px}.gb-about-intro-text{justify-self:stretch}}
+@media (max-width:767.98px){.gb-about-intro{grid-template-columns:1fr;justify-items:center;gap:18px}.gb-about-avatar{width:150px;height:150px;grid-column:auto;grid-row:auto}.gb-about-intro-text{justify-self:stretch;grid-column:auto;grid-row:auto}}
