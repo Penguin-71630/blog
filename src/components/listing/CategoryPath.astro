@@ -2,12 +2,20 @@
 interface Props {
 	primary: string;
 	secondary?: string;
+	href?: string;
 }
 
-const { primary, secondary } = Astro.props;
+const { primary, secondary, href } = Astro.props;
 ---
 
-<span class="gb-catpath">
-	<span># {primary}</span>
-	{secondary && <><span aria-hidden="true" class="gb-catpath-separator">▷</span><span>{secondary}</span></>}
-</span>
+{href ? (
+	<a class="gb-catpath" href={href}>
+		<span># {primary}</span>
+		{secondary && <><span aria-hidden="true" class="gb-catpath-separator">▷</span><span>{secondary}</span></>}
+	</a>
+) : (
+	<span class="gb-catpath">
+		<span># {primary}</span>
+		{secondary && <><span aria-hidden="true" class="gb-catpath-separator">▷</span><span>{secondary}</span></>}
+	</span>
+)}

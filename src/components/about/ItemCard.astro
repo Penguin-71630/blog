@@ -1,0 +1,20 @@
+---
+interface Props {
+	title: string;
+	subtitle?: string;
+	img?: string;
+	url?: string;
+}
+
+const { title, subtitle, img, url } = Astro.props;
+const Tag = url ? 'a' : 'div';
+const linkProps = url ? { href: url, target: '_blank', rel: 'noopener noreferrer' } : {};
+---
+
+<Tag class="gb-item" {...linkProps}>
+	<div class="gb-item-img">
+		{img && <img src={img} alt={title || ''} loading="lazy" />}
+	</div>
+	<span class="gb-item-title" title={title}>{title}</span>
+	{subtitle && <span class="gb-item-sub" title={subtitle}>{subtitle}</span>}
+</Tag>

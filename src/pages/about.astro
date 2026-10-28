@@ -1,4 +1,8 @@
 ---
+import ItemCard from '../components/about/ItemCard.astro';
+import ItemCards from '../components/about/ItemCards.astro';
+import People from '../components/about/People.astro';
+import Person from '../components/about/Person.astro';
 import PageTitle from '../components/layout/PageTitle.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
 ---
@@ -6,6 +10,21 @@ import SiteLayout from '../layouts/SiteLayout.astro';
 <SiteLayout title="About Me · Gino's Blog" nav="about">
 	<div class="gb-page-about">
 		<PageTitle>About Me</PageTitle>
-		<p class="gb-page-placeholder">尚無內容</p>
+		<div class="gb-prose">
+			<p style="color:var(--muted)">
+				（About Me 內文尚未提供 — 以下為 ItemCard / Person 元件的版面示意。）
+			</p>
+			<h2>Items</h2>
+			<ItemCards>
+				<ItemCard title="Item title" subtitle="subtitle" />
+				<ItemCard title="Item title" subtitle="subtitle" />
+				<ItemCard title="Item title" subtitle="subtitle" />
+			</ItemCards>
+			<h2>People</h2>
+			<People>
+				<Person title="WiwiHo" subtitle="wiwiho.me" url="https://wiwiho.me" />
+				<Person title="Name" subtitle="subtitle" />
+			</People>
+		</div>
 	</div>
 </SiteLayout>

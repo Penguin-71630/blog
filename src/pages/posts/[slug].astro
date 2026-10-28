@@ -39,7 +39,11 @@ const categoryPosts = (await getPublishedPosts()).filter((item) => item.primary 
 				<div class="gb-card-meta gb-post-meta">
 					<time class="gb-date" datetime={post.date}>{post.displayDate}</time>
 					{post.displayUpdated && <span class="gb-post-updated">更新於 {post.displayUpdated}</span>}
-					<CategoryPath primary={post.primary} secondary={post.secondary} />
+					<CategoryPath
+						primary={post.primary}
+						secondary={post.secondary}
+						href={`/categories/${post.primarySlug}/`}
+					/>
 				</div>
 			</header>
 			{tocItems.length > 0 && <TableOfContents items={tocItems} variant="mobile" />}

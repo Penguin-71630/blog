@@ -1,9 +1,21 @@
 ---
+import CategoryTile from '../components/listing/CategoryTile.astro';
 import PageTitle from '../components/layout/PageTitle.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
+import { CATEGORIES } from '../lib/categories';
+import { getPublishedPosts } from '../lib/posts';
+
+const posts = await getPublishedPosts();
 ---
 
-<SiteLayout title="Categories · Gino's Blog" nav="categories">
+<SiteLayout title="Categories · Gino's Blog" nav="categories" wide>
 	<PageTitle>Categories</PageTitle>
-	<p class="gb-page-placeholder">尚無內容</p>
+	<div class="gb-category-grid">
+		{CATEGORIES.map((category) => (
+			<CategoryTile
+				category={category}
+				count={posts.filter((post) => post.primarySlug === category.slug).length}
+			/>
+		))}
+	</div>
 </SiteLayout>

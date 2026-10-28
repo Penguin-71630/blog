@@ -1,0 +1,29 @@
+---
+interface ArchivePost {
+	date: string;
+	title: string;
+	href: string;
+}
+
+interface Props {
+	groups: { year: string; posts: ArchivePost[] }[];
+}
+
+const { groups } = Astro.props;
+---
+
+<div>
+	{groups.map((group) => (
+		<section>
+			<h2 class="gb-archive-year">{group.year}</h2>
+			<div class="gb-archive">
+				{group.posts.map((post) => (
+					<a class="gb-archive-item" href={post.href}>
+						<time datetime={post.date}>{post.date}</time>
+						<span>{post.title}</span>
+					</a>
+				))}
+			</div>
+		</section>
+	))}
+</div>

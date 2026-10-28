@@ -1,16 +1,17 @@
 ---
 import Icon from '../Icon.astro';
 import type { Post } from '../../lib/posts';
+import { compareNaturally } from '../../lib/sorting';
 
 interface Props {
 	title: string;
 	categorySlug: string;
 	posts: Post[];
-	currentSlug: string;
+	currentSlug?: string;
+	isActive?: boolean;
 }
 
-const { title, categorySlug, posts, currentSlug } = Astro.props;
-const collator = new Intl.Collator('en', { numeric: true });
+const { title, categorySlug, posts, currentSlug = '', isActive = false } = Astro.props;
 const groupsByName = new Map<string, Post[]>();
 
 for (const post of posts) {
@@ -21,13 +22,19 @@ for (const post of posts) {
 const groups = [...groupsByName.entries()]
 	.map(([name, groupPosts]) => ({
 		name,
-		posts: groupPosts.sort((a, b) => collator.compare(a.title, b.title)),
+		posts: groupPosts.sort((a, b) => compareNaturally(a.title, b.title)),
 	}))
-	.sort((a, b) => (a.name === 'Others' ? 1 : b.name === 'Others' ? -1 : collator.compare(a.name, b.name)));
+	.sort((a, b) =>
+		a.name === 'Others' ? (b.name === 'Others' ? 0 : 1) : b.name === 'Others' ? -1 : compareNaturally(a.name, b.name),
+	);
 ---
 
 <nav class="gb-series" aria-label={`${title} 文章列表`}>
-	<a class="gb-series-title" href={`/categories/${categorySlug}/`}>{title}</a>
+	<a
+		class:list={['gb-series-title', { 'is-active': isActive }]}
+		href={`/categories/${categorySlug}/`}
+		aria-current={isActive ? 'page' : undefined}
+	>{title}</a>
 	<ul class="gb-series-list">
 		{groups.map((group, index) => {
 			const isOpen = group.posts.some((post) => post.slug === currentSlug);
