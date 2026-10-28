@@ -44,6 +44,7 @@
 | 第一層分類 | 網址代稱 |
 | --- | --- |
 | Operating System | `operating-system` |
+| C, C++ | `c-cpp` |
 | Computer Organization | `computer-organization` |
 | DS, Algorithms | `ds-algo` |
 | Linear Algebra | `linear-algebra` |
@@ -56,6 +57,8 @@
 | Life Logs | `life-logs` |
 | Rhythm Game | `rhythm-game` |
 | Miscellaneous | `miscellaneous` |
+
+共 14 個第一層分類。`C, C++` 為後來新增：分類圖示暫時沿用 Operating System 的圖示（兩者共用同一個 SVG）；手寫分類名稱圖片延後到第一次部署之後，所有分類在此之前都先用 TeX Gyre Pagella Bold。
 
 第二層分類由使用者自訂，例如 Operating System 底下的 Linux Kernel、Virtual File System、I/O and Interrupt、Synchronization、Deadlock。
 
@@ -80,6 +83,10 @@ publish: true
 | `titleImage` | 選填，手寫標題圖。 |
 
 文章標題取自內文最上方的 `# 標題`，不寫在 frontmatter。字數與閱讀時間由網站 build 時計算，不寫在 frontmatter。
+
+### 換行
+
+vault 沒有開啟 Obsidian 的 Strict line breaks，所以段落內的單一換行會顯示成換行。blog 須與 Obsidian 一致，把段落內的單一換行渲染為 `<br>`（例如使用 remark-breaks）。舊部落格文章遷移時已移除行尾的 `\` 硬換行，改依賴這條規則；若 blog 不支援，這些文章的多行內容會被併成同一行。
 
 ### 色彩
 
@@ -232,7 +239,7 @@ Markdown 本身不解讀此註解。blog 需 parser/AST 擴充，Obsidian 若要
 | Tabs | 保留；Obsidian 可依序展開內容，blog 呈現頁籤 |
 | Slider | 保留；Obsidian 可依序展開內容，blog 呈現步驟切換 |
 | ImageCarousel | 保留；Obsidian 可依序排列圖片，blog 呈現輪播 |
-| Splitter、SplitterCenter | 捨棄 |
+| Splitter、SplitterCenter | 捨棄；舊文章遷移時，SplitterCenter 的文字改為單獨一行粗體 |
 | Staff | 保留，以 abc 程式碼區塊記譜 |
 | Link | 保留連結預覽卡 |
 | ItemCard、ItemCards、Person、People | 僅 blog，主要用於 About Me |
@@ -242,13 +249,13 @@ Markdown 本身不解讀此註解。blog 需 parser/AST 擴充，Obsidian 若要
 
 ### 圖片
 
-已確認用 `![[image.png|center|60%]]` 表示置中且寬度占所在內文容器 60%，預設靠左。百分比相對於內容容器，不是視窗。保留原圖長寬比例。
+圖片**預設置中**；要靠左或靠右時才明確寫 `left` 或 `right`。`![[image.png|60%]]` 表示置中且寬度占所在內文容器 60%，`![[image.png|left|60%]]` 表示靠左。百分比相對於內容容器，不是視窗。保留原圖長寬比例。既有筆記中的 `center` 參數仍可接受，效果與不寫相同。
 
-目前 my-own.css 支援帶 center 的置中，不代表 Obsidian 已有百分比寬度解析。新 blog 和 Obsidian 都需要額外解析此寫法，不能直接當成原生功能。使用者提及的「比例」指百分比縮放；不提供 16:9 等裁切。
+預設置中由使用者修改 Obsidian 的 my-own.css 達成；這不代表 Obsidian 已有百分比寬度解析。新 blog 和 Obsidian 都需要額外解析百分比寫法，不能直接當成原生功能（在 Obsidian 外掛完成前，百分比參數暫時不生效，可接受）。使用者提及的「比例」指百分比縮放；不提供 16:9 等裁切。
 
-純數字參數是 Obsidian 原生的像素寬度，例如 `![[image.png|center|400]]` 表示寬 400px（仍不超過容器寬度），既有筆記大量使用，須支援。
+純數字參數是 Obsidian 原生的像素寬度，例如 `![[image.png|400]]` 表示寬 400px（仍不超過容器寬度），既有筆記大量使用，須支援。
 
-圖說寫在參數最後，例如 `![[cache.png|center|60%|cache line 的結構]]`。不是 `center`、百分比或純數字的參數視為圖說，顯示在圖片下方，同時作為替代文字；沒寫則不顯示圖說。全站圖片皆可點擊放大檢視。
+圖說寫在參數最後，例如 `![[cache.png|60%|cache line 的結構]]`。不是 `left`、`right`、`center`、百分比或純數字的參數視為圖說，顯示在圖片下方，同時作為替代文字；沒寫則不顯示圖說。全站圖片皆可點擊放大檢視。
 
 設計建議：最大寬度不超過所在容器、提供有意義的替代文字與可選圖說；手機保留清楚可讀的展示。舊 Image 的手機自動加 30 個百分點、深淺色圖片切換功能尚未被確認要延續。
 
@@ -268,7 +275,86 @@ Markdown 本身不解讀此註解。blog 需 parser/AST 擴充，Obsidian 若要
 
 ### Ruby
 
-採 `{漢字|かんじ}`，輸出語意化 `<ruby>` / `<rt>`。讀音較小且置於正上方，連續注音文字要保持可讀行距。表格內需避免 `|` 被當成欄分隔，示例採 `{漢字\|かんじ}`。解析器應跳過 code 和 math，並處理跳脫。此語法仍需 Obsidian 外掛與 blog parser 實作／整合。使用者確認保留此寫法，Obsidian 外掛由使用者自行實作。
+採 `{漢字|かんじ}`，輸出語意化 `<ruby>` / `<rt>`。讀音較小且置於正上方，連續注音文字要保持可讀行距。表格內需避免 `|` 被當成欄分隔，示例採 `{漢字\|かんじ}`。解析器應跳過 code 和 math，並處理跳脫。此語法仍需 Obsidian 外掛與 blog parser 實作／整合。使用者確認保留此寫法，Obsidian 外掛由使用者自行實作。完整解析規則與輸出 HTML 見下方「Ruby 與文字顏色：解析規則」。
+
+### 文字顏色
+
+所有文字上色統一使用 `{文字}(色名)`，例如 `{Tried and Accepted}(green)`、`{**弱虫モンブラン**}(maimai-master)`。不再使用 `<span class="…">`、`<span style="color:…">`、Tailwind 色彩 class 或文章內的 `<style>`。
+
+- 括號內可放 Markdown 行內語法：粗體、斜體、行內程式碼、行內公式、連結、Ruby。粗體等強調不隱含在顏色裡，需要時自行寫 `**…**`。
+- 只有下表的色名才會被解析；色名不在表中時原樣輸出文字，避免一般文字中的 `{…}(…)` 被誤判。
+- 和 Ruby 的區分：Ruby 是 `{漢字|かんじ}`（大括號內有 `|`，後面沒有接小括號）；顏色是 `{文字}` 後面緊接 `(色名)`。顏色可以包住 Ruby：`{{漢字|かんじ}}(red)`。
+- 解析器跳過 code、math；文字內要放 `}` 時寫 `\}`。
+- 此語法需要 Obsidian 外掛與 blog parser 實作（Obsidian 外掛由使用者自行實作）；外掛完成前在 Obsidian 中以原始文字顯示，可接受。
+
+色盤：
+
+| 色名 | 顏色 | 說明 |
+| --- | --- | --- |
+| `blue`、`cyan`、`green`、`yellow`、`red`、`purple`、`gray` | 與 callout 同組顏色（粉筆色系，隨 light/dark mode 變化） | 一般用途 |
+| `orange` | 粉筆色系的橘色，與上列同明度與彩度 | callout 沒有橘色組，文字色盤額外補上 |
+| `maimai-expert`、`maimai-master`、`maimai-remaster`、`maimai-utage` | 遊戲內實際顏色：`#f46781`、`#9F51DC`、`#DBAAFF`、`#df69d7` | 不套用粉筆色系，須與遊戲畫面一致；只在對比不足時（例如 light mode 下的 `maimai-remaster`）微調明度 |
+
+舊內容的轉換：
+
+- 競程難度 lv1–lv4 依 callout 色盤：lv1 → `red`、lv2 → `orange`、lv3 → `yellow`、lv4 → `green`。
+- 論文筆記中的 ❶❷ 標號：`text-red-500` → `red`、`text-blue-500` → `blue`。
+- 舊站通用色 class（`red`、`green`、`yellow`、`orange`）沿用同名色；`grey` → `gray`。
+- maimai：`exp`、`mas`、`remas`、`utage` → `maimai-expert`、`maimai-master`、`maimai-remaster`、`maimai-utage`；舊樣式內建的粗體改寫成 `**…**` 保留。
+- Codeforces 段位色：灰 → `gray`、綠 → `green`、青 → `cyan`、藍 → `blue`、紫 → `purple`、橘 → `orange`、紅 → `red`，黑色不上色。
+
+### Ruby 與文字顏色：解析規則
+
+本節是 blog parser 與 Obsidian 外掛的共同規格，兩邊可同時各自實作；輸出的 HTML 結構與 class 名稱必須一致，才能共用同一份 CSS。
+
+**解析範圍**
+- 只在行內文字中解析，包含段落、標題、清單、引用、callout 標題與內文、表格儲存格。
+- 不解析：fenced／縮排程式碼區塊、行內程式碼、行內與區塊公式（`$…$`、`$$…$$`）、HTML 註解、Obsidian 註解 `%%…%%`、wikilink 與連結的目標網址、frontmatter。
+- 公式與程式碼內的 `{`、`}`、`|` 不參與括號配對。例如 `$\{(0,1)\}$` 裡的大括號不會開始或結束一組語法。
+
+**語法判定**（由左到右掃描，遇到未跳脫的 `{` 時）
+1. 找到配對的未跳脫 `}`。內層的 `{…}` 須成對巢狀，略過程式碼與公式。找不到配對就把 `{` 當一般文字。
+2. **顏色**：如果 `}` 後面緊接 `(色名)`，中間沒有空白，且色名完全符合「文字顏色」色盤，就是顏色。大括號內的內容遞迴解析為行內 Markdown，可包含粗體、斜體、刪除線、`==highlight==`、行內程式碼、行內公式、連結、wikilink、Ruby，以及另一層顏色。
+3. **Ruby**：不是顏色時，如果大括號內有未跳脫的 `|`，就以**第一個**未跳脫的 `|` 分成本文與讀音，兩邊都不可為空。本文與讀音都視為純文字，不再解析行內語法，也不可巢狀。
+4. 以上都不符合：大括號與內容原樣輸出，例如 `{a}(e)`、`{x}(foo)`、`{沒有分隔線}`。
+- 依此規則，`{a|b}(red)` 是內容為「a|b」的紅色文字，而不是 Ruby 加上「(red)」；要讓 Ruby 上色，必須寫成 `{{漢字|かんじ}}(red)`。
+- 色名區分大小寫，只接受小寫；`(Red)`、`( red )` 都不是顏色。
+
+**跳脫**
+- `\{`、`\}`、`\|` 輸出成字面上的 `{`、`}`、`|`，而且不參與配對或分隔。這與 CommonMark 對 ASCII 標點的反斜線跳脫一致。
+- GFM 表格會先處理儲存格內的 `\|`，所以表格裡的 `{漢字\|かんじ}` 到了行內層就是 `{漢字|かんじ}`，照常解析成 Ruby。實作時須在表格切分之後才解析 Ruby 與顏色（例如寫成 micromark 行內擴充，或在 mdast 階段處理），否則 `|` 會被當成欄分隔。
+
+**實作提醒（blog）**
+- 顏色的內容可以跨越多個行內節點（文字、strong、inlineCode、inlineMath、link）。只對單一 `text` 節點跑正規表示式，處理不了 `{**弱虫モンブラン**}(maimai-master)` 或 `{$x$ 的值}(red)`。請在 tokenizer 層實作（micromark extension），或在 mdast 中跨相鄰的兄弟節點配對。
+- Ruby 內容只有純文字，可以在 text 節點上處理，但仍須遵守上面的跳脫與「先判定顏色」順序。
+
+**輸出 HTML**（blog 與 Obsidian 外掛相同）
+
+```html
+<!-- {漢字|かんじ} -->
+<ruby>漢字<rp>(</rp><rt>かんじ</rt><rp>)</rp></ruby>
+
+<!-- {Tried and Accepted}(green) -->
+<span class="text-color text-color-green">Tried and Accepted</span>
+
+<!-- {**弱虫モンブラン**}(maimai-master) -->
+<span class="text-color text-color-maimai-master"><strong>弱虫モンブラン</strong></span>
+
+<!-- {{漢字|かんじ}}(red) -->
+<span class="text-color text-color-red"><ruby>漢字<rp>(</rp><rt>かんじ</rt><rp>)</rp></ruby></span>
+```
+
+- class 名稱固定為 `text-color text-color-<色名>`，不加 inline style。顏色定義成 CSS 變數，例如 `--text-color-red`，隨 light／dark mode 切換；粉筆色系各色與 callout 共用同一組變數。
+- `<rp>` 讓不支援 ruby 的環境（RSS、純文字複製）顯示「漢字(かんじ)」。
+- 標題內出現時，ruby 與顏色同樣適用。目錄（TOC）與 heading id 只取純文字：Ruby 只取本文，顏色只取內容。
+- 字數統計：Ruby 只算本文，不算讀音；顏色只算內容。
+
+**測試用的真實筆記**（vault：`~/Documents/Obsidian 筆記`，遷移後的實際用量約為顏色 360 處、Ruby 數十處）
+- Ruby：`Language Learning/Japanese/動詞て形.md`（含表格內的 `\|`）、`Language Learning/Japanese/日三期中考.md`、`Language Learning/Japanese/動詞六種活用形.md`
+- maimai 顏色＋粗體：`Rhythm Game/Maimai/` 底下各篇，例如 `Maimai 拆譜筆記：四月の雨.md`
+- 一般顏色、內含跳脫冒號：`Life Logs/2021 建中校內初選 Virtual 賽後檢討.md`（如 `**{00\:11 pA 100}(green)**`）
+- 不可誤判：`DS, Algorithms/Math/FFT 與 NTT.md`。公式內有 `\{…\}`、`[x^i](1+x+x^2)`，全部都不能解析成語法。
+- 注意：未發布的課堂筆記（例如 Operation Research）在公式外可能也有 `{a|b}` 形式的文字，會被當成 Ruby。目前只有 `publish: true` 的筆記會上網站，所以影響有限。
 
 ### Tabs、Slider、ImageCarousel
 

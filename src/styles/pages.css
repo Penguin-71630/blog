@@ -7,7 +7,6 @@
 .gb-category-count{margin:0;padding-left:2px;font-family:var(--font-mono);font-size:14px;line-height:1.2;color:var(--muted)}
 .gb-category-jumps{display:flex;flex-wrap:wrap;gap:6px 16px;font-family:var(--font-ui);font-size:14px}
 .gb-category-empty{margin-top:40px;color:var(--muted)}
-.gb-tile.is-plain::after{background:none}
 .gb-archive-count{margin:8px 0 0;font-family:var(--font-mono);font-size:14px;color:var(--muted)}
 .gb-catpath[href]{text-decoration:none}
 .gb-catpath[href]:hover{color:var(--text)}

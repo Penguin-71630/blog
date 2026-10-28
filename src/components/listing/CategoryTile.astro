@@ -11,7 +11,7 @@ interface Props {
 const { category, count } = Astro.props;
 ---
 
-<a class:list={['gb-tile', { 'is-plain': !category.bg }]} href={`/categories/${category.slug}/`}>
+<a class="gb-tile" href={`/categories/${category.slug}/`}>
 	{category.bg && <Image class="gb-tile-bg" src={category.bg} alt="" loading="lazy" />}
 	<div class="gb-tile-body">
 		<span class="gb-tile-name"><CategoryIcon slug={category.slug} size={22} />{category.name}</span>

@@ -11,6 +11,7 @@ import categoryBg10 from '../assets/category-bg/10.webp';
 import categoryBg11 from '../assets/category-bg/11.webp';
 import categoryBg12 from '../assets/category-bg/12.webp';
 import categoryBg13 from '../assets/category-bg/13.webp';
+import categoryBg14 from '../assets/category-bg/14.webp';
 
 export const CATEGORIES = [
 	{ name: 'Operating System', slug: 'operating-system', bg: categoryBg1 },
@@ -25,7 +26,7 @@ export const CATEGORIES = [
 	{ name: 'Other Course Notes', slug: 'other-course-notes', bg: categoryBg10 },
 	{ name: 'Life Logs', slug: 'life-logs', bg: categoryBg11 },
 	{ name: 'Rhythm Game', slug: 'rhythm-game', bg: categoryBg12 },
-	{ name: 'C, C++', slug: 'c-cpp', bg: undefined },
+	{ name: 'C, C++', slug: 'c-cpp', bg: categoryBg14 },
 	{ name: 'Miscellaneous', slug: 'miscellaneous', bg: categoryBg13 },
 ] as const;
 
