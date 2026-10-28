@@ -6,10 +6,11 @@ function dimensions(slide) {
 
 export function initCarousels(root = document) {
 	root.querySelectorAll('[data-carousel]:not([data-carousel-ready])').forEach((carousel) => {
-		const slides = [...carousel.querySelectorAll('[data-carousel-slide]')];
-		const counter = carousel.querySelector('[data-carousel-counter]');
-		const previous = carousel.querySelector('[data-carousel-prev]');
-		const next = carousel.querySelector('[data-carousel-next]');
+		const slides = [...carousel.querySelectorAll('[data-carousel-slide]')]
+			.filter((slide) => slide.closest('[data-carousel]') === carousel);
+		const counter = carousel.querySelector(':scope > [data-carousel-counter]');
+		const previous = carousel.querySelector(':scope > .gb-carousel-frame > [data-carousel-prev]');
+		const next = carousel.querySelector(':scope > .gb-carousel-frame > [data-carousel-next]');
 		if (!slides.length || !counter || !previous || !next) return;
 		carousel.setAttribute('data-carousel-ready', '');
 		let index = 0;
@@ -33,6 +34,7 @@ export function initCarousels(root = document) {
 		previous.addEventListener('click', () => show(index - 1));
 		next.addEventListener('click', () => show(index + 1));
 		carousel.addEventListener('keydown', (event) => {
+			if (!(event.target instanceof Element) || event.target.closest('[data-carousel]') !== carousel) return;
 			if (event.key === 'ArrowLeft') {
 				event.preventDefault();
 				show(index - 1);

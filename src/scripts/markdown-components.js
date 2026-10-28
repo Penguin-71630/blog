@@ -1,17 +1,25 @@
 export function initMarkdownComponents(root = document) {
 	root.querySelectorAll('[data-tabs]:not([data-components-ready])').forEach((tabs) => {
-		const buttons = [...tabs.querySelectorAll('[role="tab"]')];
-		const panels = [...tabs.querySelectorAll('[data-panel-index]')];
+		const buttons = [...tabs.querySelectorAll(':scope > .gb-tablist > [role="tab"]')];
+		const panels = [...tabs.querySelectorAll(':scope > .gb-tabpanels > [data-panel-index]')];
 		if (!buttons.length || buttons.length !== panels.length) return;
 		tabs.dataset.componentsReady = '';
 		buttons.forEach((button, index) => {
 			const id = `tab-panel-${Math.random().toString(36).slice(2)}-${index}`;
+			const tabId = `tab-${Math.random().toString(36).slice(2)}-${index}`;
+			button.id = tabId;
 			button.setAttribute('aria-controls', id);
+			panels[index].setAttribute('role', 'tabpanel');
+			panels[index].setAttribute('aria-labelledby', tabId);
+			panels[index].setAttribute('tabindex', '0');
 			panels[index].id = id;
 			button.addEventListener('click', () => select(index));
 		});
 		const select = (index) => {
-			buttons.forEach((button, buttonIndex) => button.setAttribute('aria-selected', String(buttonIndex === index)));
+			buttons.forEach((button, buttonIndex) => {
+				button.setAttribute('aria-selected', String(buttonIndex === index));
+				button.tabIndex = buttonIndex === index ? 0 : -1;
+			});
 			panels.forEach((panel, panelIndex) => panel.setAttribute('aria-hidden', String(panelIndex !== index)));
 		};
 		buttons.forEach((button, index) => button.addEventListener('keydown', (event) => {
@@ -25,11 +33,11 @@ export function initMarkdownComponents(root = document) {
 	});
 
 	root.querySelectorAll('[data-slider]:not([data-components-ready])').forEach((slider) => {
-		const panes = [...slider.querySelectorAll('[data-panel-index]')];
-		const title = slider.querySelector('.gb-stepper-title');
-		const counter = slider.querySelector('[data-step-counter]');
-		const previous = slider.querySelector('[data-step-prev]');
-		const next = slider.querySelector('[data-step-next]');
+		const panes = [...slider.querySelectorAll(':scope > .gb-stepper-stage > [data-panel-index]')];
+		const title = slider.querySelector(':scope > .gb-stepper-bar .gb-stepper-title');
+		const counter = slider.querySelector(':scope > .gb-stepper-bar [data-step-counter]');
+		const previous = slider.querySelector(':scope > .gb-stepper-bar [data-step-prev]');
+		const next = slider.querySelector(':scope > .gb-stepper-bar [data-step-next]');
 		if (!panes.length || !title || !counter || !previous || !next) return;
 		slider.dataset.componentsReady = '';
 		let index = 0;
@@ -38,6 +46,10 @@ export function initMarkdownComponents(root = document) {
 			panes.forEach((pane, paneIndex) => pane.setAttribute('aria-hidden', String(paneIndex !== index)));
 			title.textContent = panes[index].dataset.panelTitle || '';
 			counter.textContent = `${index + 1} / ${panes.length}`;
+			slider.setAttribute(
+				'aria-label',
+				title.textContent ? `${title.textContent} (${counter.textContent})` : counter.textContent,
+			);
 			previous.disabled = index === 0;
 			next.disabled = index === panes.length - 1;
 		};
@@ -47,41 +59,114 @@ export function initMarkdownComponents(root = document) {
 		previous.addEventListener('click', () => show(index - 1));
 		next.addEventListener('click', () => show(index + 1));
 		slider.addEventListener('keydown', (event) => {
-			if (event.key === 'ArrowLeft') show(index - 1);
-			if (event.key === 'ArrowRight') show(index + 1);
+			if (!(event.target instanceof Element) || event.target.closest('[data-slider]') !== slider) return;
+			if (event.key === 'ArrowLeft') {
+				event.preventDefault();
+				show(index - 1);
+			} else if (event.key === 'ArrowRight') {
+				event.preventDefault();
+				show(index + 1);
+			}
 		});
 		show(0);
 	});
 
-	root.querySelectorAll('pre code.language-abc').forEach(async (code) => {
-		if (code.dataset.rendered) return;
-		code.dataset.rendered = 'true';
-		const source = code.textContent || '';
-		const pre = code.closest('pre');
-		const target = document.createElement('div');
-		target.className = 'gb-staff';
-		pre?.replaceWith(target);
-		const fallback = document.createElement('noscript');
-		fallback.textContent = source;
-		target.after(fallback);
-		const abcjs = await import('abcjs');
-		(abcjs.default || abcjs).renderAbc(target, source, { responsive: 'resize', add_classes: true });
-	});
+	const abcBlocks = [...root.querySelectorAll('pre code.language-abc:not([data-rendered])')];
+	if (abcBlocks.length) {
+		abcBlocks.forEach((code) => { code.dataset.rendered = 'true'; });
+		void (async () => {
+			let abcjs;
+			try {
+				const module = await import('abcjs');
+				abcjs = module.default || module;
+			} catch (error) {
+				console.warn('Unable to load ABC renderer.', error);
+				return;
+			}
+			for (const code of abcBlocks) {
+				const pre = code.closest('pre');
+				if (!pre) continue;
+				const target = document.createElement('div');
+				target.className = 'gb-staff';
+				try {
+					abcjs.renderAbc(target, code.textContent || '', { responsive: 'resize', add_classes: true });
+					if (!target.querySelector('svg')) throw new Error('ABC renderer produced no staff.');
+					pre.replaceWith(target);
+				} catch (error) {
+					console.warn('Unable to render ABC block.', error);
+				}
+			}
+		})();
+	}
 
-	root.querySelectorAll('pre code.language-mermaid').forEach(async (code) => {
-		if (code.dataset.rendered) return;
-		code.dataset.rendered = 'true';
-		const source = code.textContent || '';
-		const pre = code.closest('pre');
-		const target = document.createElement('div');
-		target.className = 'gb-mermaid';
-		pre?.replaceWith(target);
-		const fallback = document.createElement('noscript');
-		fallback.textContent = source;
-		target.after(fallback);
-		const mermaidModule = await import('mermaid');
-		const mermaid = mermaidModule.default;
-		mermaid.initialize({ startOnLoad: false, theme: 'dark', themeVariables: { primaryColor: '#26303a', primaryTextColor: '#dae3e8', lineColor: '#94a8b4', secondaryColor: '#1d2630', tertiaryColor: '#11161d' } });
-		await mermaid.run({ nodes: [target], suppressErrors: false });
-	});
+	const mermaidBlocks = [...root.querySelectorAll('pre code.language-mermaid:not([data-rendered])')];
+	if (mermaidBlocks.length) {
+		mermaidBlocks.forEach((code) => { code.dataset.rendered = 'true'; });
+		void (async () => {
+			let mermaid;
+			try {
+				const module = await import('mermaid');
+				mermaid = module.default;
+				const styles = getComputedStyle(document.documentElement);
+				const color = (name) => {
+					const value = styles.getPropertyValue(name).trim();
+					const match = /^oklch\(\s*([\d.]+)%?\s+([\d.]+)\s+([\d.]+)/i.exec(value);
+					if (!match) return value;
+					const lightness = Number(match[1]) / (value.includes('%') ? 100 : 1);
+					const chroma = Number(match[2]);
+					const hue = (Number(match[3]) * Math.PI) / 180;
+					const a = chroma * Math.cos(hue);
+					const b = chroma * Math.sin(hue);
+					const l = (lightness + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+					const m = (lightness - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+					const s = (lightness - 0.0894841775 * a - 1.291485548 * b) ** 3;
+					const channels = [
+						4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+						-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+						-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+					].map((channel) => {
+						const clamped = Math.max(0, Math.min(1, channel));
+						return Math.round(255 * (clamped <= 0.0031308 ? 12.92 * clamped : 1.055 * clamped ** (1 / 2.4) - 0.055));
+					});
+					return `rgb(${channels.join(', ')})`;
+				};
+				mermaid.initialize({
+					startOnLoad: false,
+					theme: 'dark',
+					themeVariables: {
+						background: color('--bg'),
+						primaryColor: color('--surface-hover'),
+						primaryTextColor: color('--text'),
+						primaryBorderColor: color('--border'),
+						lineColor: color('--muted'),
+						secondaryColor: color('--surface'),
+						tertiaryColor: color('--bg'),
+						textColor: color('--text'),
+						edgeLabelBackground: color('--bg'),
+					},
+				});
+			} catch (error) {
+				console.warn('Unable to load Mermaid renderer.', error);
+				return;
+			}
+			for (const code of mermaidBlocks) {
+				const pre = code.closest('pre');
+				if (!pre) continue;
+				const target = document.createElement('div');
+				target.className = 'gb-mermaid';
+				target.textContent = code.textContent || '';
+				target.hidden = true;
+				pre.after(target);
+				try {
+					await mermaid.run({ nodes: [target], suppressErrors: false });
+					if (!target.querySelector('svg')) throw new Error('Mermaid renderer produced no diagram.');
+					pre.remove();
+					target.hidden = false;
+				} catch (error) {
+					target.remove();
+					console.warn('Unable to render Mermaid block.', error);
+				}
+			}
+		})();
+	}
 }

@@ -191,7 +191,10 @@
 .gb-stepper-stage>*{grid-area:1/1}
 .gb-stepper-pane>*:last-child{margin-bottom:0}
 .gb-stepper-pane[aria-hidden="true"],.gb-tabpanel[aria-hidden="true"]{display:none}
-.gb-stepper.has-fade .gb-stepper-pane,.gb-tabs.has-fade .gb-tabpanel{transition:opacity 220ms ease}
+.gb-stepper.has-fade .gb-stepper-pane{display:block;opacity:0;visibility:hidden;pointer-events:none;transition:opacity 220ms ease,visibility 0s linear 220ms}
+.gb-stepper.has-fade .gb-stepper-pane[aria-hidden="false"]{opacity:1;visibility:visible;pointer-events:auto;transition:opacity 220ms ease}
+.gb-stepper:focus-visible{outline:2px solid var(--accent);outline-offset:-3px}
+.gb-step-btn:focus-visible,.gb-tab:focus-visible{outline:2px solid var(--accent);outline-offset:3px;z-index:1}
 .gb-carousel{width:100%;max-width:100%;min-width:0;margin:1.2em 0}
 .gb-carousel-frame{position:relative;display:grid;place-items:center;width:100%;max-width:100%;min-width:0;aspect-ratio:1 / var(--carousel-ratio);max-height:70vh;overflow:hidden}
 .gb-carousel-image{position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;opacity:0;pointer-events:none}
@@ -203,7 +206,7 @@
 .gb-carousel-nav:hover{border-color:var(--accent-line);color:var(--accent)}
 .gb-carousel-counter{display:block;margin-top:10px;text-align:center;font-family:var(--font-mono);font-size:12.5px;color:var(--muted)}
 .gb-carousel:focus-visible,.gb-carousel-nav:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-@media (prefers-reduced-motion:reduce){.gb-carousel.has-fade .gb-carousel-image{transition:none}}
+@media (prefers-reduced-motion:reduce){.gb-stepper.has-fade .gb-stepper-pane,.gb-carousel.has-fade .gb-carousel-image{transition:none}}
 
 /* link card */
 .gb-linkcard{display:flex;margin:1.2em 0;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;text-decoration:none;color:var(--text);background:var(--surface);transition:border-color var(--dur),background-color var(--dur)}

@@ -1,24 +1,30 @@
 import assert from 'node:assert/strict';
 import { markdownConfigDefaults, unified } from '@astrojs/markdown-remark';
-import rehypeKatex from 'rehype-katex';
-import remarkMath from 'remark-math';
-import remarkBreaks from 'remark-breaks';
-import remarkObsidian from '../src/lib/markdown/remark-obsidian.mjs';
-import remarkRubyColor from '../src/lib/markdown/remark-ruby-color.mjs';
-import rehypeWrapTables from '../src/lib/markdown/rehype-wrap-tables.mjs';
-import rehypeRemoveEmptyParagraphs from '../src/lib/markdown/rehype-remove-empty-paragraphs.mjs';
-import remarkTableWidths from '../src/lib/markdown/remark-table-widths.mjs';
+import {
+	markdownRemarkPlugins,
+	markdownRehypePlugins,
+	markdownShikiConfig,
+	markdownSyntaxHighlight,
+} from '../src/lib/markdown/plugins.mjs';
+import { extractLinkUrls } from '../src/lib/markdown/link-preview-urls.mjs';
 
 const processor = unified({
-	remarkPlugins: [remarkMath, remarkObsidian, remarkRubyColor, remarkBreaks, remarkTableWidths],
-	rehypePlugins: [rehypeKatex, rehypeWrapTables, rehypeRemoveEmptyParagraphs],
+	remarkPlugins: markdownRemarkPlugins,
+	rehypePlugins: markdownRehypePlugins,
 });
-const renderer = await processor.createRenderer(markdownConfigDefaults);
+const renderer = await processor.createRenderer({
+	...markdownConfigDefaults,
+	syntaxHighlight: markdownSyntaxHighlight,
+	shikiConfig: markdownShikiConfig,
+});
 const fileURL = new URL('../src/content/posts/inline-syntax-test.md', import.meta.url);
 
 async function render(source) {
 	return renderer.render(source, { fileURL });
 }
+
+assert.ok(markdownSyntaxHighlight.excludeLangs.includes('abc'));
+assert.ok(markdownSyntaxHighlight.excludeLangs.includes('mermaid'));
 
 const ruby = await render('{漢字|かんじ}');
 assert.match(ruby.code, /<ruby>漢字<rp>\(<\/rp><rt>かんじ<\/rt><rp>\)<\/rp><\/ruby>/);
@@ -79,14 +85,152 @@ assert.match(markers.code, /class="gb-markers"/);
 assert.match(markers.code, /ri-information-line/);
 assert.match(markers.code, /type="checkbox"/);
 
+const markerAfterInline = await render('- **Not a marker** [i] text');
+assert.doesNotMatch(markerAfterInline.code, /class="gb-markers"|ri-information-line/);
+
+const calloutMarkers = await render('> [!note]\n> - [i] Info inside a callout');
+assert.match(calloutMarkers.code, /ri-information-line/);
+
 const widths = await render('<!-- table: widths=8em,20em -->\n\n| A | B |\n| --- | --- |\n| 1 | 2 |');
 assert.match(widths.code, /<colgroup><col style="width:8em"><col style="width:20em"><\/colgroup>/);
 const intervening = await render('<!-- table: widths=8em,20em -->\n\nText\n\n| A | B |\n| --- | --- |');
 assert.doesNotMatch(intervening.code, /<colgroup>/);
+const invalidWidths = await render('<!-- table: widths=8em,nope -->\n\n| A | B |\n| --- | --- |');
+assert.doesNotMatch(invalidWidths.code, /<colgroup>/);
 const emptyTabs = await render('> [!tabs]\n> plain body');
 assert.match(emptyTabs.code, /class="gb-callout"/);
 assert.doesNotMatch(emptyTabs.code, /class="gb-tabs"/);
-const carousel = await render('> [!carousel]\n> ![[image.webp]]');
-assert.match(carousel.code, /data-carousel/);
+
+const cppTabs = [
+	'> [!tabs]',
+	'> > [!panel] basic.c',
+	'> >',
+	'> > ```c',
+	'> > int main() {',
+	'> >     int a = 0x11111111;',
+	'> >     int b = 0x22222222;',
+	'> >     int c = a + b;',
+	'> >     return 0;',
+	'> > }',
+	'> > ```',
+	'> > [!panel] basic.o',
+	'> >',
+	'> > ```asm',
+	'> > 0000000000000000 <ltmp0>:',
+	'> >     mov w0, #0x0',
+	'> > ```',
+	'> > [!panel] basic.o 解說',
+	'> >',
+	'> > `w0` 是整數 return register。',
+].join('\n');
+const cpp = await render(cppTabs);
+assert.equal((cpp.code.match(/role="tab"/g) ?? []).length, 3);
+assert.equal((cpp.code.match(/class="gb-tabpanel"/g) ?? []).length, 3);
+assert.doesNotMatch(cpp.code, /data-fade/);
+
+const chapter3Nested = [
+	'> [!tabs]',
+	'> > [!panel] 正常範例',
+	'> >',
+	'> > 範例：$0.5 + (-0.4375)$',
+	'> > > [!slider]',
+	'> > > > [!panel] Step 1',
+	'> > > >',
+	'> > > > ```',
+	'> > > > A:  1.000 x 2^{-1}',
+	'> > > > B: -1.110 x 2^{-2}',
+	'> > > > ```',
+	'> > > > [!panel] Step 2',
+	'> > > >',
+	'> > > > ```',
+	'> > > > A:  1.000 x 2^{-1}',
+	'> > > > B: -0.111 x 2^{-1}',
+	'> > > > ```',
+	'> > > > [!panel] Step 3',
+	'> > > >',
+	'> > > > ```',
+	'> > > > A:  0.100 x 2^{0}',
+	'> > > > B: -0.111 x 2^{-1}',
+	'> > > > ```',
+	'> > [!panel] 會 Overflow 的範例',
+	'> > Overflow example content.',
+].join('\n');
+const nestedComponents = await render(chapter3Nested);
+assert.equal((nestedComponents.code.match(/role="tab"/g) ?? []).length, 1);
+assert.equal((nestedComponents.code.match(/class="gb-tabpanel"/g) ?? []).length, 1);
+assert.equal((nestedComponents.code.match(/class="gb-stepper-pane"/g) ?? []).length, 3);
+assert.match(nestedComponents.code, /data-step-counter[^>]*>1 \/ 3<\/span>/);
+assert.match(nestedComponents.code, /class="gb-tabpanel"[\s\S]*class="gb-stepper"/);
+const sliderTag = nestedComponents.code.match(/<div class="gb-stepper"[^>]*>/)?.[0] ?? '';
+assert.match(sliderTag, /role="group"/);
+assert.match(sliderTag, /tabindex="0"/);
+assert.match(nestedComponents.code, /aria-label="Step 1 \(1 \/ 3\)"/);
+
+const abc = await render([
+	'```abc',
+	'X: 1',
+	'M: none',
+	'L: 1/1',
+	'K: C',
+	'C D E F G A B c',
+	'w: C D E F G A B C',
+	'```',
+].join('\n'));
+assert.match(abc.code, /<pre><code class="language-abc">/);
+assert.doesNotMatch(abc.code, /class="astro-code|class="line"/);
+
+const mermaid = await render([
+	'```mermaid',
+	'sequenceDiagram',
+	'    Note left of Alice: Info',
+	'    Alice->>Bob: Send Data/Information',
+	'    Note left of Bob: Eve: Hack and Revise Data',
+	'    Note left of Bob: Data loss',
+	'    Note right of Bob: ????',
+	'```',
+].join('\n'));
+assert.match(mermaid.code, /<pre><code class="language-mermaid">/);
+assert.doesNotMatch(mermaid.code, /class="astro-code|class="line"/);
+
+const carousel = await render([
+	'> [!carousel|fade]',
+	'> ![[Maimai-april-shower-15.png]]',
+	'> ![[Maimai-swing-1.png]]',
+	'> ![[Maimai-umiuri-fig1.png]]',
+].join('\n'));
+assert.match(carousel.code, /class="gb-carousel has-fade"[^>]*data-carousel/);
+assert.equal((carousel.code.match(/data-carousel-slide/g) ?? []).length, 3);
+assert.match(carousel.code, /data-carousel-counter[^>]*>1 \/ 3<\/span>/);
+
+const sliderFade = await render([
+	'> [!slider|fade]',
+	'> > [!panel] One',
+	'> > First.',
+	'> > [!panel] Two',
+	'> > Second.',
+].join('\n'));
+assert.match(sliderFade.code, /class="gb-stepper has-fade"[^>]*data-slider/);
+
+const links = [
+	'> [!link]',
+	'> https://example.com/depth-one',
+	'',
+	'> [!note]',
+	'> Nested link follows.',
+	'>',
+	'> > [!link]',
+	'> > https://example.com/depth-two',
+].join('\n');
+const linkCards = await render(links);
+assert.equal((linkCards.code.match(/class="gb-linkcard"/g) ?? []).length, 2);
+assert.match(linkCards.code, /href="https:\/\/example\.com\/depth-one"/);
+assert.match(linkCards.code, /href="https:\/\/example\.com\/depth-two"/);
+assert.deepEqual(extractLinkUrls(links), [
+	'https://example.com/depth-one',
+	'https://example.com/depth-two',
+]);
+
+const center = await render('> [!center]\n> Centered **content**.\n>\n> > [!center]\n> > Nested.');
+assert.equal((center.code.match(/class="gb-center"/g) ?? []).length, 2);
 
 console.log('Inline Markdown syntax tests passed.');

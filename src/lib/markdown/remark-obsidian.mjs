@@ -441,6 +441,47 @@ function panelData(node) {
 	return { title, children: bodyChildren(node) };
 }
 
+function panelDirective(node) {
+	if (node.type !== 'paragraph' || node.children?.[0]?.type !== 'text') return null;
+	const match = /^\s*\[!panel\]\s*(.*)$/i.exec(node.children[0].value);
+	return match ? { title: match[1].trim() } : null;
+}
+
+function splitPanelBody(panel) {
+	const panels = [{ title: panel.title, children: [] }];
+	for (const child of panel.children) {
+		const directive = panelDirective(child);
+		if (directive) panels.push({ ...directive, children: [] });
+		else panels.at(-1).children.push(child);
+	}
+	return panels;
+}
+
+function collectPanels(children) {
+	const panels = [];
+	let current = null;
+	const finish = () => {
+		if (current) panels.push(current);
+		current = null;
+	};
+
+	for (const child of children) {
+		const panel = panelData(child);
+		const directive = panelDirective(child);
+		if (panel) {
+			finish();
+			panels.push(...splitPanelBody(panel));
+		} else if (directive) {
+			finish();
+			current = { ...directive, children: [] };
+		} else if (current) {
+			current.children.push(child);
+		}
+	}
+	finish();
+	return panels;
+}
+
 function makePanelNode(panel, className, index) {
 	return {
 		type: 'paragraph',
@@ -507,10 +548,7 @@ function transformSpecialCallouts(parent) {
 		}
 
 		if (!['tabs', 'slider'].includes(name)) continue;
-		const panels = (child.children ?? []).flatMap((node) => {
-			const panel = panelData(node);
-			return panel ? [panel] : [];
-		});
+		const panels = collectPanels(bodyChildren(child));
 		if (!panels.length) continue;
 
 		if (name === 'tabs') {
@@ -519,7 +557,7 @@ function transformSpecialCallouts(parent) {
 				.join('');
 			child.data = {
 				hName: 'div',
-				hProperties: { className: ['gb-tabs'], 'data-tabs': '', 'data-fade': modifier === 'fade' ? 'true' : undefined },
+				hProperties: { className: ['gb-tabs'], 'data-tabs': '' },
 			};
 			child.children = [
 				{ type: 'html', value: `<div class="gb-tablist" role="tablist">${buttons}</div>` },
@@ -533,7 +571,13 @@ function transformSpecialCallouts(parent) {
 			const [first] = panels;
 			child.data = {
 				hName: 'div',
-				hProperties: { className: ['gb-stepper'], 'data-slider': '', 'data-fade': modifier === 'fade' ? 'true' : undefined },
+				hProperties: {
+					className: ['gb-stepper', ...(modifier === 'fade' ? ['has-fade'] : [])],
+					'data-slider': '',
+					tabIndex: 0,
+					role: 'group',
+					'aria-label': `${first.title || 'Step'} (1 / ${panels.length})`,
+				},
 			};
 			child.children = [
 				{
@@ -583,6 +627,7 @@ function transformCarousels(parent) {
 				'data-carousel': '',
 				role: 'group',
 				tabIndex: 0,
+				'aria-label': '圖片輪播',
 				style: '--carousel-ratio:0.75',
 			},
 		};
@@ -608,8 +653,9 @@ function transformMarkerLists(parent) {
 		if (child.type !== 'list') continue;
 		let hasMarker = false;
 		for (const item of child.children ?? []) {
-			const first = item.children?.[0];
-			const text = first?.children?.find((node) => node.type === 'text');
+			const first = item.children?.find((node) => node.type === 'paragraph');
+			const text = first?.children?.[0];
+			if (text?.type !== 'text') continue;
 			const match = text?.value.match(/^\[([ikpc])\]\s*/);
 			if (!match) continue;
 			hasMarker = true;

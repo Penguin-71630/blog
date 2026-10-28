@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
+import { extractLinkUrls } from '../src/lib/markdown/link-preview-urls.mjs';
 
 const root = path.resolve(process.cwd());
 const postsRoot = path.join(root, 'src/content/posts');
@@ -22,10 +23,7 @@ async function files(directory) {
 const urls = new Set();
 for (const file of await files(postsRoot)) {
 	const source = await readFile(file, 'utf8');
-	for (const match of source.matchAll(/>\s*>\s*\[!link\][^\n]*\n((?:>\s?.*\n?)+)/g)) {
-		const body = match[1].replace(/^>\s?/gm, '').match(/https?:\/\/\S+/)?.[0];
-		if (body) urls.add(body.replace(/[)>.,]+$/, ''));
-	}
+	for (const url of extractLinkUrls(source)) urls.add(url);
 }
 
 const previews = {};
