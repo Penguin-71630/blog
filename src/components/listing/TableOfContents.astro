@@ -1,0 +1,42 @@
+---
+import Icon from '../Icon.astro';
+
+interface Item {
+	id: string;
+	text: string;
+	level: number;
+}
+
+interface Props {
+	items: Item[];
+	variant?: 'sidebar' | 'mobile';
+}
+
+const { items, variant = 'sidebar' } = Astro.props;
+---
+
+{variant === 'mobile' ? (
+	<details class="gb-toc-mobile">
+		<summary>目錄 <Icon name="ri-arrow-right-s-line" /></summary>
+		<nav class="gb-toc is-mobile" aria-label="目錄" style="position:static;width:auto">
+			<ol>
+				{items.map((item) => (
+					<li class={`lv${item.level}`}>
+						<a href={`#${item.id}`} data-toc-link>{item.text}</a>
+					</li>
+				))}
+			</ol>
+		</nav>
+	</details>
+) : (
+	<nav class="gb-toc" aria-label="目錄">
+		<p class="gb-toc-label">目錄</p>
+		<ol>
+			{items.map((item) => (
+				<li class={`lv${item.level}`}>
+					<a href={`#${item.id}`} data-toc-link>{item.text}</a>
+				</li>
+			))}
+		</ol>
+	</nav>
+)}

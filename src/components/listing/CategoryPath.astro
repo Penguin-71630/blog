@@ -1,0 +1,13 @@
+---
+interface Props {
+	primary: string;
+	secondary?: string;
+}
+
+const { primary, secondary } = Astro.props;
+---
+
+<span class="gb-catpath">
+	<span># {primary}</span>
+	{secondary && <><span aria-hidden="true" class="gb-catpath-separator">▷</span><span>{secondary}</span></>}
+</span>

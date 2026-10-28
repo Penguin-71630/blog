@@ -1,0 +1,56 @@
+---
+import type { CategorySlug } from '../../lib/categories';
+import operatingSystem from '../../assets/category-icons/operating-system.svg?raw';
+import computerOrganization from '../../assets/category-icons/computer-organization.svg?raw';
+import dsAlgo from '../../assets/category-icons/ds-algo.svg?raw';
+import linearAlgebra from '../../assets/category-icons/linear-algebra.svg?raw';
+import discreteMathematics from '../../assets/category-icons/discrete-mathematics.svg?raw';
+import parallelProgramming from '../../assets/category-icons/parallel-programming.svg?raw';
+import compilerFrontend from '../../assets/category-icons/compiler-frontend.svg?raw';
+import formalLanguage from '../../assets/category-icons/formal-language.svg?raw';
+import languageLearning from '../../assets/category-icons/language-learning.svg?raw';
+import otherCourseNotes from '../../assets/category-icons/other-course-notes.svg?raw';
+import lifeLogs from '../../assets/category-icons/life-logs.svg?raw';
+import rhythmGame from '../../assets/category-icons/rhythm-game.svg?raw';
+import cCpp from '../../assets/category-icons/c-cpp.svg?raw';
+import miscellaneous from '../../assets/category-icons/miscellaneous.svg?raw';
+
+interface Props {
+	slug: CategorySlug;
+	size?: number;
+}
+
+const { slug, size = 42 } = Astro.props;
+const icons: Record<CategorySlug, string> = {
+	'operating-system': operatingSystem,
+	'computer-organization': computerOrganization,
+	'ds-algo': dsAlgo,
+	'linear-algebra': linearAlgebra,
+	'discrete-mathematics': discreteMathematics,
+	'parallel-programming': parallelProgramming,
+	'compiler-frontend': compilerFrontend,
+	'formal-language': formalLanguage,
+	'language-learning': languageLearning,
+	'other-course-notes': otherCourseNotes,
+	'life-logs': lifeLogs,
+	'rhythm-game': rhythmGame,
+	'c-cpp': cCpp,
+	miscellaneous,
+};
+const icon = icons[slug]
+	.replace(/<metadata>[\s\S]*?<\/metadata>/g, '')
+	.replace(/\bstroke="[^"]*"/g, 'stroke="currentColor"')
+	.replace(/<svg\b([^>]*)>/, (_, attributes) => {
+		const rootAttributes = attributes
+			.replace(/(^|\s)width="[^"]*"/, '$1')
+			.replace(/(^|\s)height="[^"]*"/, '$1');
+		return `<svg${rootAttributes} aria-hidden="true" focusable="false" width="100%" height="100%">`;
+	});
+---
+
+<span
+	class="gb-cat-icon gb-cat-icon--inline"
+	style={`width:${size}px;height:${size}px`}
+	aria-hidden="true"
+	set:html={icon}
+></span>

@@ -1,9 +1,15 @@
 ---
+import ArticleCard from '../components/listing/ArticleCard.astro';
 import PageTitle from '../components/layout/PageTitle.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
+import { getPublishedPosts } from '../lib/posts';
+
+const posts = await getPublishedPosts();
 ---
 
 <SiteLayout nav="articles">
 	<PageTitle>Articles</PageTitle>
-	<p class="gb-page-placeholder">尚無文章</p>
+	<div class="gb-article-list">
+		{posts.map((post) => <ArticleCard post={post} />)}
+	</div>
 </SiteLayout>

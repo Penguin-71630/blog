@@ -1,0 +1,26 @@
+---
+import type { Post } from '../../lib/posts';
+import CategoryIcon from './CategoryIcon.astro';
+import CategoryPath from './CategoryPath.astro';
+
+interface Props {
+	post: Post;
+}
+
+const { post } = Astro.props;
+---
+
+<a class="gb-card" href={post.href}>
+	<div class="gb-card-meta">
+		<time class="gb-date" datetime={post.date}>{post.displayDate}</time>
+		<CategoryPath primary={post.primary} secondary={post.secondary} />
+	</div>
+	<div class="gb-card-head">
+		<CategoryIcon slug={post.primarySlug} size={42} />
+		<h2 class="gb-card-title">{post.title}</h2>
+	</div>
+	{post.description && <p class="gb-card-desc">{post.description}</p>}
+	<div class="gb-card-stats">
+		{post.words} Words <span aria-hidden="true">|</span> Read Time: {post.readTime}min
+	</div>
+</a>

@@ -1,0 +1,76 @@
+---
+import Icon from '../Icon.astro';
+import type { Post } from '../../lib/posts';
+
+interface Props {
+	title: string;
+	categorySlug: string;
+	posts: Post[];
+	currentSlug: string;
+}
+
+const { title, categorySlug, posts, currentSlug } = Astro.props;
+const collator = new Intl.Collator('en', { numeric: true });
+const groupsByName = new Map<string, Post[]>();
+
+for (const post of posts) {
+	const group = post.secondary ?? 'Others';
+	groupsByName.set(group, [...(groupsByName.get(group) ?? []), post]);
+}
+
+const groups = [...groupsByName.entries()]
+	.map(([name, groupPosts]) => ({
+		name,
+		posts: groupPosts.sort((a, b) => collator.compare(a.title, b.title)),
+	}))
+	.sort((a, b) => (a.name === 'Others' ? 1 : b.name === 'Others' ? -1 : collator.compare(a.name, b.name)));
+---
+
+<nav class="gb-series" aria-label={`${title} 文章列表`}>
+	<a class="gb-series-title" href={`/categories/${categorySlug}/`}>{title}</a>
+	<ul class="gb-series-list">
+		{groups.map((group, index) => {
+			const isOpen = group.posts.some((post) => post.slug === currentSlug);
+			const listId = `series-group-${index}`;
+			return (
+				<li>
+					<button
+						type="button"
+						class:list={['gb-series-folder', { 'is-open': isOpen }]}
+						aria-expanded={isOpen ? 'true' : 'false'}
+						aria-controls={listId}
+						data-series-toggle
+					>
+						<Icon name="ri-arrow-right-s-line" />
+						<span>{group.name}</span>
+					</button>
+					<ul class="gb-series-posts" id={listId} hidden={!isOpen}>
+						{group.posts.map((post) => (
+							<li>
+								<a
+									class:list={['gb-series-post', { 'is-active': post.slug === currentSlug }]}
+									href={post.href}
+									aria-current={post.slug === currentSlug ? 'page' : undefined}
+								>
+									{post.title}
+								</a>
+							</li>
+						))}
+					</ul>
+				</li>
+			);
+		})}
+	</ul>
+</nav>
+
+<script>
+	document.querySelectorAll<HTMLButtonElement>('[data-series-toggle]').forEach((button) => {
+		button.addEventListener('click', () => {
+			const isOpen = button.getAttribute('aria-expanded') === 'true';
+			const list = button.nextElementSibling;
+			button.setAttribute('aria-expanded', String(!isOpen));
+			button.classList.toggle('is-open', !isOpen);
+			if (list instanceof HTMLElement) list.hidden = isOpen;
+		});
+	});
+</script>
