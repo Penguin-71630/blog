@@ -1,7 +1,7 @@
 import { copyFile, lstat, mkdir, readdir, realpath, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CATEGORIES } from '../src/lib/categories.ts';
+import { CATEGORY_DEFINITIONS } from '../src/lib/category-definitions.ts';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outputDir = path.join(repoRoot, 'src/content/posts');
@@ -14,7 +14,7 @@ if (!vaultArgument) {
 }
 
 const vaultDir = await realpath(path.resolve(vaultArgument));
-const categoryNames = new Set(CATEGORIES.map(({ name }) => name));
+const categoryNames = new Set(CATEGORY_DEFINITIONS.map(({ name }) => name));
 
 if (vaultDir === outputDir || outputDir.startsWith(`${vaultDir}${path.sep}`)) {
 	throw new Error('The vault directory cannot contain the generated content directory.');

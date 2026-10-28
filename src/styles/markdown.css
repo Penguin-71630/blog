@@ -38,6 +38,62 @@
 	display: none;
 }
 
+.gb-figure.is-left {
+	align-items: flex-start;
+}
+
+.gb-figure.is-right {
+	align-items: flex-end;
+}
+
+.text-color-blue {
+	color: var(--text-color-blue);
+}
+
+.text-color-cyan {
+	color: var(--text-color-cyan);
+}
+
+.text-color-green {
+	color: var(--text-color-green);
+}
+
+.text-color-yellow {
+	color: var(--text-color-yellow);
+}
+
+.text-color-red {
+	color: var(--text-color-red);
+}
+
+.text-color-purple {
+	color: var(--text-color-purple);
+}
+
+.text-color-gray {
+	color: var(--text-color-gray);
+}
+
+.text-color-orange {
+	color: var(--text-color-orange);
+}
+
+.text-color-maimai-expert {
+	color: var(--text-color-maimai-expert);
+}
+
+.text-color-maimai-master {
+	color: var(--text-color-maimai-master);
+}
+
+.text-color-maimai-remaster {
+	color: var(--text-color-maimai-remaster);
+}
+
+.text-color-maimai-utage {
+	color: var(--text-color-maimai-utage);
+}
+
 @media (min-width: 1180px) {
 	.gb-toc-mobile {
 		display: none;

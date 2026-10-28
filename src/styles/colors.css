@@ -65,6 +65,18 @@
   --chalk-red:oklch(var(--callout-l) var(--callout-c) 25);
   --chalk-purple:oklch(var(--callout-l) var(--callout-c) 305);
   --chalk-gray:oklch(var(--callout-l) 0.012 250);
+  --text-color-blue:var(--chalk-blue);
+  --text-color-cyan:var(--chalk-cyan);
+  --text-color-green:var(--chalk-green);
+  --text-color-yellow:var(--chalk-yellow);
+  --text-color-red:var(--chalk-red);
+  --text-color-purple:var(--chalk-purple);
+  --text-color-gray:var(--chalk-gray);
+  --text-color-orange:oklch(var(--callout-l) var(--callout-c) 55);
+  --text-color-maimai-expert:#f46781;
+  --text-color-maimai-master:#9F51DC;
+  --text-color-maimai-remaster:#DBAAFF;
+  --text-color-maimai-utage:#df69d7;
   /* semantic aliases */
   --surface-page:var(--bg);
   --surface-card:var(--surface);
@@ -97,3 +109,4 @@
   --marker-pro:var(--chalk-green);
   --marker-con:var(--chalk-red);
 }
+[data-theme="light"]{--text-color-maimai-remaster:#783a91}

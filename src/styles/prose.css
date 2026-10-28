@@ -57,5 +57,5 @@ a:hover{text-decoration-color:var(--accent)}
 .gb-prose :is(.hljs-comment,.tok-c){color:var(--syntax-comment);font-style:italic}
 
 /* ruby */
-.gb-prose ruby rt{font-size:.55em;color:var(--muted);font-weight:400;letter-spacing:.02em}
-.gb-prose ruby{ruby-position:over}
+.gb-prose ruby rt{font-size:.5em;line-height:1.3;text-align:center;color:var(--muted);font-weight:400;letter-spacing:.02em}
+.gb-prose ruby{ruby-position:over;ruby-align:center}

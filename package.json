@@ -11,6 +11,7 @@
     "preview": "astro preview",
     "fonts:cjk": "node scripts/build-cjk-fonts.mjs",
     "sync:vault": "node scripts/sync-vault.mjs",
+    "test:markdown": "node scripts/test-inline-syntax.mjs",
     "astro": "astro"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
     "github-slugger": "^2.0.0",
     "katex": "^0.19.1",
     "rehype-katex": "^7.0.1",
+    "remark-breaks": "^4.0.0",
     "remark-math": "^6.0.0"
   },
   "devDependencies": {

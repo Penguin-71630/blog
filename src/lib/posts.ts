@@ -41,8 +41,99 @@ function withoutCodeAndMath(source: string) {
 		.replace(/%%[\s\S]*?%%/g, ' ');
 }
 
+const textColors = new Set([
+	'blue',
+	'cyan',
+	'green',
+	'yellow',
+	'red',
+	'purple',
+	'gray',
+	'orange',
+	'maimai-expert',
+	'maimai-master',
+	'maimai-remaster',
+	'maimai-utage',
+]);
+
+function isAsciiPunctuation(character: string | undefined) {
+	if (!character) return false;
+	const code = character.charCodeAt(0);
+	return (code >= 33 && code <= 47) || (code >= 58 && code <= 64) || (code >= 91 && code <= 96) || (code >= 123 && code <= 126);
+}
+
+function findClosingBrace(source: string, start: number) {
+	let depth = 1;
+	for (let index = start + 1; index < source.length; index += 1) {
+		if (source[index] === '\\' && isAsciiPunctuation(source[index + 1])) {
+			index += 1;
+			continue;
+		}
+		if (source[index] === '{') depth += 1;
+		if (source[index] === '}' && --depth === 0) return index;
+	}
+	return -1;
+}
+
+function stripRubyColorSyntax(source: string): string {
+	let result = '';
+	for (let index = 0; index < source.length; ) {
+		if (source[index] === '`') {
+			let delimiterEnd = index + 1;
+			while (source[delimiterEnd] === '`') delimiterEnd += 1;
+			const delimiter = source.slice(index, delimiterEnd);
+			const closing = source.indexOf(delimiter, delimiterEnd);
+			if (closing >= 0) {
+				const end = closing + delimiter.length;
+				result += source.slice(index, end);
+				index = end;
+				continue;
+			}
+		}
+
+		if (source[index] === '\\' && isAsciiPunctuation(source[index + 1])) {
+			result += source.slice(index, index + 2);
+			index += 2;
+			continue;
+		}
+
+		if (source[index] === '{') {
+			const closing = findClosingBrace(source, index);
+			if (closing >= 0) {
+				const color = /^\(([^)]+)\)/.exec(source.slice(closing + 1));
+				if (color && textColors.has(color[1])) {
+					result += stripRubyColorSyntax(source.slice(index + 1, closing));
+					index = closing + 1 + color[0].length;
+					continue;
+				}
+
+				let separator = -1;
+				for (let cursor = index + 1; cursor < closing; cursor += 1) {
+					if (source[cursor] === '\\' && isAsciiPunctuation(source[cursor + 1])) {
+						cursor += 1;
+						continue;
+					}
+					if (source[cursor] === '|') {
+						separator = cursor;
+						break;
+					}
+				}
+				if (separator > index + 1 && separator < closing - 1) {
+					result += source.slice(index + 1, separator);
+					index = closing + 1;
+					continue;
+				}
+			}
+		}
+
+		result += source[index];
+		index += 1;
+	}
+	return result;
+}
+
 function plainText(source: string) {
-	return source
+	const markdownText = source
 		.replace(/!\[\[[^\]]*\]\]/g, ' ')
 		.replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
 		.replace(/\[\[([^\]|]+?)(?:\|([^\]]+))?\]\]/g, (_match, target: string, alias?: string) =>
@@ -53,7 +144,9 @@ function plainText(source: string) {
 		.replace(/^\s*>+\s?/gm, '')
 		.replace(/^\s{0,3}#{1,6}\s+/gm, '')
 		.replace(/^\s*[-*_]{3,}\s*$/gm, ' ')
-		.replace(/^\s*\|?[\s:|-]+\|?\s*$/gm, ' ')
+		.replace(/^\s*\|?[\s:|-]+\|?\s*$/gm, ' ');
+
+	return stripRubyColorSyntax(markdownText)
 		.replace(/`([^`]*)`/g, '$1')
 		.replace(/(\*\*|__|~~|==|[*_])/g, '')
 		.replace(/\\([\\`*_{}[\]()#+\-.!])/g, '$1')
