@@ -1,29 +1,184 @@
 ---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Carousel from '../components/content/Carousel.astro';
+import Icon from '../components/Icon.astro';
 import ItemCard from '../components/about/ItemCard.astro';
 import ItemCards from '../components/about/ItemCards.astro';
 import People from '../components/about/People.astro';
 import Person from '../components/about/Person.astro';
 import PageTitle from '../components/layout/PageTitle.astro';
 import SiteLayout from '../layouts/SiteLayout.astro';
+
+const aboutMedia = import.meta.glob<{ default: ImageMetadata }>(
+	'../assets/about/content/about/**/*.{webp,png,jpg,jpeg}',
+	{ eager: true },
+);
+const songMedia = import.meta.glob<{ default: ImageMetadata }>(
+	'../assets/about/music/songs/*.{webp,png,jpg,jpeg}',
+	{ eager: true },
+);
+const peopleMedia = import.meta.glob<{ default: ImageMetadata }>(
+	'../assets/about/people/*.{webp,png,jpg,jpeg}',
+	{ eager: true },
+);
+const aboutImage = (name: string) =>
+	aboutMedia[`../assets/about/content/about/${name}`].default;
+const songImage = (name: string) =>
+	songMedia[`../assets/about/music/songs/${name}`].default;
+const personImage = (slug: string) =>
+	Object.entries(peopleMedia).find(([path]) => path.split('/').pop()?.startsWith(`${slug}.`))?.[1].default;
+
+const arcaeaImages = [
+	'faint-light.webp', 'testify-byd.webp', '11-all-pm-1.webp', '11-all-pm-2.webp',
+	'lament-rain.webp', '1f1e33.webp', 'testify-ftr.webp', 'infinite-strife.webp',
+	'straight-into-the-lights.webp', 'neo-kosmo.webp', 'memory-forest.webp', 'blrink.webp',
+].map((name) => aboutImage(`arcaea/${name}`));
+const maimaiImages = [
+	'maimai-b50.webp', 'our-wrenally.webp', 'regulus.webp', 'southern-cross.webp', 'wanderschaffen-law.webp',
+].map((name) => aboutImage(`maimai/${name}`));
 ---
 
-<SiteLayout title="About Me · Gino's Blog" nav="about">
+<SiteLayout title="About Me · Gino's Blog" nav="about" wide>
 	<div class="gb-page-about">
 		<PageTitle>About Me</PageTitle>
 		<div class="gb-prose">
-			<p style="color:var(--muted)">
-				（About Me 內文尚未提供 — 以下為 ItemCard / Person 元件的版面示意。）
-			</p>
-			<h2>Items</h2>
-			<ItemCards>
-				<ItemCard title="Item title" subtitle="subtitle" />
-				<ItemCard title="Item title" subtitle="subtitle" />
-				<ItemCard title="Item title" subtitle="subtitle" />
-			</ItemCards>
-			<h2>People</h2>
+			<h2>關於部落格</h2>
+			<p>這是新的部落格，使用的主題 <a href="https://github.com/cosZone/astro-koharu?tab=readme-ov-file">koharu</a>，是由余弦 (cosine) 開發，覺得非常好看優化做得又好就抓下來使用了！<a href="https://github.com/yusixian">（她的 GitHub）</a></p>
+			<p>新部落格於 2026 年 2 月 4 日開始開發，2021 ~ 2023 的文章是從之前的部落格遷移過來的。</p>
+			<p>網站背景目前是 <a href="https://www.youtube.com/watch?v=cBJkWEEdxw0">Juvenile</a> 這首歌的曲繪，曲師是 technoplanet，這是我最喜歡的歌曲沒有之一。</p>
+			<p>首頁卡片的所有圖案繪師均為<a href="https://www.pixiv.net/en/users/65794679/artworks">物黍</a>，非常喜歡老師的畫風（虎牙真的真的很可愛。。。</p>
+
+			<h2>關於站長</h2>
+			<p>哈囉～ 我是 Gino！</p>
+			<p>目前是台灣的陽明交通大學資工系大三生，先前是演算法競賽選手（ICPC），最近重心在畢業專題跟考研。</p>
+			<p>興趣是演算法競賽、音樂遊戲、研究一些前後端的東西，最近剛摸一點攝影跟日文。</p>
+			<p>其實我目前還在摸索部落格的定位，不確定該以什麼領域作為主要產出，所以近期可能都是想到什麼就寫什麼，當作是蒐集靈感。有想法之後會撰寫類似週刊的系列文，請多指教！</p>
+
+			<h2><Icon name="ri-time-fill" /> 學業軌跡</h2>
+			<div class="gb-archive">
+				<div class="gb-archive-item"><time datetime="2019-09">2019-09</time><span>就讀師大附中</span><span class="gb-archive-description">1510 資訊科學班</span></div>
+				<div class="gb-archive-item"><time datetime="2022-09">2022-09</time><span>就讀交大資工</span><span class="gb-archive-description">繁星錄取</span></div>
+			</div>
+
+			<h2><Icon name="ri-code-box-fill" /> 資訊競賽經歷</h2>
+			<div class="gb-table-wrap">
+				<table>
+					<thead><tr><th><Icon name="ri-graduation-cap-line" /> 年級</th><th><Icon name="ri-macbook-fill" /> 競賽</th><th><Icon name="ri-medal-2-line" /> 獎項</th><th><Icon name="ri-sparkling-2-line" /> Remarks</th></tr></thead>
+					<tbody>
+						<tr><td>大三</td><td><a href="https://www.icpc.tw/2025/">2025 ICPC 台中站</a></td><td>第 22 名 / Silver Medal</td><td>pI (Convex Hull 變形)、pK (複雜度可均攤的 DFS 搜尋)</td></tr>
+						<tr><td>大三</td><td><a href="https://ncpc.nsysu.edu.tw/static/file/62/1062/img/ScoreboardNCPC2025_FINAL-DOMjudge.pdf">2025 NCPC 決賽</a></td><td>第 11 名 / 取得外站補助名額</td><td>pH (字串 Gusfield's algorithm)</td></tr>
+						<tr><td>大三</td><td><a href="https://topc.icpc.tw/scoreboard/">2025 TOPC</a></td><td>第 23 名</td><td>pJ (二分搜答案套樹 DP)</td></tr>
+						<tr><td>大三</td><td><a href="https://www.nycu.edu.tw/it/ch/app/news/view?module=headnews&id=4&serno=819866d7-2225-428c-ba24-00792fb96d0e">交大校內選拔賽</a></td><td>第 4 名</td><td>一題僅 3 隊 AC 的數論題（GCD 相關）</td></tr>
+						<tr><td>大一</td><td><a href="https://icpc.global/regionals/finder/Taipei-2023/standings">2022 ICPC 桃園站</a></td><td>第 22 名 / Silver Award</td><td></td></tr>
+						<tr><td>大一</td><td>2022 NCPC 決賽</td><td>第 21 名 / 佳作第一名</td><td></td></tr>
+						<tr><td>大一</td><td>交大校內選拔賽</td><td>第 5 名</td><td>一題二分搜套差分約束系統</td></tr>
+						<tr><td>大一</td><td>交大新生個人賽</td><td>第 2 名</td><td></td></tr>
+						<tr><td>高三</td><td>APCS（2021 年 11 月場）</td><td>實作 5 級分（原始分數 370）</td><td>該次實作 2734 人報考，僅 5 人 5 級分</td></tr>
+						<tr><td>高三</td><td><a href="https://sorahisa.github.io/OI/DumpedRanks/nhspc2021_tpe/ranking/Ranking.html">資訊學科競賽 台北市市賽</a></td><td>第 16 名 / 三等獎</td><td>pC 80 分 (位元 DP)</td></tr>
+						<tr><td>高三</td><td>YTP 少年圖靈計畫 決賽</td><td>第 7 名</td><td></td></tr>
+						<tr><td>高三</td><td>成大高中生程式設計邀請賽</td><td>第 2 名</td><td></td></tr>
+						<tr><td>高三</td><td>NPSC</td><td>第 17 名 / 佳作</td><td></td></tr>
+						<tr><td>高二</td><td>APCS（2021 年 1 月場）</td><td>觀念 5 級分（原始分數 92）<br />實作 5 級分（原始分數 400）</td><td>該次實作 2962 人報考，僅 27 人 5 級分</td></tr>
+						<tr><td>高二</td><td>資訊之芽算法班</td><td>優秀結業</td><td></td></tr>
+						<tr><td>高二</td><td>TOI 初選</td><td>第 29 名</td><td></td></tr>
+						<tr><td>高一</td><td>APCS（2020 年 7 月場）</td><td>觀念 4 級分（原始分數 88）<br />實作 4 級分（原始分數 295）</td><td></td></tr>
+					</tbody>
+				</table>
+			</div>
+
+			<h2><Icon name="ri-group-2-fill" /> ICPC 隊伍</h2>
+			<p><strong><Icon name="ri-team-fill" /> 隊伍成員</strong></p>
 			<People>
-				<Person title="WiwiHo" subtitle="wiwiho.me" url="https://wiwiho.me" />
-				<Person title="Name" subtitle="subtitle" />
+				<Person title="Ian" url="https://gitea.konchin.com/ytshih" />
+				<Person title="Benson" url="https://github.com/benson0402" />
+				<Person title="Gino" url="https://github.com/Penguin-71630" />
+			</People>
+			<p><strong><Icon name="ri-pen-nib-fill" /> 相關資料</strong></p>
+			<ItemCards>
+				<ItemCard title="Codeforces ID" subtitle="polarbear03617" img={aboutImage('codeforces.webp')} url="https://codeforces.com/profile/polarbear03617" />
+				<ItemCard title="ICPC Codebook" subtitle="NYCU_LLLemonade_Jam" url="https://github.com/konchinshih/codebook" />
+			</ItemCards>
+
+			<h2><Icon name="ri-presentation-fill" /> 資訊競賽教學</h2>
+			<p><strong><Icon name="ri-article-fill" /> 上課簡報</strong></p>
+			<ItemCards>
+				<ItemCard title="字串" subtitle="KMP / Z-Value / Suffix Array" url="https://slides.com/penguin71630/string" img={aboutImage('string-dark.webp')} />
+				<ItemCard title="莫隊算法" subtitle="一般莫隊 / 回滾莫隊 / 帶修改莫隊" url="https://drive.google.com/file/d/1lbUAzupnsITTtQS9qLDhM0pNE2TUnbpn/view?usp=sharing" img={aboutImage('mo-dark.webp')} />
+				<ItemCard title="根號算法 I" subtitle="分塊 / 根號複雜度" url="https://hackmd.io/@penguin71630/sqrt1#/" img={aboutImage('sqrt-dark.webp')} />
+				<ItemCard title="根號算法 II" subtitle="操作分塊" url="https://hackmd.io/@penguin71630/sqrt2#/" img={aboutImage('sqrt-dark.webp')} />
+				<ItemCard title="CDQ 分治" subtitle="三維偏序 / 操作分治" url="https://drive.google.com/file/d/1Ind7Kx3ck2ZGZBoJuXdfmIF0nOxq4GHg/view?usp=sharing" img={aboutImage('dc-dark.webp')} />
+				<ItemCard title="分治" subtitle="Master Theorem / 其他經典問題" url="https://drive.google.com/file/d/1HU_FEQtWdVAq6dG9DqzossMjytfgiVRi/view?usp=sharing" img={aboutImage('dc-dark.webp')} />
+				<ItemCard title="基礎 DP 複習" subtitle="LIS / 背包問題" url="https://hackmd.io/@penguin71630/DPpractice1#/" img={aboutImage('dp-dark.webp')} />
+				<ItemCard title="平行二分搜" subtitle="CSES New Roads Queries" url="https://drive.google.com/file/d/1ZatluDxGYlMXbuZoUQyhauGxnRsLzKsF/view?usp=sharing" img={aboutImage('parallel-bs-dark.webp')} />
+				<ItemCard title="計算幾何" subtitle="向量基礎 / Convex Hull / 旋轉卡尺" url="https://drive.google.com/file/d/11UBQ_4fGO8BSZIXReTIQH5UQZLBXXugy/view" img={aboutImage('geometry-dark.webp')} />
+				<ItemCard title="資料結構" subtitle="稀疏表 / BIT / 懶標線段樹" url="https://drive.google.com/file/d/1FPmwB58dJ-0mmJS570frGKEHEVOLhj35/view" img={aboutImage('ds-dark.webp')} />
+			</ItemCards>
+			<p><strong><Icon name="ri-time-fill" /> 教學經歷</strong></p>
+			<div class="gb-table-wrap">
+				<table>
+					<thead><tr><th>年級</th><th>活動</th><th>講授主題</th></tr></thead>
+					<tbody>
+						<tr><td>大一</td><td>交大 PCCA 寒訓</td><td><a href="https://www.youtube.com/watch?v=ym6_szBFoqk">莫隊算法、CDQ 分治、Parallel Binary Search</a></td></tr>
+						<tr><td>大一</td><td>資訊之芽竹區算法班</td><td><a href="https://www.csie.ntu.edu.tw/~sprout/algo2023/ppt_pdf/week06/divide_and_conquer_inclass(hc).pdf">分治</a></td></tr>
+						<tr><td>高三</td><td>附中 x 延平競程讀書會</td><td><a href="https://hackmd.io/@penguin71630/sqrt1#/">根號算法 I</a></td></tr>
+						<tr><td>高三</td><td>附中 x 延平競程讀書會</td><td><a href="https://hackmd.io/@penguin71630/sqrt2#/">根號算法 II</a></td></tr>
+						<tr><td>高三</td><td>附中 x 延平競程讀書會</td><td><a href="https://hackmd.io/@penguin71630/DPpractice1#/">基礎 DP 複習</a></td></tr>
+						<tr><td>高三</td><td>附中資訊校隊培訓</td><td><a href="https://slides.com/penguin71630/string">字串演算法</a></td></tr>
+						<tr><td>高三</td><td>附中資訊暑期培訓</td><td><a href="https://drive.google.com/file/d/11UBQ_4fGO8BSZIXReTIQH5UQZLBXXugy/view">基礎計算幾何</a></td></tr>
+						<tr><td>高三</td><td>附中資訊暑期培訓</td><td><a href="https://drive.google.com/file/d/1FPmwB58dJ-0mmJS570frGKEHEVOLhj35/view">基礎資料結構</a></td></tr>
+						<tr><td>高三</td><td>薇閣 x 嘉義 x 新化 x 附中 四校暑訓</td><td><a href="https://github.com/HHSH-CYSH-WGSH-HSNU-Summer-Camp/Divide-and-Conquer/blob/main/Divide%20and%20Conquer.pdf">基礎分治</a></td></tr>
+					</tbody>
+				</table>
+			</div>
+
+			<h2><Icon name="ri-disc-fill" /> 音樂遊戲</h2>
+			<p>主要玩 Arcaea 跟 Maimai，Arcaea 玩了 4 年目前 potential <code>13.23</code> 並加入了 Lgd 戰隊。這個遊戲剩下 Tempestissimo 尾殺跟 Designant 中間慢速段尚未 PM 過，目前是想聽歌才會回來玩。最喜歡 Paradox Palette、Lost in the Abyss 和 Waltz for Lorelei，退坑前的心願是理論這幾張譜。</p>
+			<p>右手 CPS 為 <code>9.7</code>（30 秒測試），左手為 <code>7.5</code>，我的手速使我面對高難譜非常吃力，碰到子彈或硬扛的鍵型我完全沒辦法把精度壓進 25ms 內。然而我最不缺的是研究譜面的耐心，因此對於一些節奏複雜的下位譜我能夠有不錯的成績，比如 Memory Forest 1 小、BLRINK 1 小。</p>
+			<p><strong><Icon name="ri-gamepad-fill" /> Arcaea</strong></p>
+			<Carousel images={arcaeaImages} label="Arcaea 遊戲成績" />
+			<p><strong><Icon name="ri-gamepad-fill" /> Maimai</strong></p>
+			<Carousel images={maimaiImages} label="Maimai 遊戲成績" />
+			<p>Maimai 的話玩了 3 年，297 道上彩，認真練到大概 600 道拿了紫將之後就開始隨性玩了。目前將牌已攻略紫代、爽代、桃代、煌代。非常非常喜歡紫代，開歌時不時會選紫代的譜（conflict 除外）如天火明命、四月の雨、Selector、Panopticon。針對 Maimai 有寫過一些經驗分享文，<a href="/categories/rhythm-game/">感興趣的話可以看看</a>。</p>
+			<p>4k 音遊也有接觸一點，Malody 目前是常規三段（考的是 v3 段位）最近正好要考常規四段。osu!mania 的話約 3200pp，能打 4 星左右的譜。</p>
+			<figure class="gb-figure"><Image src={aboutImage('osu-mania-4k.webp')} alt="osu!mania 4K 成績" loading="lazy" /></figure>
+
+			<h2><Icon name="ri-headphone-fill" /> 平時聽的歌</h2>
+			<p><strong><Icon name="ri-headphone-fill" /> 喜歡的歌曲</strong></p>
+			<ItemCards>
+				<ItemCard img={songImage('Wonder.webp')} title="ワンダー" subtitle="tayori" />
+				<ItemCard img={songImage('雪は何色.webp')} title="雪は何色" subtitle="堀江晶太 / Kotoha" />
+				<ItemCard img={songImage('花たちに希望を.webp')} title="花たちに希望を" subtitle="Sound piercer / DAZBEE" />
+				<ItemCard img={songImage('Juvenile.webp')} title="Juvenile" subtitle="technoplanet" />
+				<ItemCard img={songImage('Inverted World.webp')} title="Inverted World" subtitle="ARForest" />
+			</ItemCards>
+			<p><strong><Icon name="ri-headphone-fill" /> 喜歡的曲師與樂團</strong></p>
+			<People>
+				<Person title="Aethoro" url="https://www.youtube.com/@Aethoro" img={personImage('aethoro')} />
+				<Person title="tayori" url="https://www.youtube.com/@tayori_tri" img={personImage('tayori')} />
+				<Person title="ARForest" url="https://www.youtube.com/@ARForest" img={personImage('arforest')} />
+				<Person title="Elliot Hsu" url="https://www.youtube.com/@ElliotHsu" img={personImage('elliot-hsu')} />
+				<Person title="yourmythos" url="https://www.youtube.com/@yourmythos/videos" img={personImage('yourmythos')} />
+				<Person title="BlackY" url="https://www.youtube.com/@BlackY_official" img={personImage('blacky')} />
+				<Person title="onoken" url="https://www.youtube.com/@ax_onoken" img={personImage('onoken')} />
+				<Person title="Pretty Patterns" url="https://www.youtube.com/@PrettyPatterns" img={personImage('pretty-patterns')} />
+				<Person title="ナナツカゼ" url="https://www.youtube.com/@Nanatsukaze_" img={personImage('nanatsukaze')} />
+				<Person title="Sakuzyo" url="https://www.youtube.com/@SakuzyoOfficial" img={aboutImage('sakuzyo.webp')} />
+				<Person title="Mili" url="https://www.youtube.com/@ProjectMili" img={personImage('mili')} />
+				<Person title="mamomo" url="https://www.youtube.com/@mamomo4026" img={personImage('mamomo')} />
+				<Person title="Rigël Theatre" url="https://www.youtube.com/@Rig%C3%ABlTheatre" img={personImage('rigel-theatre')} />
+				<Person title="Dj Okawari" url="https://www.youtube.com/@djokawariofficial5774" img={personImage('dj-okawari')} />
+				<Person title="Lime" url="https://soundcloud.com/kanki2" img={aboutImage('lime-kankitsu.webp')} />
+			</People>
+			<p><strong><Icon name="ri-headphone-fill" /> 喜歡的歌手</strong></p>
+			<People>
+				<Person title="Kotoha" img={personImage('kotoha')} />
+				<Person title="倚水" img={personImage('isui')} />
+				<Person title="nayuta / AZKi" img={personImage('nayuta-azki')} />
+				<Person title="DAZBEE" img={personImage('dazbee')} />
+				<Person title="Risa Yuzuki" url="https://www.yuzu-risa.com/" img={personImage('risa-yuzuki')} />
+				<Person title="藍月なくる" img={personImage('aitsuki-nakuru')} />
+				<Person title="vally.exe" img={personImage('vally-exe')} />
 			</People>
 		</div>
 	</div>

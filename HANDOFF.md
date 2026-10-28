@@ -2,7 +2,7 @@
 
 更新：2026-10-25｜branch：`claude-design`｜已 push（`6bbcb20` 之後）
 
-**下一步**：做「之後的移植順序」第 4 步：Tabs／Slider／Carousel、Ruby、MarkerList、lightbox、link card、表格欄寬註解與 mermaid／abc。
+**下一步**：做「之後的移植順序」第 4 步：Tabs／Slider、MarkerList、lightbox、link card、表格欄寬註解與 Mermaid／ABC；Carousel、Ruby／文字顏色已完成。`src/pages/dev/fonts.astro` 仍待移除。
 
 > 給接手的 session：使用者正在忙學校作業，回覆請**簡短、一次只問一件事**，用繁體中文。
 
@@ -21,7 +21,7 @@
   - Rubik 彎引號那段（`GB Latin Quotes`，`U+2018-201F`）保持原樣，排在 `--font-body` 第一位
 - **KaTeX**：從 npm 引入（`katex`）
 - **圖示**：`src/components/Icon.astro` 內嵌 SVG
-  - 只收錄設計用到的 21 個 Remix 和 14 個 Lucide，清單在 `src/icons/index.ts`
+  - 只收錄設計用到的 Remix 和 Lucide，清單在 `src/icons/index.ts`
   - 用法：`<Icon name="ri-article-line" />`、`<Icon name="icon-pencil" />`
 - **中文字型（已定案）**：cn-font-split 依字頻切 Noto `.ttf`，自架在 `public/fonts/cjk/`
   - `scripts/build-cjk-fonts.mjs`：`pnpm build` 每次都會先跑；`pnpm dev` 只在 `cjk.css` 不存在時跑；也可以單獨跑 `pnpm fonts:cjk`
@@ -38,7 +38,9 @@
   - Vault 是唯讀來源；更新筆記後執行 `pnpm sync:vault <vaultDir>`，再重新 build。
   - 修改 remark／rehype plugin 後，先清除 Astro content cache：`rm -rf node_modules/.astro`，再 build。
   - 目前同步 `/home/ubuntu/vault/v` 後有 44 篇發布文章和 170 個附件。
-- **Categories、Archives 與 About Me（第 3 步已完成）**：分類索引與各分類頁、年份歸檔、About 元件示意；分類與文章頁共用自然排序。
+- **Categories、Archives 與 About Me（第 3 步已完成）**：分類索引與各分類頁、年份歸檔，以及從舊 About 頁遷移的自我介紹內容；About 圖片改用 Astro assets。
+  - `src/components/content/Carousel.astro` 提供無自動播放的循環圖片輪播。
+- **Markdown 延伸語法**：remark-breaks、Ruby／文字顏色和圖片對齊已加入；修改 remark／rehype plugin 後，先清除 Astro content cache：`rm -rf node_modules/.astro`，再 build。
 
 ## 字型量測結果
 
@@ -68,7 +70,7 @@
 1. [x] layout：側欄、手機頂部列、footer、stub pages
 2. [x] Articles 列表和文章頁，用 content collections ＋ Markdown
 3. [x] Categories、Archives、About Me
-4. 內文元件：Tabs／Slider／Carousel、Ruby、MarkerList、lightbox、link card、表格欄寬註解、mermaid／abc
+4. 內文元件：Tabs／Slider、MarkerList、lightbox、link card、表格欄寬註解、mermaid／abc；Carousel 與 Ruby／文字顏色已完成
 
 ## 注意
 
