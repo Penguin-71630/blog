@@ -1,0 +1,38 @@
+---
+import type { ImageMetadata } from 'astro';
+import Icon from '../components/Icon.astro';
+import ItemCard from '../components/about/ItemCard.astro';
+import ItemCards from '../components/about/ItemCards.astro';
+import PageTitle from '../components/layout/PageTitle.astro';
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { musicGroups } from '../lib/music-playlist';
+
+const songs = import.meta.glob<{ default: ImageMetadata }>(
+	'../assets/music/songs/*.{webp,png,jpg,jpeg}',
+	{ eager: true },
+);
+const imageFor = (name: string) => songs[`../assets/music/songs/${name}`]?.default;
+---
+
+<SiteLayout title="歌單" description="我喜歡的音樂" nav="about" wide>
+	<div class="gb-page-about">
+		<PageTitle>歌單</PageTitle>
+		<div class="gb-prose">
+			{musicGroups.map(({ icon, label, songs: groupSongs }) => (
+				<section>
+					<p><strong><Icon name={icon} /> {label}</strong></p>
+					<ItemCards>
+						{groupSongs.map(([image, title, subtitle]) => (
+							<ItemCard img={imageFor(image)} title={title} subtitle={subtitle} />
+						))}
+					</ItemCards>
+				</section>
+			))}
+		</div>
+	</div>
+</SiteLayout>
+
+<script>
+	import { initLightbox } from '../scripts/lightbox.js';
+	initLightbox();
+</script>

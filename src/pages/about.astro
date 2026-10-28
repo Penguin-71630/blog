@@ -145,6 +145,10 @@ const maimaiImages = [
 
 			<h2><Icon name="ri-headphone-fill" /> 平時聽的歌</h2>
 			<p><strong><Icon name="ri-headphone-fill" /> 喜歡的歌曲</strong></p>
+			<aside class="gb-aside">
+				<div class="gb-aside-label"><Icon name="ri-book-2-line" /> Reference</div>
+				<div><p><a href="/music/">完整歌單在此</a></p></div>
+			</aside>
 			<ItemCards>
 				<ItemCard img={songImage('Wonder.webp')} title="ワンダー" subtitle="tayori" />
 				<ItemCard img={songImage('雪は何色.webp')} title="雪は何色" subtitle="堀江晶太 / Kotoha" />
@@ -183,3 +187,8 @@ const maimaiImages = [
 		</div>
 	</div>
 </SiteLayout>
+
+<script>
+	import { initLightbox } from '../scripts/lightbox.js';
+	initLightbox();
+</script>

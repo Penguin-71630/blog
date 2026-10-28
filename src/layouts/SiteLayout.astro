@@ -7,14 +7,15 @@ import type { NavKey } from '../components/layout/nav';
 
 interface Props {
 	title?: string;
+	description?: string;
 	nav: NavKey;
 	wide?: boolean;
 }
 
-const { title, nav, wide = false } = Astro.props;
+const { title, description, nav, wide = false } = Astro.props;
 ---
 
-<BaseLayout title={title}>
+<BaseLayout title={title} description={description}>
 	<MobileTopBar active={nav}><slot name="sidebar" /></MobileTopBar>
 	<div class="gb-shell">
 		<div class="gb-shell-body">

@@ -19,15 +19,22 @@ import riGroup2Fill from 'remixicon/icons/User & Faces/group-2-fill.svg?raw';
 import riHeadphoneFill from 'remixicon/icons/Media/headphone-fill.svg?raw';
 import riInformationLine from 'remixicon/icons/System/information-line.svg?raw';
 import riKey2Line from 'remixicon/icons/Others/key-2-line.svg?raw';
+import riBookOpenFill from 'remixicon/icons/Document/book-open-fill.svg?raw';
+import riCarFill from 'remixicon/icons/Map/car-fill.svg?raw';
+import riFilmFill from 'remixicon/icons/Media/film-fill.svg?raw';
+import riLeafFill from 'remixicon/icons/Others/leaf-fill.svg?raw';
 import riLink from 'remixicon/icons/Editor/link.svg?raw';
 import riMacbookFill from 'remixicon/icons/Device/macbook-fill.svg?raw';
 import riMedal2Line from 'remixicon/icons/Business/medal-2-line.svg?raw';
 import riMenuLine from 'remixicon/icons/System/menu-line.svg?raw';
+import riMoonFill from 'remixicon/icons/Weather/moon-fill.svg?raw';
 import riMoonLine from 'remixicon/icons/Weather/moon-line.svg?raw';
+import riMusic2Fill from 'remixicon/icons/Media/music-2-fill.svg?raw';
 import riPenNibFill from 'remixicon/icons/Design/pen-nib-fill.svg?raw';
 import riPresentationFill from 'remixicon/icons/Business/presentation-fill.svg?raw';
 import riSparkling2Line from 'remixicon/icons/Weather/sparkling-2-line.svg?raw';
 import riStickyNoteLine from 'remixicon/icons/Document/sticky-note-line.svg?raw';
+import riSunFill from 'remixicon/icons/Weather/sun-fill.svg?raw';
 import riSunLine from 'remixicon/icons/Weather/sun-line.svg?raw';
 import riTeamFill from 'remixicon/icons/User & Faces/team-fill.svg?raw';
 import riTimeFill from 'remixicon/icons/System/time-fill.svg?raw';
@@ -71,15 +78,22 @@ export const icons = {
 	'ri-headphone-fill': riHeadphoneFill,
 	'ri-information-line': riInformationLine,
 	'ri-key-2-line': riKey2Line,
+	'ri-book-open-fill': riBookOpenFill,
+	'ri-car-fill': riCarFill,
+	'ri-film-fill': riFilmFill,
+	'ri-leaf-fill': riLeafFill,
 	'ri-link': riLink,
 	'ri-macbook-fill': riMacbookFill,
 	'ri-medal-2-line': riMedal2Line,
 	'ri-menu-line': riMenuLine,
+	'ri-moon-fill': riMoonFill,
 	'ri-moon-line': riMoonLine,
+	'ri-music-2-fill': riMusic2Fill,
 	'ri-pen-nib-fill': riPenNibFill,
 	'ri-presentation-fill': riPresentationFill,
 	'ri-sparkling-2-line': riSparkling2Line,
 	'ri-sticky-note-line': riStickyNoteLine,
+	'ri-sun-fill': riSunFill,
 	'ri-sun-line': riSunLine,
 	'ri-team-fill': riTeamFill,
 	'ri-time-fill': riTimeFill,
