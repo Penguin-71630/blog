@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { images, fade = false, label = '圖片輪播' } = Astro.props;
-const aspectRatio = Math.max(1, ...images.map((image) => image.height / image.width));
+const aspectRatio = Math.max(0.01, ...images.map((image) => image.height / image.width));
 ---
 
 <div
@@ -38,30 +38,6 @@ const aspectRatio = Math.max(1, ...images.map((image) => image.height / image.wi
 </div>
 
 <script>
-	for (const carousel of document.querySelectorAll('[data-carousel]')) {
-		const slides = [...carousel.querySelectorAll('[data-carousel-slide]')];
-		const counter = carousel.querySelector('[data-carousel-counter]');
-		let index = 0;
-
-		const show = (nextIndex) => {
-			index = (nextIndex + slides.length) % slides.length;
-			slides.forEach((slide, slideIndex) => {
-				slide.classList.toggle('is-active', slideIndex === index);
-				slide.setAttribute('aria-hidden', slideIndex === index ? 'false' : 'true');
-			});
-			counter.textContent = `${index + 1} / ${slides.length}`;
-		};
-
-		carousel.querySelector('[data-carousel-prev]').addEventListener('click', () => show(index - 1));
-		carousel.querySelector('[data-carousel-next]').addEventListener('click', () => show(index + 1));
-		carousel.addEventListener('keydown', (event) => {
-			if (event.key === 'ArrowLeft') {
-				event.preventDefault();
-				show(index - 1);
-			} else if (event.key === 'ArrowRight') {
-				event.preventDefault();
-				show(index + 1);
-			}
-		});
-	}
+	import { initCarousels } from '../../scripts/carousel.js';
+	initCarousels();
 </script>

@@ -2,7 +2,7 @@
 
 更新：2026-10-25｜branch：`claude-design`｜已 push（`6bbcb20` 之後）
 
-**下一步**：做「之後的移植順序」第 4 步：Tabs／Slider、MarkerList、lightbox、link card、表格欄寬註解與 Mermaid／ABC；Carousel、Ruby／文字顏色已完成。`src/pages/dev/fonts.astro` 仍待移除。
+**下一步**：第 4 步已完成；剩餘未規劃的 DOT／Graphviz 與 `+++`／`:::` 語法不處理。
 
 > 給接手的 session：使用者正在忙學校作業，回覆請**簡短、一次只問一件事**，用繁體中文。
 
@@ -41,6 +41,7 @@
 - **Categories、Archives 與 About Me（第 3 步已完成）**：分類索引與各分類頁、年份歸檔，以及從舊 About 頁遷移的自我介紹內容；About 圖片改用 Astro assets。
   - `src/components/content/Carousel.astro` 提供無自動播放的循環圖片輪播。
 - **Markdown 延伸語法**：remark-breaks、Ruby／文字顏色和圖片對齊已加入；修改 remark／rehype plugin 後，先清除 Astro content cache：`rm -rf node_modules/.astro`，再 build。
+- **Link cards**：更新 vault 後執行 `pnpm links:fetch`，再提交 `src/data/link-previews.json` 與 `public/link-previews/` 的圖片；建置不會發出網路請求。
 
 ## 字型量測結果
 
@@ -70,7 +71,7 @@
 1. [x] layout：側欄、手機頂部列、footer、stub pages
 2. [x] Articles 列表和文章頁，用 content collections ＋ Markdown
 3. [x] Categories、Archives、About Me
-4. 內文元件：Tabs／Slider、MarkerList、lightbox、link card、表格欄寬註解、mermaid／abc；Carousel 與 Ruby／文字顏色已完成
+4. [x] 內文元件：Tabs／Slider／Carousel、MarkerList、lightbox、link card、表格欄寬註解、Mermaid／ABC
 
 ## 注意
 

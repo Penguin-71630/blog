@@ -10,18 +10,22 @@
     "build": "node scripts/build-cjk-fonts.mjs && astro build",
     "preview": "astro preview",
     "fonts:cjk": "node scripts/build-cjk-fonts.mjs",
+    "links:fetch": "node scripts/fetch-link-previews.mjs",
     "sync:vault": "node scripts/sync-vault.mjs",
     "test:markdown": "node scripts/test-inline-syntax.mjs",
     "astro": "astro"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.4",
+    "abcjs": "^6.7.2",
     "astro": "^7.4.2",
     "github-slugger": "^2.0.0",
     "katex": "^0.19.1",
+    "mermaid": "^12.2.0",
     "rehype-katex": "^7.0.1",
     "remark-breaks": "^4.0.0",
-    "remark-math": "^6.0.0"
+    "remark-math": "^6.0.0",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "cn-font-split": "^7.4.3",

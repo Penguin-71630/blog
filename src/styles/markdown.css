@@ -46,6 +46,10 @@
 	align-items: flex-end;
 }
 
+.gb-figure:not(.is-left):not(.is-right) {
+	align-items: center;
+}
+
 .text-color-blue {
 	color: var(--text-color-blue);
 }
@@ -88,6 +92,10 @@
 
 .text-color-maimai-remaster {
 	color: var(--text-color-maimai-remaster);
+}
+
+.text-color-maimai-utage {
+	color: var(--text-color-maimai-utage);
 }
 
 .text-color-maimai-utage {

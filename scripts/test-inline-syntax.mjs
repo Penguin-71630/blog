@@ -7,9 +7,10 @@ import remarkObsidian from '../src/lib/markdown/remark-obsidian.mjs';
 import remarkRubyColor from '../src/lib/markdown/remark-ruby-color.mjs';
 import rehypeWrapTables from '../src/lib/markdown/rehype-wrap-tables.mjs';
 import rehypeRemoveEmptyParagraphs from '../src/lib/markdown/rehype-remove-empty-paragraphs.mjs';
+import remarkTableWidths from '../src/lib/markdown/remark-table-widths.mjs';
 
 const processor = unified({
-	remarkPlugins: [remarkMath, remarkObsidian, remarkRubyColor, remarkBreaks],
+	remarkPlugins: [remarkMath, remarkObsidian, remarkRubyColor, remarkBreaks, remarkTableWidths],
 	rehypePlugins: [rehypeKatex, rehypeWrapTables, rehypeRemoveEmptyParagraphs],
 });
 const renderer = await processor.createRenderer(markdownConfigDefaults);
@@ -72,5 +73,20 @@ assert.match(callout.code, /<ruby>內容<rp>\(<\/rp><rt>ないよう<\/rt><rp>\)
 assert.match(callout.code, /<span class="text-color text-color-green">green<\/span>/);
 assert.match(callout.code, /class="katex"/);
 assert.match(callout.code, /\n\{x\|y\}<\/p>/);
+
+const markers = await render('- [i] Info\n- [k] Key\n- [p] Yes\n- [c] No\n- [ ] Todo\n- [x] Done');
+assert.match(markers.code, /class="gb-markers"/);
+assert.match(markers.code, /ri-information-line/);
+assert.match(markers.code, /type="checkbox"/);
+
+const widths = await render('<!-- table: widths=8em,20em -->\n\n| A | B |\n| --- | --- |\n| 1 | 2 |');
+assert.match(widths.code, /<colgroup><col style="width:8em"><col style="width:20em"><\/colgroup>/);
+const intervening = await render('<!-- table: widths=8em,20em -->\n\nText\n\n| A | B |\n| --- | --- |');
+assert.doesNotMatch(intervening.code, /<colgroup>/);
+const emptyTabs = await render('> [!tabs]\n> plain body');
+assert.match(emptyTabs.code, /class="gb-callout"/);
+assert.doesNotMatch(emptyTabs.code, /class="gb-tabs"/);
+const carousel = await render('> [!carousel]\n> ![[image.webp]]');
+assert.match(carousel.code, /data-carousel/);
 
 console.log('Inline Markdown syntax tests passed.');

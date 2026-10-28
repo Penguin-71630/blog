@@ -82,48 +82,14 @@ const categoryPosts = (await getPublishedPosts()).filter((item) => item.primary 
 	window.addEventListener('scroll', updateActiveHeading, { passive: true });
 	window.addEventListener('resize', updateActiveHeading);
 	updateActiveHeading();
+</script>
 
-	const images = document.querySelectorAll('.gb-prose img');
-	if (images.length) {
-		const lightbox = document.createElement('div');
-		lightbox.className = 'gb-lightbox';
-		lightbox.setAttribute('role', 'dialog');
-		lightbox.setAttribute('aria-modal', 'true');
-		lightbox.hidden = true;
-		lightbox.style.display = 'none';
-		const enlargedImage = document.createElement('img');
-		lightbox.append(enlargedImage);
-		document.body.append(lightbox);
-		let previousOverflow = '';
-		const closeLightbox = () => {
-			lightbox.hidden = true;
-			lightbox.style.display = 'none';
-			document.body.style.overflow = previousOverflow;
-		};
-		lightbox.addEventListener('click', closeLightbox);
-		document.addEventListener('keydown', (event) => {
-			if (event.key === 'Escape' && !lightbox.hidden) closeLightbox();
-		});
-		images.forEach((image) => {
-			image.setAttribute('tabindex', '0');
-			image.setAttribute('role', 'button');
-			image.setAttribute('aria-label', `放大圖片：${image.alt || '文章圖片'}`);
-			const openLightbox = () => {
-				enlargedImage.src = image.currentSrc || image.src;
-				enlargedImage.alt = image.alt;
-				lightbox.setAttribute('aria-label', image.alt || '文章圖片');
-				previousOverflow = document.body.style.overflow;
-				document.body.style.overflow = 'hidden';
-				lightbox.hidden = false;
-				lightbox.style.display = 'flex';
-			};
-			image.addEventListener('click', openLightbox);
-			image.addEventListener('keydown', (event) => {
-				if (event.key === 'Enter' || event.key === ' ') {
-					event.preventDefault();
-					openLightbox();
-				}
-			});
-		});
-	}
+<script>
+	import { initCarousels } from '../../scripts/carousel.js';
+	import { initLightbox } from '../../scripts/lightbox.js';
+	import { initMarkdownComponents } from '../../scripts/markdown-components.js';
+
+	initCarousels();
+	initMarkdownComponents();
+	initLightbox();
 </script>

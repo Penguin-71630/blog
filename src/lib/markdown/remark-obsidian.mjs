@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import GithubSlugger from 'github-slugger';
@@ -35,6 +35,14 @@ const calloutIcons = {
 	example: 'list',
 	quote: 'quote',
 };
+const markerIcons = {
+	i: ['ri-information-line', 'gb-marker-i'],
+	k: ['ri-key-2-line', 'gb-marker-k'],
+	p: ['ri-thumb-up-line', 'gb-marker-p'],
+	c: ['ri-thumb-down-line', 'gb-marker-c'],
+};
+const linkPreviewFile = path.resolve(process.cwd(), 'src/data/link-previews.json');
+const linkPreviews = existsSync(linkPreviewFile) ? JSON.parse(readFileSync(linkPreviewFile, 'utf8')) : {};
 
 let publishedPosts;
 
@@ -393,6 +401,231 @@ function iconMarkup(name) {
 	return `<i class="gb-icon icon-${name}" aria-hidden="true">${svg}</i>`;
 }
 
+function remixIconMarkup(name, className = '') {
+	const fileName = name.replace(/^ri-/, '');
+	const iconPath = path.resolve(process.cwd(), 'node_modules/remixicon/icons');
+	const directories = ['Business', 'Design', 'Development', 'Device', 'Document', 'Editor', 'Map', 'Media', 'Others', 'System', 'User & Faces', 'Weather'];
+	for (const directory of directories) {
+		const candidate = path.join(iconPath, directory, `${fileName}.svg`);
+		if (existsSync(candidate)) {
+			const svg = readFileSync(candidate, 'utf8').replace(/<svg\b/, '<svg aria-hidden="true" focusable="false"').trim();
+			return `<i class="gb-icon ${name} ${className}" aria-hidden="true">${svg}</i>`;
+		}
+	}
+	return `<i class="gb-icon ${name} ${className}" aria-hidden="true"></i>`;
+}
+
+function htmlEscape(value) {
+	return String(value)
+		.replaceAll('&', '&amp;')
+		.replaceAll('<', '&lt;')
+		.replaceAll('>', '&gt;')
+		.replaceAll('"', '&quot;');
+}
+
+function textContent(node) {
+	if (node.type === 'text') return node.value;
+	if (Array.isArray(node.children)) return node.children.map(textContent).join('');
+	return '';
+}
+
+function bodyChildren(node) {
+	return node.children?.find(
+		(child) => child.data?.hProperties?.className?.includes?.('gb-callout-body'),
+	)?.children ?? node.children?.slice(1) ?? [];
+}
+
+function panelData(node) {
+	if (node.data?.hProperties?.dataCallout !== 'panel') return null;
+	const title = textContent(node.children?.[0] ?? '').trim();
+	return { title, children: bodyChildren(node) };
+}
+
+function makePanelNode(panel, className, index) {
+	return {
+		type: 'paragraph',
+		data: {
+			hName: 'div',
+			hProperties: {
+				className: [className],
+				'data-panel-index': String(index),
+				'data-panel-title': panel.title,
+				'aria-hidden': index === 0 ? 'false' : 'true',
+			},
+		},
+		children: panel.children,
+	};
+}
+
+function transformSpecialCallouts(parent) {
+	if (!Array.isArray(parent.children)) return;
+
+	for (const child of parent.children) {
+		transformSpecialCallouts(child);
+		const rawCallout = child.data?.hProperties?.dataCallout;
+		if (!rawCallout) continue;
+		const [name, modifier] = rawCallout.toLowerCase().split('|');
+		if (name === 'center') {
+			child.data = {
+				...child.data,
+				hName: 'div',
+				hProperties: { className: ['gb-center'] },
+			};
+			child.children = bodyChildren(child);
+			continue;
+		}
+
+		if (name === 'link') {
+			const url = textContent({ children: bodyChildren(child) }).trim().match(/https?:\/\/\S+/)?.[0];
+			if (!url) continue;
+			const domain = (() => {
+				try {
+					return new URL(url).hostname.replace(/^www\./, '');
+				} catch {
+					return url;
+				}
+			})();
+			const preview = linkPreviews[url] ?? {};
+			const image = preview.image ? `<img class="gb-linkcard-img" src="${htmlEscape(preview.image)}" alt="" loading="lazy">` : '';
+			const title = preview.title || domain;
+			const description = preview.description || url;
+			child.type = 'paragraph';
+			child.data = {
+				hName: 'a',
+				hProperties: {
+					className: ['gb-linkcard'],
+					href: url,
+					target: '_blank',
+					rel: 'noopener noreferrer',
+				},
+			};
+			child.children = [{
+				type: 'html',
+				value: `${image}<span class="gb-linkcard-body"><span class="gb-linkcard-title">${htmlEscape(title)}</span><span class="gb-linkcard-desc">${htmlEscape(description)}</span><span class="gb-linkcard-domain">${htmlEscape(domain)}</span></span>`,
+			}];
+			continue;
+		}
+
+		if (!['tabs', 'slider'].includes(name)) continue;
+		const panels = (child.children ?? []).flatMap((node) => {
+			const panel = panelData(node);
+			return panel ? [panel] : [];
+		});
+		if (!panels.length) continue;
+
+		if (name === 'tabs') {
+			const buttons = panels
+				.map((panel, index) => `<button class="gb-tab" type="button" role="tab" data-tab-index="${index}" aria-selected="${index === 0 ? 'true' : 'false'}">${htmlEscape(panel.title)}</button>`)
+				.join('');
+			child.data = {
+				hName: 'div',
+				hProperties: { className: ['gb-tabs'], 'data-tabs': '', 'data-fade': modifier === 'fade' ? 'true' : undefined },
+			};
+			child.children = [
+				{ type: 'html', value: `<div class="gb-tablist" role="tablist">${buttons}</div>` },
+				{
+					type: 'paragraph',
+					data: { hName: 'div', hProperties: { className: ['gb-tabpanels'] } },
+					children: panels.map((panel, index) => makePanelNode(panel, 'gb-tabpanel', index)),
+				},
+			];
+		} else {
+			const [first] = panels;
+			child.data = {
+				hName: 'div',
+				hProperties: { className: ['gb-stepper'], 'data-slider': '', 'data-fade': modifier === 'fade' ? 'true' : undefined },
+			};
+			child.children = [
+				{
+					type: 'html',
+					value: `<div class="gb-stepper-bar"><span class="gb-stepper-title">${htmlEscape(first.title)}</span><span class="gb-stepper-ctrl"><button class="gb-step-btn" type="button" data-step-prev aria-label="上一步">‹</button><span data-step-counter>1 / ${panels.length}</span><button class="gb-step-btn" type="button" data-step-next aria-label="下一步">›</button></span></div>`,
+				},
+				{
+					type: 'paragraph',
+					data: { hName: 'div', hProperties: { className: ['gb-stepper-stage'] } },
+					children: panels.map((panel, index) => makePanelNode(panel, 'gb-stepper-pane', index)),
+				},
+			];
+		}
+	}
+}
+
+function transformCarousels(parent) {
+	if (!Array.isArray(parent.children)) return;
+	for (const child of parent.children) {
+		transformCarousels(child);
+		const rawCallout = child.data?.hProperties?.dataCallout;
+		if (!rawCallout || !rawCallout.toLowerCase().startsWith('carousel')) continue;
+		const images = [];
+		for (const node of bodyChildren(child)) {
+			const visit = (candidate) => {
+				if (candidate.type === 'image') images.push(candidate);
+				for (const nested of candidate.children ?? []) visit(nested);
+			};
+			visit(node);
+		}
+		if (!images.length) continue;
+		images.forEach((image, index) => {
+			image.data = {
+				...image.data,
+				hProperties: {
+					...image.data?.hProperties,
+					className: ['gb-carousel-image'],
+					'data-carousel-slide': '',
+					'aria-hidden': index === 0 ? 'false' : 'true',
+				},
+			};
+		});
+		child.data = {
+			hName: 'div',
+			hProperties: {
+				className: ['gb-carousel', ...(rawCallout.toLowerCase().endsWith('|fade') ? ['has-fade'] : [])],
+				'data-carousel': '',
+				role: 'group',
+				tabIndex: 0,
+				style: '--carousel-ratio:0.75',
+			},
+		};
+		child.children = [
+			{
+				type: 'paragraph',
+				data: { hName: 'div', hProperties: { className: ['gb-carousel-frame'] } },
+				children: [
+					...images,
+					{ type: 'html', value: '<button class="gb-carousel-nav is-prev" type="button" data-carousel-prev aria-label="上一張">‹</button>' },
+					{ type: 'html', value: '<button class="gb-carousel-nav is-next" type="button" data-carousel-next aria-label="下一張">›</button>' },
+				],
+			},
+			{ type: 'html', value: `<span class="gb-carousel-counter" data-carousel-counter aria-live="polite">1 / ${images.length}</span>` },
+		];
+	}
+}
+
+function transformMarkerLists(parent) {
+	if (!Array.isArray(parent.children)) return;
+	for (const child of parent.children) {
+		transformMarkerLists(child);
+		if (child.type !== 'list') continue;
+		let hasMarker = false;
+		for (const item of child.children ?? []) {
+			const first = item.children?.[0];
+			const text = first?.children?.find((node) => node.type === 'text');
+			const match = text?.value.match(/^\[([ikpc])\]\s*/);
+			if (!match) continue;
+			hasMarker = true;
+			text.value = text.value.slice(match[0].length);
+			first.data = { ...first.data, hName: 'div' };
+			first.children.unshift({ type: 'html', value: remixIconMarkup(markerIcons[match[1]][0], markerIcons[match[1]][1]) });
+		}
+		if (hasMarker) {
+			child.data = {
+				...child.data,
+				hProperties: { ...child.data?.hProperties, className: ['gb-markers'] },
+			};
+		}
+	}
+}
+
 function splitCalloutDirective(firstParagraph, file, lineStarts) {
 	const directiveParts = [];
 	const directivePositions = [];
@@ -554,6 +787,9 @@ export default function remarkObsidian() {
 		replaceInlineSyntax(tree, file);
 		transformEmbeds(tree, file);
 		transformCallouts(tree, file, lineStarts);
+		transformSpecialCallouts(tree);
+		transformCarousels(tree);
+		transformMarkerLists(tree);
 		removeEmptyParagraphs(tree);
 	};
 }
