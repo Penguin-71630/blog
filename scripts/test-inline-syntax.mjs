@@ -19,8 +19,8 @@ const renderer = await processor.createRenderer({
 });
 const fileURL = new URL('../src/content/posts/inline-syntax-test.md', import.meta.url);
 
-async function render(source) {
-	return renderer.render(source, { fileURL });
+async function render(source, sourceFileURL = fileURL) {
+	return renderer.render(source, { fileURL: sourceFileURL });
 }
 
 assert.ok(markdownSyntaxHighlight.excludeLangs.includes('abc'));
@@ -211,6 +211,18 @@ assert.doesNotMatch(mermaid.code, /class="gb-code"/);
 const standaloneImage = await render('![Remote image](https://example.com/remote.png)');
 assert.match(standaloneImage.code, /<figure class="gb-figure"><img\b[^>]*alt="Remote image"[^>]*style="max-width:100%;height:auto"[^>]*><\/figure>/);
 assert.doesNotMatch(standaloneImage.code, /<figcaption>/);
+
+const draftEmbed = await render(
+	'![[draft-image.png]]',
+	new URL('../src/content/drafts/Discrete%20Mathematics/lecture.md', import.meta.url),
+);
+assert.match(draftEmbed.code, /\.\.\/_attachments\/draft-image\.png/);
+
+const draftStandardImage = await render(
+	'![Local image](Pasted%20image.png)',
+	new URL('../src/content/drafts/Discrete%20Mathematics/lecture.md', import.meta.url),
+);
+assert.match(draftStandardImage.code, /\.\.\/_attachments\/Pasted image\.png/);
 
 const inlineImage = await render('Text before ![Inline image](https://example.com/inline.png) and after.');
 assert.match(inlineImage.code, /<p>Text before <img\b[^>]*alt="Inline image"[^>]*> and after\.<\/p>/);

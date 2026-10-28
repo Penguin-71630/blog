@@ -26,3 +26,4 @@ pnpm-debug.log*
 # generated CJK font slices (pnpm fonts:cjk, rebuilt on every deploy)
 public/fonts/cjk/
 src/styles/cjk.css
+src/content/drafts/

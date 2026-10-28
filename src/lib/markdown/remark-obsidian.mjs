@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import GithubSlugger from 'github-slugger';
 
 const postsRoot = path.resolve(process.cwd(), 'src/content/posts');
+const draftsRoot = path.resolve(process.cwd(), 'src/content/drafts');
 const calloutAliases = {
 	summary: 'abstract',
 	tldr: 'abstract',
@@ -284,9 +285,49 @@ function getImageUrl(file, basename) {
 			: String(filePath).startsWith('file:')
 				? fileURLToPath(filePath)
 				: path.resolve(String(filePath));
-	const relativeNotePath = path.relative(postsRoot, absolutePath).split(path.sep).join('/');
+	const contentRoot = [postsRoot, draftsRoot].find((root) => {
+		const relativePath = path.relative(root, absolutePath);
+		return (
+			relativePath !== '' &&
+			relativePath !== '..' &&
+			!relativePath.startsWith(`..${path.sep}`) &&
+			!path.isAbsolute(relativePath)
+		);
+	});
+	if (!contentRoot) throw new Error(`Unable to resolve the content root for ${absolutePath}.`);
+	const relativeNotePath = path.relative(contentRoot, absolutePath).split(path.sep).join('/');
 	const relativeDirectory = path.posix.dirname(relativeNotePath);
 	return path.posix.relative(relativeDirectory, `_attachments/${basename}`);
+}
+
+function isDraftFile(file) {
+	const filePath = file.path ?? file.history?.[0];
+	if (!filePath) return false;
+	const absolutePath =
+		filePath instanceof URL
+			? fileURLToPath(filePath)
+			: String(filePath).startsWith('file:')
+				? fileURLToPath(filePath)
+				: path.resolve(String(filePath));
+	const relativePath = path.relative(draftsRoot, absolutePath);
+	return (
+		relativePath !== '' &&
+		relativePath !== '..' &&
+		!relativePath.startsWith(`..${path.sep}`) &&
+		!path.isAbsolute(relativePath)
+	);
+}
+
+function resolveDraftImageUrls(parent, file) {
+	if (!Array.isArray(parent.children)) return;
+	for (const child of parent.children) {
+		if (child.type === 'image' && child.url && !/^(?:[a-z][a-z\d+.-]*:|\/\/|\/|#)/i.test(child.url)) {
+			const imagePath = decodeURIComponent(child.url.split(/[?#]/, 1)[0]);
+			const basename = path.posix.basename(imagePath.replaceAll('\\', '/'));
+			if (basename) child.url = getImageUrl(file, basename);
+		}
+		resolveDraftImageUrls(child, file);
+	}
 }
 
 function makeFigure(file, reference) {
@@ -876,6 +917,7 @@ export default function remarkObsidian() {
 		normalizeCodeLanguages(tree);
 		replaceInlineSyntax(tree, file);
 		transformEmbeds(tree, file);
+		if (isDraftFile(file)) resolveDraftImageUrls(tree, file);
 		transformStandaloneImages(tree);
 		transformCallouts(tree, file, lineStarts);
 		transformSpecialCallouts(tree);

@@ -1,8 +1,9 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import GithubSlugger from 'github-slugger';
+import { statSync } from 'node:fs';
 import { CATEGORIES } from './categories';
 
-export type PostEntry = CollectionEntry<'posts'>;
+export type PostEntry = CollectionEntry<'posts'> | CollectionEntry<'drafts'>;
 
 export interface Post {
 	entry: PostEntry;
@@ -198,6 +199,7 @@ function formatDate(date: string) {
 }
 
 export function toPost(entry: PostEntry): Post {
+	const isDraft = entry.collection === 'drafts';
 	const body = entry.body ?? '';
 	const segments = entry.id.replace(/\.md$/i, '').split('/');
 	const filename = segments.at(-1) ?? '';
@@ -210,9 +212,10 @@ export function toPost(entry: PostEntry): Post {
 	}
 
 	const titleMatch = /^#\s+(.+?)\s*#*\s*$/m.exec(body);
-	if (!titleMatch) throw new Error(`Post is missing an H1 title: ${entry.id}`);
-	const title = titleMatch[1].trim();
+	if (!titleMatch && !isDraft) throw new Error(`Post is missing an H1 title: ${entry.id}`);
+	const title = titleMatch?.[1].trim() || filename;
 	const slug = new GithubSlugger().slug(filename);
+	const date = isDraft ? (entry.data.date || statSync(entry.filePath).mtime.toISOString()) : entry.data.date ?? '';
 	const { cjk, latin, words } = getWordCount(body);
 	const frontmatterDescription = entry.data.description?.trim();
 
@@ -225,8 +228,8 @@ export function toPost(entry: PostEntry): Post {
 		primarySlug: category.slug,
 		secondary,
 		title,
-		date: entry.data.date,
-		displayDate: formatDate(entry.data.date),
+		date,
+		displayDate: formatDate(date),
 		updated: entry.data.updated,
 		displayUpdated: entry.data.updated ? formatDate(entry.data.updated) : undefined,
 		description: frontmatterDescription || getFallbackDescription(body),
@@ -250,6 +253,27 @@ async function loadPublishedPosts() {
 	for (const post of posts) {
 		if (slugs.has(post.slug)) throw new Error(`Duplicate post URL slug: ${post.slug}`);
 		slugs.add(post.slug);
+	}
+
+	if (import.meta.env.DEV) {
+		const draftEntries = await getCollection('drafts', ({ data }) => data.publish !== true);
+		for (const entry of draftEntries) {
+			const post = toPost(entry);
+			const baseSlug = post.slug;
+			let slug = baseSlug;
+			let suffix = 2;
+			while (slugs.has(slug)) {
+				slug = `${baseSlug}-${suffix}`;
+				suffix += 1;
+			}
+			if (slug !== baseSlug) {
+				console.warn(`Draft slug collision for "${entry.id}"; using "${slug}" instead of "${baseSlug}".`);
+				post.slug = slug;
+				post.href = `/posts/${slug}/`;
+			}
+			slugs.add(slug);
+			posts.push(post);
+		}
 	}
 
 	return posts.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
