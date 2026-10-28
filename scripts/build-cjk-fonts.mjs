@@ -1,5 +1,4 @@
-// Split Noto Sans TC / Noto Serif TC into woff2 slices ordered by how often each character
-// appears in the blog's posts (src/content/), so a typical post pulls fewer, smaller slices.
+// Split Noto TC by corpus frequency and add JP glyphs missing from the matching TC font.
 //
 //   pnpm fonts:cjk              — always regenerate (runs before every `pnpm build`)
 //   pnpm fonts:cjk --if-missing — only if src/styles/cjk.css doesn't exist yet (`pnpm dev`)
@@ -30,15 +29,29 @@ const FONTS = [
 		key: 'sans', wght: '300:500',
 		url: `${GF}/3be1884c48c3e45b52ecc725676a08f87776373e/ofl/notosanstc/NotoSansTC%5Bwght%5D.ttf`,
 		sha256: '864727d210d54f2537bbe23b3a839436c3992af72de9322af5270897246bd44f',
-		family: 'GB Noto Sans TC', cssVariable: '--font-noto-sans-tc', generic: 'sans-serif',
+		family: 'GB Noto Sans TC', role: 'tc', match: 'sans-jp',
 		local: ['PingFang TC', 'PingFangTC-Regular', 'Microsoft JhengHei', 'Noto Sans CJK TC'],
 	},
 	{
 		key: 'serif', wght: '400:700',
 		url: `${GF}/8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5/ofl/notoseriftc/NotoSerifTC%5Bwght%5D.ttf`,
 		sha256: '0077e18f57c6908f4a000969880940bdb0dad057c0e8d98b49dc364c3d1b09c6',
-		family: 'GB Noto Serif TC', cssVariable: '--font-noto-serif-tc', generic: 'serif',
+		family: 'GB Noto Serif TC', role: 'tc', match: 'serif-jp',
 		local: ['Songti TC', 'STSongti-TC-Regular', 'PMingLiU', 'Noto Serif CJK TC'],
+	},
+	{
+		key: 'sans-jp', wght: '300:500',
+		url: `${GF}/66a36c8c94b1a5d992ee4e7f392fccfe4945767c/ofl/notosansjp/NotoSansJP%5Bwght%5D.ttf`,
+		sha256: 'c2f3b4d463500a2ddcd3849cded1fceeb9fd6d1c32e6cbecd568453ba50fc68f',
+		family: 'GB Noto Sans JP', role: 'jp', match: 'sans',
+		local: ['Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans CJK JP'],
+	},
+	{
+		key: 'serif-jp', wght: '400:700',
+		url: `${GF}/8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5/ofl/notoserifjp/NotoSerifJP%5Bwght%5D.ttf`,
+		sha256: '2fd527ba12b6a44ec30d796d633360da0aeba6c5d4af1304ce12bb4dc15a7dfc',
+		family: 'GB Noto Serif JP', role: 'jp', match: 'serif',
+		local: ['Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif CJK JP'],
 	},
 ];
 
@@ -76,20 +89,90 @@ else console.warn(`[cjk] ${path.relative(ROOT, CORPUS)} not found: slicing in cn
 const ordered = [...freq.entries()].sort((a, b) => b[1] - a[1]).map(([cp]) => cp);
 console.log(`[cjk] ${ordered.length} distinct CJK characters in corpus`);
 
-// ASCII first, then corpus characters by frequency in growing chunks; cn-font-split
-// packs everything left in the font into its own slices after these.
-const subsets = [Array.from({ length: 0x7f - 0x20 }, (_, i) => i + 0x20)];
-let i = 0;
-for (const n of [200, 300, 500, 800, 1200]) {
-	if (i < ordered.length) subsets.push(ordered.slice(i, i + n));
-	i += n;
+function python(source, args) {
+	return execFileSync('python3', ['-c', source, ...args], { encoding: 'utf8' }).trim();
 }
-for (; i < ordered.length; i += 1500) subsets.push(ordered.slice(i, i + 1500));
 
-// --- download, trim weight axis, split, collect CSS ---
+function cmapOf(fontPath) {
+	const codepoints = python(
+		'import json,sys;from fontTools.ttLib import TTFont;print(json.dumps(sorted(TTFont(sys.argv[1],lazy=True).getBestCmap().keys())))',
+		[fontPath],
+	);
+	return new Set(JSON.parse(codepoints));
+}
+
+function frequencySubsets(characters, cmap) {
+	const filtered = characters.filter((codepoint) => cmap.has(codepoint));
+	const ascii = Array.from({ length: 0x7f - 0x20 }, (_, index) => index + 0x20).filter((codepoint) => cmap.has(codepoint));
+	const result = ascii.length ? [ascii] : [];
+	let cursor = 0;
+	for (const size of [200, 300, 500, 800, 1200]) {
+		if (cursor < filtered.length) result.push(filtered.slice(cursor, cursor + size));
+		cursor += size;
+	}
+	for (; cursor < filtered.length; cursor += 1500) result.push(filtered.slice(cursor, cursor + 1500));
+	return result;
+}
+
+function subsetFont(inputPath, outputPath, codepoints) {
+	const subsetter = [
+		'import json,sys',
+		'from fontTools.ttLib import TTFont',
+		'from fontTools.subset import Subsetter',
+		'font=TTFont(sys.argv[1])',
+		'subsetter=Subsetter()',
+		'subsetter.populate(unicodes=json.loads(sys.argv[3]))',
+		'subsetter.subset(font)',
+		'font.save(sys.argv[2])',
+	].join(';');
+	execFileSync('python3', ['-c', subsetter, inputPath, outputPath, JSON.stringify(codepoints)], { stdio: 'inherit' });
+}
+
+function metricFallback(font, trimmed) {
+	const [ascent, descent, upm] = python(
+		'import sys;from fontTools.ttLib import TTFont;t=TTFont(sys.argv[1],lazy=True);h=t["hhea"];print(h.ascent,-h.descent,t["head"].unitsPerEm)',
+		[trimmed],
+	).split(' ').map(Number);
+	const pct = (value) => `${+(value / upm * 100).toFixed(2)}%`;
+	return `@font-face{font-family:"${font.family} Fallback";src:${font.local.map((name) => `local("${name}")`).join(',')};` +
+		`ascent-override:${pct(ascent)};descent-override:${pct(descent)};line-gap-override:0%;size-adjust:100%}`;
+}
+
+async function splitFont(font, inputPath, fontSubsets) {
+	if (!fontSubsets.length) return [];
+	const outDir = path.join(OUT, font.key);
+	await fontSplit({
+		input: new Uint8Array(fs.readFileSync(inputPath)),
+		outDir,
+		subsets: fontSubsets,
+		css: {
+			fontFamily: font.family,
+			fontWeight: font.wght.replace(':', ' '),
+			fontDisplay: 'swap',
+			localFamily: [],
+		},
+		renameOutputFont: '[hash:10].[ext]',
+		testHtml: false,
+		reporter: false,
+		silent: true,
+	});
+	const faces = fs.readFileSync(path.join(outDir, 'result.css'), 'utf8')
+		.match(/@font-face\s*{[^}]*}/g)
+		.map((rule) => rule.replace(/local\("[^"]*"\),/g, '').replace(/url\("\.\//g, `url("/fonts/cjk/${font.key}/`));
+	fs.rmSync(path.join(outDir, 'result.css'));
+	fs.rmSync(path.join(outDir, 'index.proto'), { force: true });
+	return faces;
+}
+
+// --- download, trim weight axes, filter coverage, split, collect CSS ---
 fs.mkdirSync(CACHE, { recursive: true });
 fs.rmSync(OUT, { recursive: true, force: true });
-const css = ['/* Generated by scripts/build-cjk-fonts.mjs — do not edit. */'];
+const css = [
+	'/* Generated by scripts/build-cjk-fonts.mjs — do not edit. */',
+	':root{--font-noto-sans-tc:"GB Noto Sans TC","GB Noto Sans JP","GB Noto Sans TC Fallback","GB Noto Sans JP Fallback",sans-serif}',
+	':root{--font-noto-serif-tc:"GB Noto Serif TC","GB Noto Serif JP","GB Noto Serif TC Fallback","GB Noto Serif JP Fallback",serif}',
+];
+const prepared = new Map();
 
 for (const f of FONTS) {
 	const source = path.join(CACHE, `${f.key}-${f.sha256.slice(0, 12)}.ttf`);
@@ -107,38 +190,47 @@ for (const f of FONTS) {
 		console.log(`[cjk] trimming ${f.key} to wght ${f.wght}…`);
 		execFileSync('python3', ['-m', 'fontTools.varLib.instancer', source, `wght=${f.wght}`, '-o', trimmed], { stdio: 'inherit' });
 	}
-	const outDir = path.join(OUT, f.key);
-	await fontSplit({
-		input: new Uint8Array(fs.readFileSync(trimmed)),
-		outDir,
-		subsets,
-		css: { fontFamily: f.family, fontWeight: f.wght.replace(':', ' '), fontDisplay: 'swap', localFamily: [] },
-		renameOutputFont: '[hash:10].[ext]',
-		testHtml: false,
-		reporter: false,
-		silent: true,
-	});
-	const faces = fs.readFileSync(path.join(outDir, 'result.css'), 'utf8')
-		.match(/@font-face\s*{[^}]*}/g)
-		// Drop the local() source cn-font-split always adds: an installed copy may differ from our slices.
-		.map((rule) => rule.replace(/local\("[^"]*"\),/g, '').replace(/url\("\.\//g, `url("/fonts/cjk/${f.key}/`));
-	fs.rmSync(path.join(outDir, 'result.css'));
-	fs.rmSync(path.join(outDir, 'index.proto'), { force: true });
+	prepared.set(f.key, { font: f, trimmed, cmap: cmapOf(trimmed) });
+}
 
-	// Local system font with Noto's vertical metrics, so the swap doesn't shift lines.
-	const [ascent, descent, upm] = execFileSync('python3', ['-c',
-		'import sys;from fontTools.ttLib import TTFont;t=TTFont(sys.argv[1],lazy=True);h=t["hhea"];print(h.ascent,-h.descent,t["head"].unitsPerEm)',
-		trimmed]).toString().trim().split(' ').map(Number);
-	const pct = (v) => `${+(v / upm * 100).toFixed(2)}%`;
-	css.push(
-		`@font-face{font-family:"${f.family} Fallback";src:${f.local.map((n) => `local("${n}")`).join(',')};` +
-		`ascent-override:${pct(ascent)};descent-override:${pct(descent)};line-gap-override:0%;size-adjust:100%}`,
-		...faces,
-	);
-	css.splice(1, 0, `:root{${f.cssVariable}:"${f.family}","${f.family} Fallback",${f.generic}}`);
-	const files = fs.readdirSync(outDir);
-	const bytes = files.reduce((s, n) => s + fs.statSync(path.join(outDir, n)).size, 0);
-	console.log(`[cjk] ${f.key}: ${files.length} slices, ${(bytes / 1048576).toFixed(1)} MB`);
+for (const { font, trimmed, cmap } of prepared.values()) {
+	css.push(metricFallback(font, trimmed));
+	if (font.role === 'tc') {
+		const selected = ordered.filter((codepoint) => cmap.has(codepoint));
+		const faces = await splitFont(font, trimmed, frequencySubsets(ordered, cmap));
+		css.push(...faces);
+		const outDir = path.join(OUT, font.key);
+		const files = fs.existsSync(outDir) ? fs.readdirSync(outDir) : [];
+		const bytes = files.reduce((sum, name) => sum + fs.statSync(path.join(outDir, name)).size, 0);
+		console.log(`[cjk] ${font.key}: ${selected.length} corpus characters, ${files.length} slices, ${bytes} bytes (${(bytes / 1048576).toFixed(1)} MB)`);
+		continue;
+	}
+
+	const tc = prepared.get(font.match);
+	const selected = ordered.filter((codepoint) => !tc.cmap.has(codepoint) && cmap.has(codepoint));
+	if (!selected.length) {
+		console.log(`[cjk] ${font.key}: 0 corpus characters, 0 slices, 0 bytes`);
+		continue;
+	}
+	const selectionHash = crypto.createHash('sha256').update(JSON.stringify(selected)).digest('hex').slice(0, 12);
+	const subsetPath = trimmed.replace(/\.ttf$/, `-corpus-${selectionHash}.ttf`);
+	if (!fs.existsSync(subsetPath)) subsetFont(trimmed, subsetPath, selected);
+	const faces = await splitFont(font, subsetPath, [selected]);
+	css.push(...faces);
+	const outDir = path.join(OUT, font.key);
+	const files = fs.existsSync(outDir) ? fs.readdirSync(outDir) : [];
+	const bytes = files.reduce((sum, name) => sum + fs.statSync(path.join(outDir, name)).size, 0);
+	console.log(`[cjk] ${font.key}: ${selected.length} corpus characters, ${files.length} slices, ${bytes} bytes (${(bytes / 1048576).toFixed(1)} MB)`);
+}
+
+for (const tc of [...prepared.values()].filter(({ font }) => font.role === 'tc')) {
+	const jp = prepared.get(tc.font.match);
+	const uncovered = ordered.filter((codepoint) => !tc.cmap.has(codepoint) && !jp.cmap.has(codepoint));
+	if (uncovered.length) {
+		console.warn(`[cjk] ${tc.font.key} uncovered corpus characters: ${uncovered.map((codepoint) => `${String.fromCodePoint(codepoint)} (U+${codepoint.toString(16).toUpperCase()})`).join(', ')}`);
+	} else {
+		console.log(`[cjk] ${tc.font.key}: all corpus characters are covered by TC or JP fonts`);
+	}
 }
 
 fs.writeFileSync(CSS_OUT, css.join('\n') + '\n');
