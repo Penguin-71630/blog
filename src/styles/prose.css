@@ -39,6 +39,7 @@ a:hover{text-decoration-color:var(--accent)}
 .gb-prose hr{border:0;border-top:1px solid var(--border);margin:2em 0}
 .gb-prose .katex{font-size:1.05em}
 .gb-prose .katex-display{overflow-x:auto;overflow-y:hidden;padding:.2em 0}
+.gb-prose .katex .cjk_fallback{font-family:var(--font-noto-serif-tc),KaTeX_Main,serif}
 
 /* tables: centered, content-width, alignment from :---: */
 .gb-table-wrap{overflow-x:auto;margin:1.2em 0;display:flex}
