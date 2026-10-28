@@ -286,6 +286,34 @@ function iconMarkup(name) {
 	return `<i class="gb-icon icon-${name}" aria-hidden="true">${svg}</i>`;
 }
 
+function splitCalloutDirective(firstParagraph) {
+	const directiveParts = [];
+	const bodyChildren = [];
+	const children = firstParagraph.children ?? [];
+
+	for (const [index, node] of children.entries()) {
+		if (node.type === 'break') {
+			bodyChildren.push(...children.slice(index + 1));
+			return { directiveLine: directiveParts.join('').trim(), bodyChildren };
+		}
+		if (node.type !== 'text') return null;
+
+		const lineBreak = /\r?\n/.exec(node.value);
+		if (!lineBreak) {
+			directiveParts.push(node.value);
+			continue;
+		}
+
+		directiveParts.push(node.value.slice(0, lineBreak.index));
+		const remainder = node.value.slice(lineBreak.index + lineBreak[0].length);
+		if (remainder) bodyChildren.push({ ...node, value: remainder });
+		bodyChildren.push(...children.slice(index + 1));
+		return { directiveLine: directiveParts.join('').trim(), bodyChildren };
+	}
+
+	return { directiveLine: directiveParts.join('').trim(), bodyChildren };
+}
+
 function transformCallouts(parent) {
 	if (!Array.isArray(parent.children)) return;
 
@@ -294,8 +322,9 @@ function transformCallouts(parent) {
 		if (child.type !== 'blockquote' || child.children?.[0]?.type !== 'paragraph') continue;
 
 		const firstParagraph = child.children[0];
-		const directive = firstParagraph.children?.map((node) => node.value ?? '').join('').trim() ?? '';
-		const [directiveLine, ...bodyLines] = directive.split(/\r?\n/);
+		const split = splitCalloutDirective(firstParagraph);
+		if (!split) continue;
+		const { directiveLine, bodyChildren: firstParagraphBody } = split;
 		const match = /^\[!([^\]]+)\]([+-]?)(?:\s*(.*))?$/.exec(directiveLine);
 		if (!match) continue;
 
@@ -311,12 +340,8 @@ function transformCallouts(parent) {
 			: '';
 		const titleMarkup = `<${summary} class="gb-callout-title">${iconMarkup(calloutIcons[type])}<span>${escapeHtml(title)}</span>${foldIcon}</${summary}>`;
 		const bodyChildren = child.children.slice(1);
-		const firstParagraphBody = bodyLines.join('\n').trim();
-		if (firstParagraphBody) {
-			bodyChildren.unshift({
-				type: 'paragraph',
-				children: [{ type: 'text', value: firstParagraphBody }],
-			});
+		if (firstParagraphBody.some((node) => !isEmptyNode(node))) {
+			bodyChildren.unshift({ ...firstParagraph, children: firstParagraphBody });
 		}
 		child.type = 'blockquote';
 		child.data = {
