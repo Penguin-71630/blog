@@ -1,5 +1,8 @@
 .gb-prose pre.astro-code,
 .gb-prose pre.shiki {
+	--astro-code-foreground: var(--text);
+	--astro-code-background: var(--surface-code);
+	--astro-code-token-string-expression: var(--syntax-string);
 	--astro-code-color-text: var(--text);
 	--astro-code-color-background: var(--surface-code);
 	--shiki-color-text: var(--text);
