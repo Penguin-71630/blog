@@ -107,7 +107,9 @@ export function initMarkdownComponents(root = document) {
 			try {
 				const module = await import('mermaid');
 				mermaid = module.default;
+				await document.fonts.ready;
 				const styles = getComputedStyle(document.documentElement);
+				const fontFamily = styles.getPropertyValue('--font-body').trim();
 				const color = (name) => {
 					const value = styles.getPropertyValue(name).trim();
 					const match = /^oklch\(\s*([\d.]+)%?\s+([\d.]+)\s+([\d.]+)/i.exec(value);
@@ -133,6 +135,7 @@ export function initMarkdownComponents(root = document) {
 				mermaid.initialize({
 					startOnLoad: false,
 					theme: 'dark',
+					fontFamily,
 					themeVariables: {
 						background: color('--bg'),
 						primaryColor: color('--surface-hover'),
@@ -143,6 +146,17 @@ export function initMarkdownComponents(root = document) {
 						tertiaryColor: color('--bg'),
 						textColor: color('--text'),
 						edgeLabelBackground: color('--bg'),
+						noteBkgColor: color('--surface'),
+						noteTextColor: color('--text'),
+						noteBorderColor: color('--border'),
+						actorBkg: color('--surface'),
+						actorBorder: color('--border'),
+						actorTextColor: color('--text'),
+						actorLineColor: color('--muted'),
+						signalColor: color('--text'),
+						signalTextColor: color('--text'),
+						labelBoxBkgColor: color('--surface'),
+						labelTextColor: color('--text'),
 					},
 				});
 			} catch (error) {
