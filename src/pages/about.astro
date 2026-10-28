@@ -43,10 +43,15 @@ const maimaiImages = [
 	<div class="gb-page-about">
 		<PageTitle>About Me</PageTitle>
 		<div class="gb-prose">
-			<p>哈囉～ 我是 Gino！</p>
-			<p>目前是台灣的陽明交通大學資工系大三生，先前是演算法競賽選手（ICPC），最近重心在畢業專題跟考研。</p>
-			<p>興趣是演算法競賽、音樂遊戲、研究一些前後端的東西，最近剛摸一點攝影跟日文。</p>
-			<p>其實我目前還在摸索部落格的定位，不確定該以什麼領域作為主要產出，所以近期可能都是想到什麼就寫什麼，當作是蒐集靈感。有想法之後會撰寫類似週刊的系列文，請多指教！</p>
+			<div class="gb-about-intro">
+				<Image class="gb-about-avatar" src={aboutImage('gino.png')} alt="Gino" widths={[240, 480]} sizes="240px" loading="eager" />
+				<div class="gb-about-intro-text">
+					<p>哈囉～ 我是 Gino！</p>
+					<p>目前是台灣的陽明交通大學資工系大三生，先前是演算法競賽選手（ICPC），最近重心在畢業專題跟考研。</p>
+					<p>興趣是演算法競賽、音樂遊戲、研究一些前後端的東西，最近剛摸一點攝影跟日文。</p>
+					<p>其實我目前還在摸索部落格的定位，不確定該以什麼領域作為主要產出，所以近期可能都是想到什麼就寫什麼，當作是蒐集靈感。有想法之後會撰寫類似週刊的系列文，請多指教！</p>
+				</div>
+			</div>
 
 			<h2><Icon name="ri-time-fill" /> 學業軌跡</h2>
 			<div class="gb-archive">
