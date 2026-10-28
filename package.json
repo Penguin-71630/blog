@@ -10,21 +10,21 @@
     "build": "node scripts/build-cjk-fonts.mjs && astro build",
     "preview": "astro preview",
     "fonts:cjk": "node scripts/build-cjk-fonts.mjs",
+    "sync:vault": "node scripts/sync-vault.mjs",
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/markdown-remark": "^7.3.4",
     "astro": "^7.4.2",
-    "katex": "^0.19.1"
+    "github-slugger": "^2.0.0",
+    "katex": "^0.19.1",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0"
   },
   "devDependencies": {
     "cn-font-split": "^7.4.3",
     "lucide-static": "^1.61.0",
     "remixicon": "^4.9.1"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "cn-font-split"
-    ]
   },
   "packageManager": "pnpm@10.28.0"
 }
