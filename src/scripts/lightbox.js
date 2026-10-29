@@ -8,7 +8,7 @@ function largestSource(image) {
 
 export function initLightbox(root = document) {
 	const images = [...root.querySelectorAll('.gb-prose img')].filter(
-		(image) => !image.closest('.gb-item, a') && !image.closest('[data-lightbox-trigger]'),
+		(image) => !image.closest('.gb-item, a, .gb-about-avatar') && !image.closest('[data-lightbox-trigger]'),
 	);
 	if (!images.length) return;
 	const lightbox = document.createElement('div');

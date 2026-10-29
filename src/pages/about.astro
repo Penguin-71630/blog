@@ -44,7 +44,10 @@ const maimaiImages = [
 		<PageTitle>About Me</PageTitle>
 		<div class="gb-prose">
 			<div class="gb-about-intro">
-				<Image class="gb-about-avatar" src={aboutImage('gino.png')} alt="Gino" widths={[240, 480]} sizes="240px" loading="eager" />
+				<span class="gb-about-avatar" data-avatar-toggle>
+					<Image class="gb-about-avatar-cat" src={aboutImage('aethoro.webp')} alt="Gino" widths={[240, 480]} sizes="240px" loading="eager" />
+					<Image class="gb-about-avatar-photo" src={aboutImage('gino.png')} alt="" widths={[240, 480]} sizes="240px" loading="eager" />
+				</span>
 				<div class="gb-about-intro-text">
 					<p>哈囉～ 我是 Gino！</p>
 					<p>目前是台灣的陽明交通大學資工系大三生，先前是演算法競賽選手（ICPC），最近重心在畢業專題跟考研。</p>
@@ -189,4 +192,9 @@ const maimaiImages = [
 <script>
 	import { initLightbox } from '../scripts/lightbox.js';
 	initLightbox();
+
+	const avatar = document.querySelector<HTMLElement>('[data-avatar-toggle]');
+	avatar?.addEventListener('click', () => {
+		if (window.matchMedia('(hover: none)').matches) avatar.classList.toggle('is-photo');
+	});
 </script>
