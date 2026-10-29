@@ -1,7 +1,7 @@
 .gb-prose pre.astro-code,
 .gb-prose pre.shiki {
-	/* vs. base tokens: background L/C ×0.8, text C ×1.2 */
-	--code-bg: oklch(0.212 0.0176 250);
+	/* vs. base tokens: background L ×0.896, C ×0.64; text C ×1.2 */
+	--code-bg: oklch(0.2374 0.0141 250);
 	--code-text: oklch(0.91 0.0144 230);
 	--syntax-keyword: oklch(0.8 0.108 305);
 	--syntax-function: oklch(0.8 0.108 250);
