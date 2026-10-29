@@ -1,12 +1,23 @@
 .gb-prose pre.astro-code,
 .gb-prose pre.shiki {
-	--astro-code-foreground: var(--text);
-	--astro-code-background: var(--surface-code);
+	/* vs. base tokens: background L/C ×0.8, text C ×1.2 */
+	--code-bg: oklch(0.212 0.0176 250);
+	--code-text: oklch(0.91 0.0144 230);
+	--syntax-keyword: oklch(0.8 0.108 305);
+	--syntax-function: oklch(0.8 0.108 250);
+	--syntax-number: oklch(0.8 0.108 88);
+	--syntax-string: oklch(0.8 0.108 150);
+	--syntax-type: oklch(0.8 0.108 200);
+	--syntax-comment: oklch(0.72 0.0336 235);
+	background: var(--code-bg);
+	color: var(--code-text);
+	--astro-code-foreground: var(--code-text);
+	--astro-code-background: var(--code-bg);
 	--astro-code-token-string-expression: var(--syntax-string);
-	--astro-code-color-text: var(--text);
-	--astro-code-color-background: var(--surface-code);
-	--shiki-color-text: var(--text);
-	--shiki-color-background: var(--surface-code);
+	--astro-code-color-text: var(--code-text);
+	--astro-code-color-background: var(--code-bg);
+	--shiki-color-text: var(--code-text);
+	--shiki-color-background: var(--code-bg);
 	--astro-code-token-constant: var(--syntax-number);
 	--shiki-token-constant: var(--syntax-number);
 	--astro-code-token-string: var(--syntax-string);
