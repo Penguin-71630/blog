@@ -1,0 +1,41 @@
+/* Cmd+P: article only, page margins painted in the site background. */
+@media print {
+	@page {
+		margin: 14mm 12mm;
+		background: #11161d;
+	}
+
+	html,
+	body {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+	}
+
+	.gb-topbar,
+	.gb-drawer,
+	.gb-drawer-scrim,
+	.gb-sidebar,
+	.gb-toc,
+	.gb-toc-mobile,
+	.gb-footer,
+	.gb-code-copy {
+		display: none !important;
+	}
+
+	.gb-shell {
+		max-width: none;
+		min-height: 0;
+		margin: 0;
+		padding: 0;
+	}
+
+	.gb-main,
+	.gb-post-article {
+		max-width: none;
+		padding-top: 0;
+	}
+
+	.gb-post-layout {
+		display: block;
+	}
+}
