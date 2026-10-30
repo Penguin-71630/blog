@@ -38,4 +38,13 @@
 	.gb-post-layout {
 		display: block;
 	}
+
+	.gb-prose .page-break {
+		break-after: page;
+	}
+}
+
+.gb-prose .page-break {
+	height: 0;
+	margin: 0;
 }
