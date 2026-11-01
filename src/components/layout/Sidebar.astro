@@ -19,8 +19,15 @@ const { active } = Astro.props;
 	</div>
 	<nav class="gb-nav" aria-label="主要導覽">
 		{
-			NAV_ITEMS.map(({ key, label, href, icon }) => (
-				<NavItem icon={icon} label={label} href={href} active={active === key} />
+			NAV_ITEMS.map(({ key, label, href, word, icon }) => (
+				<NavItem
+					word={word}
+					icon={icon}
+					label={label}
+					href={href}
+					active={active === key}
+					idPrefix="side"
+				/>
 			))
 		}
 	</nav>

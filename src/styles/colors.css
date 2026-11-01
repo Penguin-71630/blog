@@ -61,7 +61,7 @@
   --chalk-blue:oklch(var(--callout-l) var(--callout-c) 250);
   --chalk-cyan:oklch(var(--callout-l) var(--callout-c) 200);
   --chalk-green:oklch(var(--callout-l) var(--callout-c) 150);
-  --chalk-yellow:oklch(var(--callout-l) var(--callout-c) 88);
+  --chalk-yellow:#f0e6a0;
   --chalk-red:oklch(var(--callout-l) var(--callout-c) 25);
   --chalk-purple:oklch(var(--callout-l) var(--callout-c) 305);
   --chalk-gray:oklch(var(--callout-l) 0.012 250);

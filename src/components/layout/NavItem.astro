@@ -1,18 +1,82 @@
 ---
-import Icon from '../Icon.astro';
-import type { IconName } from '../../icons';
+import type { ImageMetadata } from 'astro';
 
 interface Props {
-	icon: IconName;
+	word: ImageMetadata;
+	icon: ImageMetadata;
 	label: string;
 	href: string;
 	active?: boolean;
+	idPrefix: string;
 }
 
-const { icon, label, href, active = false } = Astro.props;
+const { word, icon, label, href, active = false, idPrefix } = Astro.props;
+const wordHeight = Math.round(word.height * 0.36);
+const wordWidth = Math.round((word.width * wordHeight) / word.height);
+const iconHeight = Math.round(icon.height * 0.4);
+const iconWidth = Math.round((icon.width * iconHeight) / icon.height);
 ---
 
 <a class="gb-nav-item" href={href} aria-current={active ? 'page' : undefined}>
-	<Icon name={icon} />
-	<span>{label}</span>
+	<img
+		class="gb-nav-icon"
+		src={icon.src}
+		width={iconWidth}
+		height={iconHeight}
+		alt=""
+		style={`--h:${iconHeight}px`}
+	/>
+	<span class="gb-nav-word">
+		<img
+			src={word.src}
+			width={wordWidth}
+			height={wordHeight}
+			alt={label}
+			style={`--h:${wordHeight}px`}
+		/>
+		{
+			active && (
+				<svg
+					class="gb-nav-underline"
+					viewBox="0 0 150 14"
+					preserveAspectRatio="none"
+					aria-hidden="true"
+					overflow="visible"
+				>
+					<defs>
+						<filter id={`${idPrefix}-chalk`}>
+							<feTurbulence
+								type="fractalNoise"
+								baseFrequency="0.9"
+								numOctaves="2"
+								result="n"
+							/>
+							<feDisplacementMap in="SourceGraphic" in2="n" scale="3" />
+							<feComponentTransfer>
+								<feFuncA type="discrete" tableValues="0 1 1 0.6 1" />
+							</feComponentTransfer>
+						</filter>
+					</defs>
+					<g
+						filter={`url(#${idPrefix}-chalk)`}
+						fill="none"
+						stroke="var(--chalk-yellow)"
+						stroke-linecap="round"
+					>
+						<path
+							stroke-width="3"
+							vector-effect="non-scaling-stroke"
+							d="M3 9 C 30 5, 60 11, 90 7 S 135 6, 147 8"
+						/>
+						<path
+							stroke-width="2"
+							opacity=".7"
+							vector-effect="non-scaling-stroke"
+							d="M12 12 C 45 9, 90 12, 140 10"
+						/>
+					</g>
+				</svg>
+			)
+		}
+	</span>
 </a>
