@@ -149,9 +149,12 @@
 .gb-center{text-align:center;margin:.8em 0}
 
 /* aside & reference: small, low chroma */
-.gb-aside{margin:1em 0;padding:2px 0 2px 14px;border-left:2px solid var(--border);font-size:var(--size-small);line-height:1.7;color:var(--muted)}
-.gb-aside-label{font-family:var(--font-ui);font-weight:var(--weight-ui);font-size:12.5px;letter-spacing:.08em;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:2px}
-.gb-aside>div>*:last-child{margin-bottom:0}
+.gb-aside{display:flex;align-items:flex-start;gap:10px;margin:.75em 0;color:var(--muted);font-size:var(--size-small);line-height:1.7}
+.gb-aside-label{display:flex;flex:none;align-items:center;gap:4px;white-space:nowrap;font-weight:700;user-select:none}
+.gb-aside-label .gb-icon{display:inline-flex;flex-shrink:0;font-size:1em;line-height:1}
+.gb-aside-body{flex:1;min-width:0}
+.gb-aside-body>*:first-child{margin-top:0}
+.gb-aside-body>*:last-child{margin-bottom:0}
 
 /* custom list markers */
 .gb-markers{list-style:none;padding-left:0!important}

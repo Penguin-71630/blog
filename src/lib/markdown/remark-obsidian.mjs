@@ -726,54 +726,67 @@ function transformMarkerLists(parent) {
 }
 
 function splitCalloutDirective(firstParagraph, file, lineStarts) {
-	const directiveParts = [];
-	const directivePositions = [];
-	const bodyChildren = [];
 	const children = firstParagraph.children ?? [];
-	const source = String(file.value);
+	const firstText = children[0];
+	if (firstText?.type !== 'text') return null;
+	const directive = /^\s*\[!([^\]]+)\]([+-]?)/.exec(firstText.value);
+	if (!directive) return null;
 
-	const appendDirective = (node, start, end) => {
-		directiveParts.push(node.value.slice(start, end));
-		const offsets = sourceMap(node, file);
-		for (let offset = start; offset < end; offset += 1) {
-			directivePositions.push(
-				offsets
-					? { start: offsets.starts[offset], end: offsets.ends[offset] }
-					: null,
-			);
-		}
-	};
-
+	const titleChildren = [];
+	const bodyChildren = [];
 	for (const [index, node] of children.entries()) {
 		if (node.type === 'break') {
 			bodyChildren.push(...children.slice(index + 1));
-			return { directiveLine: directiveParts.join('').trim(), directivePositions, bodyChildren };
+			break;
 		}
-		if (node.type !== 'text') return null;
 
-		const lineBreak = /\r?\n/.exec(node.value);
-		if (!lineBreak) {
-			appendDirective(node, 0, node.value.length);
+		const start = index === 0 ? directive[0].length : 0;
+		if (node.type === 'text') {
+			const remainder = node.value.slice(start);
+			const lineBreak = /\r?\n/.exec(remainder);
+			if (lineBreak) {
+				const titleEnd = start + lineBreak.index;
+				if (titleEnd > start) titleChildren.push(sliceText(node, start, titleEnd, file, lineStarts));
+				const bodyStart = titleEnd + lineBreak[0].length;
+				if (bodyStart < node.value.length) {
+					bodyChildren.push(sliceText(node, bodyStart, node.value.length, file, lineStarts));
+				}
+				bodyChildren.push(...children.slice(index + 1));
+				break;
+			}
+			if (start < node.value.length) titleChildren.push(sliceText(node, start, node.value.length, file, lineStarts));
 			continue;
 		}
 
-		appendDirective(node, 0, lineBreak.index);
-		const remainderStart = lineBreak.index + lineBreak[0].length;
-		const remainder = node.value.slice(remainderStart);
-		if (remainder) {
-			const offsets = sourceMap(node, file);
-			const sourceStart = offsets?.starts[remainderStart];
-			const position =
-				Number.isInteger(sourceStart) && node.position?.end
-					? { start: pointAt(source, sourceStart, lineStarts), end: node.position.end }
-					: undefined;
-			bodyChildren.push({ ...node, value: remainder, position });
-		}
-		bodyChildren.push(...children.slice(index + 1));
-		return { directiveLine: directiveParts.join('').trim(), directivePositions, bodyChildren };
+		titleChildren.push(node);
 	}
 
-	return { directiveLine: directiveParts.join('').trim(), directivePositions, bodyChildren };
+	while (titleChildren[0]?.type === 'text') {
+		const leading = titleChildren[0].value.length - titleChildren[0].value.trimStart().length;
+		if (leading === titleChildren[0].value.length) {
+			titleChildren.shift();
+			continue;
+		}
+		if (leading) titleChildren[0] = sliceText(titleChildren[0], leading, titleChildren[0].value.length, file, lineStarts);
+		break;
+	}
+	while (titleChildren.at(-1)?.type === 'text') {
+		const last = titleChildren.at(-1);
+		const end = last.value.trimEnd().length;
+		if (!end) {
+			titleChildren.pop();
+			continue;
+		}
+		if (end < last.value.length) titleChildren[titleChildren.length - 1] = sliceText(last, 0, end, file, lineStarts);
+		break;
+	}
+
+	return {
+		rawType: directive[1].trim(),
+		fold: directive[2],
+		titleChildren,
+		bodyChildren,
+	};
 }
 
 function transformCallouts(parent, file, lineStarts) {
@@ -786,13 +799,45 @@ function transformCallouts(parent, file, lineStarts) {
 		const firstParagraph = child.children[0];
 		const split = splitCalloutDirective(firstParagraph, file, lineStarts);
 		if (!split) continue;
-		const { directiveLine, bodyChildren: firstParagraphBody } = split;
-		const match = /^\[!([^\]]+)\]([+-]?)(?:\s*(.*))?$/.exec(directiveLine);
-		if (!match) continue;
-
-		const [, rawType, fold, explicitTitle = ''] = match;
+		const { rawType, fold, titleChildren: explicitTitleChildren, bodyChildren: firstParagraphBody } = split;
+		const asideType = rawType.toLowerCase();
+		if (asideType === 'aside' || asideType === 'reference') {
+			const bodyChildren = child.children.slice(1);
+			const asideBody = [];
+			asideBody.push(...explicitTitleChildren);
+			if (explicitTitleChildren.length && firstParagraphBody.some((node) => !isEmptyNode(node))) {
+				asideBody.push({ type: 'break' });
+			}
+			asideBody.push(...firstParagraphBody);
+			if (asideBody.some((node) => !isEmptyNode(node))) {
+				bodyChildren.unshift({ ...firstParagraph, children: asideBody });
+			}
+			const label = asideType === 'aside' ? 'Note' : 'Reference';
+			const icon = asideType === 'aside' ? 'ri-edit-2-fill' : 'ri-article-fill';
+			child.type = 'blockquote';
+			child.data = {
+				...child.data,
+				hName: 'div',
+				hProperties: { className: ['gb-aside', `gb-aside-${asideType}`] },
+			};
+			child.children = [
+				{
+					type: 'paragraph',
+					data: { hName: 'div', hProperties: { className: ['gb-aside-label'] } },
+					children: [
+						{ type: 'html', value: remixIconMarkup(icon) },
+						{ type: 'text', value: `${label} ⟩` },
+					],
+				},
+				{
+					type: 'paragraph',
+					data: { hName: 'div', hProperties: { className: ['gb-aside-body'] } },
+					children: bodyChildren,
+				},
+			];
+			continue;
+		}
 		const type = resolveCalloutType(rawType);
-		const title = explicitTitle.trim() || rawType[0].toLocaleUpperCase() + rawType.slice(1);
 		const isFoldable = Boolean(fold);
 		const summary = isFoldable ? 'summary' : 'div';
 		const foldIcon = isFoldable
@@ -800,25 +845,11 @@ function transformCallouts(parent, file, lineStarts) {
 				readFileSync(path.resolve(process.cwd(), 'node_modules/lucide-static/icons/chevron-down.svg'), 'utf8') +
 				'</i>'
 			: '';
-		const titleStart =
-			explicitTitle.trim() && directiveLine.includes(']')
-				? directiveLine.indexOf(']') + 1 + directiveLine.slice(directiveLine.indexOf(']') + 1).search(/\S/)
-				: -1;
-		const titleFirst = titleStart >= 0 ? split.directivePositions[titleStart] : null;
-		const titleLast =
-			titleStart >= 0
-				? split.directivePositions[titleStart + title.length - 1]
-				: null;
-		const titlePosition =
-			titleFirst && titleLast
-				? {
-						start: pointAt(String(file.value), titleFirst.start, lineStarts),
-						end: pointAt(String(file.value), titleLast.end, lineStarts),
-					}
-				: undefined;
 		const titleChildren = [
 			{ type: 'html', value: iconMarkup(calloutIcons[type]) },
-			{ type: 'text', value: title, position: titlePosition },
+			...(explicitTitleChildren.length
+				? explicitTitleChildren
+				: [{ type: 'text', value: rawType[0].toLocaleUpperCase() + rawType.slice(1) }]),
 		];
 		if (foldIcon) titleChildren.push({ type: 'html', value: foldIcon });
 		const bodyChildren = child.children.slice(1);

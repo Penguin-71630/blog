@@ -80,6 +80,37 @@ assert.match(callout.code, /<span class="text-color text-color-green">green<\/sp
 assert.match(callout.code, /class="katex"/);
 assert.match(callout.code, /\n\{x\|y\}<\/p>/);
 
+const formattedCalloutTitle = await render('> [!note] $K_n$ **bold** *italic* `code` [link](https:\/\/example.com)\n> Body.');
+assert.match(formattedCalloutTitle.code, /<div class="gb-callout-title">[\s\S]*class="katex"[\s\S]*<strong>bold<\/strong>[\s\S]*<em>italic<\/em>[\s\S]*<code>code<\/code>[\s\S]*<a href="https:\/\/example.com">link<\/a>/);
+
+const linkedCalloutTitle = await render('> [!note] 經典例題：[資芽 OJ 794 — 區間絕對眾數](https:\/\/neoj.sprout.tw/problem/794\/)\n> Problem statement.');
+assert.match(linkedCalloutTitle.code, /<div class="gb-callout-title">[\s\S]*經典例題：<a href="https:\/\/neoj\.sprout\.tw\/problem\/794\/">資芽 OJ 794 — 區間絕對眾數<\/a>/);
+
+const foldableFormattedTitle = await render('> [!tip]- **Summary** with `code`\n> Folded body.');
+assert.match(foldableFormattedTitle.code, /<summary class="gb-callout-title">[\s\S]*<strong>Summary<\/strong> with <code>code<\/code>[\s\S]*gb-fold/);
+
+const aside = await render('> [!aside]\n>\n> 先備知識：前綴和\n>\n> 第二段。');
+assert.match(aside.code, /<div class="gb-aside gb-aside-aside">\s*<div class="gb-aside-label"><i class="gb-icon ri-edit-2-fill/);
+assert.match(aside.code, /Note ⟩<\/div>\s*<div class="gb-aside-body"><p>先備知識：前綴和<\/p><p>第二段。<\/p><\/div>\s*<\/div>/);
+
+const reference = await render('> [!reference]\n> [G.T. Wang - C++11 亂數教學](https:\/\/example.com\/random)');
+assert.match(reference.code, /<div class="gb-aside gb-aside-reference">\s*<div class="gb-aside-label"><i class="gb-icon ri-article-fill/);
+assert.match(reference.code, /Reference ⟩<\/div>\s*<div class="gb-aside-body"><p><a href="https:\/\/example.com\/random">G\.T\. Wang - C\+\+11 亂數教學<\/a><\/p><\/div>\s*<\/div>/);
+
+const nestedAside = await render([
+	'> [!info]',
+	'> 舞曲。',
+	'> > [!aside]',
+	'> >',
+	'> > 舞曲對應一種歷史上存在過的舞蹈。',
+].join('\n'));
+assert.match(nestedAside.code, /<div class="gb-callout"[\s\S]*<div class="gb-aside gb-aside-aside"/);
+assert.match(nestedAside.code, /舞曲對應一種歷史上存在過的舞蹈/);
+
+const asideTitle = await render('> [!aside]- 補充標題\n> 內文。');
+assert.doesNotMatch(asideTitle.code, /<details|<summary/);
+assert.match(asideTitle.code, /<div class="gb-aside-body"><p>補充標題<br>\s*內文。<\/p><\/div>/);
+
 const markers = await render('- [i] Info\n- [k] Key\n- [p] Yes\n- [c] No\n- [ ] Todo\n- [x] Done');
 assert.match(markers.code, /class="gb-markers"/);
 assert.match(markers.code, /ri-information-line/);
