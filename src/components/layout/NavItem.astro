@@ -1,5 +1,6 @@
 ---
 import type { ImageMetadata } from 'astro';
+import { NAV_ITEMS } from './nav';
 
 interface Props {
 	word: ImageMetadata;
@@ -14,17 +15,19 @@ const { word, icon, label, href, active = false, idPrefix } = Astro.props;
 const wordHeight = Math.round(word.height * 0.36);
 const wordWidth = Math.round((word.width * wordHeight) / word.height);
 const iconHeight = Math.round(icon.height * 0.4);
-const iconWidth = Math.round((icon.width * iconHeight) / icon.height);
+const iconBox = Math.max(
+	...NAV_ITEMS.map(({ icon: i }) => Math.round((i.width * Math.round(i.height * 0.4)) / i.height)),
+);
 ---
 
 <a class="gb-nav-item" href={href} aria-current={active ? 'page' : undefined}>
 	<img
 		class="gb-nav-icon"
 		src={icon.src}
-		width={iconWidth}
+		width={iconBox}
 		height={iconHeight}
 		alt=""
-		style={`--h:${iconHeight}px`}
+		style={`--h:${iconHeight}px;--w:${iconBox}px`}
 	/>
 	<span class="gb-nav-word">
 		<img
