@@ -194,8 +194,7 @@ function getWordCount(body: string) {
 }
 
 function formatDate(date: string) {
-	const match = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})/.exec(date);
-	return match ? `${match[1]} ${match[2]}` : date;
+	return /^\d{4}-\d{2}-\d{2}/.exec(date)?.[0] ?? date;
 }
 
 export function toPost(entry: PostEntry): Post {
