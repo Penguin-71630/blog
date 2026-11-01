@@ -20,7 +20,12 @@ const iconBox = Math.max(
 );
 ---
 
-<a class="gb-nav-item" href={href} aria-current={active ? 'page' : undefined}>
+<a
+	class="gb-nav-item"
+	href={href}
+	aria-current={active ? 'page' : undefined}
+	style={active ? `--smudge:url(#${idPrefix}-smudge)` : undefined}
+>
 	<img
 		class="gb-nav-icon"
 		src={icon.src}
@@ -47,6 +52,11 @@ const iconBox = Math.max(
 					overflow="visible"
 				>
 					<defs>
+						<filter id={`${idPrefix}-smudge`}>
+							<feTurbulence type="fractalNoise" baseFrequency="0.035 0.12" numOctaves="3" result="n" />
+							<feDisplacementMap in="SourceGraphic" in2="n" scale="18" />
+							<feGaussianBlur stdDeviation="2" />
+						</filter>
 						<filter id={`${idPrefix}-chalk`}>
 							<feTurbulence
 								type="fractalNoise"
