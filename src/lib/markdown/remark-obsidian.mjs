@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import GithubSlugger from 'github-slugger';
+import { toString as mdastToString } from 'mdast-util-to-string';
 
 const postsRoot = path.resolve(process.cwd(), 'src/content/posts');
 const calloutAliases = {
@@ -212,14 +213,39 @@ function sliceText(node, start, end, file, lineStarts) {
 	return sliced;
 }
 
-function replaceInlineSyntax(tree, file) {
+function assignHeadingIds(tree) {
+	const slugger = new GithubSlugger();
+	const headingSlugs = new Map();
+	const visit = (parent) => {
+		for (const child of parent.children ?? []) {
+			if (child.type === 'heading') {
+				const text = mdastToString(child).trim();
+				const slug = slugger.slug(text);
+				child.data = {
+					...child.data,
+					hProperties: { ...child.data?.hProperties, id: slug },
+				};
+				const key = text.toLocaleLowerCase();
+				if (!headingSlugs.has(key)) headingSlugs.set(key, slug);
+			}
+			visit(child);
+		}
+	};
+	visit(tree);
+	return headingSlugs;
+}
+
+function sourcePath(file) {
+	const filePath = file.path ?? file.history?.[0];
+	if (!filePath) return '';
+	if (filePath instanceof URL) return fileURLToPath(filePath);
+	return String(filePath).startsWith('file:') ? fileURLToPath(filePath) : String(filePath);
+}
+
+function replaceInlineSyntax(tree, file, lineStarts, headingSlugs) {
 	const wiki = /(?<!!)\[\[([^\]|]+?)(?:\|([^\]]+))?\]\]/g;
-	const highlight = /==(.+?)==/g;
-	const source = String(file.value);
-	const lineStarts = [0];
-	for (let index = 0; index < source.length; index += 1) {
-		if (source[index] === '\n') lineStarts.push(index + 1);
-	}
+	const currentName = path.basename(sourcePath(file), '.md').toLocaleLowerCase();
+	const currentSlug = getPublishedPosts().get(currentName);
 
 	mapNodes(tree, (node) => {
 		wiki.lastIndex = 0;
@@ -232,20 +258,34 @@ function replaceInlineSyntax(tree, file) {
 			if (match.index > cursor) output.push(sliceText(node, cursor, match.index, file, lineStarts));
 			const target = match[1].trim().replace(/\.md$/i, '');
 			const aliasSource = match[2] ?? match[1];
-			const alias = aliasSource.trim().replace(/\.md$/i, '');
-			const slug = getPublishedPosts().get(target.toLocaleLowerCase());
+			const alias = aliasSource.trim();
+			const hasHeading = target.includes('#');
+			const [targetNote = '', ...headingParts] = hasHeading ? target.split('#') : [target];
+			const headingText = headingParts.at(-1)?.trim() ?? '';
+			const headingSlug = hasHeading ? headingSlugs.get(headingText.toLocaleLowerCase()) ?? new GithubSlugger().slug(headingText) : '';
+			const publishedSlug = getPublishedPosts().get(targetNote.trim().toLocaleLowerCase());
+			const samePage = hasHeading && (!targetNote.trim() || (publishedSlug && publishedSlug === currentSlug));
+			const slug = hasHeading ? publishedSlug : getPublishedPosts().get(target.toLocaleLowerCase());
 			const aliasStart =
 				match.index +
-				(match[2] == null ? match[0].indexOf(aliasSource) : match[0].lastIndexOf(aliasSource)) +
-				aliasSource.length -
-				aliasSource.trimStart().length;
+				(match[2] == null ? match[0].indexOf(aliasSource) : match[0].lastIndexOf(aliasSource));
+			const display = match[2] != null
+				? alias.replace(/\.md$/i, '')
+				: samePage
+					? headingText
+					: hasHeading && slug
+						? `${targetNote.trim()} > ${headingText}`
+						: alias.replace(/\.md$/i, '');
 			const aliasNode = sliceText(node, aliasStart, aliasStart + alias.length, file, lineStarts);
-			const aliasText = aliasNode?.value === alias ? aliasNode : { type: 'text', value: alias };
-			output.push(
-				slug
-					? { type: 'link', url: `/posts/${slug}/`, children: [aliasText] }
-					: aliasText,
-			);
+			const aliasText = aliasNode?.value === display ? aliasNode : { type: 'text', value: display };
+			const url = samePage
+				? `#${headingSlug}`
+				: hasHeading && slug
+					? `/posts/${slug}/#${headingSlug}`
+					: slug
+						? `/posts/${slug}/`
+						: '';
+			output.push(url ? { type: 'link', url, children: [aliasText] } : aliasText);
 			cursor = match.index + match[0].length;
 		}
 		if (cursor < node.value.length) output.push(sliceText(node, cursor, node.value.length, file, lineStarts));
@@ -1059,7 +1099,8 @@ export default function remarkObsidian() {
 		stripComments(tree);
 		removeFirstH1(tree);
 		normalizeCodeLanguages(tree);
-		replaceInlineSyntax(tree, file);
+		const headingSlugs = assignHeadingIds(tree);
+		replaceInlineSyntax(tree, file, lineStarts, headingSlugs);
 		transformHighlights(tree, file, lineStarts);
 		transformEmbeds(tree, file);
 		transformStandaloneImages(tree);

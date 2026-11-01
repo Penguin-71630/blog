@@ -114,11 +114,28 @@ assert.match(escapedTableImage.code, /width:60%;max-width:100%;height:auto/);
 assert.equal((escapedTableImage.code.match(/__ASTRO_IMAGE_/g) ?? []).length, 1);
 
 const heading = await render('# Title\n\n## {漢字|かんじ}と{色}(red)');
-assert.match(heading.code, /<h2 id="漢字と色">/);
+assert.match(heading.code, /<h2 id="漢字かんじと色red">/);
 assert.deepEqual(
 	heading.metadata.headings.map(({ text, slug }) => ({ text, slug })),
-	[{ text: '漢字と色', slug: '漢字と色' }],
+	[{ text: '漢字と色', slug: '漢字かんじと色red' }],
 );
+
+const headingWikilinks = await render([
+	'# TOEFL 出題系統',
+	'## 7. 未來目標',
+	'### 7-1. 短期目標',
+	'[[#7. 未來目標#7-1. 短期目標|7-1. 短期目標]]',
+	'[[#7. 未來目標]]',
+	'[[隨機大法好（2021 電資圈接力發文活動）#不那麼隨機的隨機]]',
+	'[[Unknown Note#Unknown Heading]]',
+].join('\n\n'), fileURL);
+assert.match(headingWikilinks.code, /<h2 id="7-未來目標">/);
+assert.match(headingWikilinks.code, /<h3 id="7-1-短期目標">/);
+assert.match(headingWikilinks.code, /<a href="#7-1-%E7%9F%AD%E6%9C%9F%E7%9B%AE%E6%A8%99">7-1\. 短期目標<\/a>/);
+assert.match(headingWikilinks.code, /<a href="#7-%E6%9C%AA%E4%BE%86%E7%9B%AE%E6%A8%99">7\. 未來目標<\/a>/);
+assert.match(headingWikilinks.code, /href="\/posts\/[^"]*#%E4%B8%8D/);
+assert.match(headingWikilinks.code, /Unknown Note#Unknown Heading/);
+assert.doesNotMatch(headingWikilinks.code, /<a[^>]*>Unknown Note#Unknown Heading<\/a>/);
 
 const callout = await render('> [!note] {標題|ひょうだい}\n> {內容|ないよう} and {green}(green) $x$\n> \\{x|y\\}');
 assert.match(callout.code, /<ruby>標題<rp>\(<\/rp><rt>ひょうだい<\/rt><rp>\)<\/rp><\/ruby>/);
