@@ -377,8 +377,8 @@ function getImageUrl(file, basename) {
 	return path.posix.relative(relativeDirectory, `_attachments/${basename}`);
 }
 
-function makeFigure(file, reference) {
-	const [filename, ...options] = reference.split('|').map((part) => part.trim());
+function makeEmbeddedImage(file, reference) {
+	const [filename, ...options] = reference.replaceAll('\\|', '|').split('|').map((part) => part.trim());
 	const basename = path.posix.basename(filename.replaceAll('\\', '/'));
 	const url = getImageUrl(file, basename);
 	const alignment = options.find((option) => option === 'left' || option === 'right');
@@ -405,6 +405,11 @@ function makeFigure(file, reference) {
 			},
 		},
 	};
+	return { image, alignment, caption };
+}
+
+function makeFigure(file, reference) {
+	const { image, alignment, caption } = makeEmbeddedImage(file, reference);
 	const children = [image];
 	if (caption) {
 		children.push({
@@ -448,11 +453,72 @@ function makeMarkdownFigure(image) {
 	};
 }
 
+function mergeSplitTableEmbeds(row) {
+	if (!Array.isArray(row.children)) return;
+
+	const merged = [];
+	for (let index = 0; index < row.children.length; index += 1) {
+		const cell = row.children[index];
+		if (cell.type !== 'tableCell' || cell.children?.some((child) => child.type !== 'text')) {
+			merged.push(cell);
+			continue;
+		}
+
+		let value = cell.children.map((child) => child.value).join('');
+		const embedStart = value.lastIndexOf('![[');
+		if (embedStart < 0 || value.indexOf(']]', embedStart) >= 0) {
+			merged.push(cell);
+			continue;
+		}
+
+		let end = index;
+		while (end + 1 < row.children.length && value.indexOf(']]', embedStart) < 0) {
+			const next = row.children[end + 1];
+			if (next.type !== 'tableCell' || next.children?.some((child) => child.type !== 'text')) break;
+			value += `|${next.children.map((child) => child.value).join('')}`;
+			end += 1;
+		}
+
+		if (value.indexOf(']]', embedStart) >= 0) {
+			merged.push({ ...cell, children: [{ type: 'text', value }] });
+			index = end;
+		} else {
+			merged.push(cell);
+		}
+	}
+	row.children = merged;
+}
+
 function transformEmbeds(parent, file) {
 	if (!Array.isArray(parent.children)) return;
 
 	const expanded = [];
 	for (const child of parent.children) {
+		if (child.type === 'table') {
+			for (const row of child.children ?? []) mergeSplitTableEmbeds(row);
+			transformEmbeds(child, file);
+			expanded.push(child);
+			continue;
+		}
+		if (child.type === 'tableCell') {
+			const cellChildren = [];
+			for (const inline of child.children ?? []) {
+				if (inline.type !== 'text') {
+					cellChildren.push(inline);
+					continue;
+				}
+				let cursor = 0;
+				for (const match of inline.value.matchAll(/!\[\[([^\]]+)\]\]/g)) {
+					if (match.index > cursor) cellChildren.push({ type: 'text', value: inline.value.slice(cursor, match.index) });
+					cellChildren.push(makeEmbeddedImage(file, match[1]).image);
+					cursor = match.index + match[0].length;
+				}
+				if (cursor < inline.value.length) cellChildren.push({ type: 'text', value: inline.value.slice(cursor) });
+			}
+			child.children = cellChildren;
+			expanded.push(child);
+			continue;
+		}
 		if (child.type !== 'paragraph') {
 			transformEmbeds(child, file);
 			expanded.push(child);

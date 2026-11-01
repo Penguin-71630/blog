@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { markdownConfigDefaults, unified } from '@astrojs/markdown-remark';
 import {
 	markdownRemarkPlugins,
@@ -18,6 +20,10 @@ const renderer = await processor.createRenderer({
 	shikiConfig: markdownShikiConfig,
 });
 const fileURL = new URL('../src/content/posts/inline-syntax-test.md', import.meta.url);
+const maimaiPostURL = pathToFileURL(path.resolve(
+	path.dirname(fileURLToPath(import.meta.url)),
+	'../src/content/posts/Rhythm Game/Maimai/Maimai 新手攻略：如何達成彩框 ／ 萬五.md',
+));
 
 async function render(source, sourceFileURL = fileURL) {
 	return renderer.render(source, { fileURL: sourceFileURL });
@@ -79,6 +85,33 @@ assert.match(s3Highlight.code, /<mark>Because a cache of size <span class="katex
 const table = await render('| {漢字\\|かんじ} | x |\n| --- | --- |\n| a | b |');
 assert.equal((table.code.match(/<t[hd]>/g) ?? []).length, 4);
 assert.match(table.code, /<th><ruby>漢字<rp>\(<\/rp><rt>かんじ<\/rt><rp>\)<\/rp><\/ruby><\/th>/);
+
+const tableImage = await render(String.raw`> [!warning]
+>
+> ||||
+> |:--:|:--:|:--:|
+> |![[Maimai-how-to-rainbow-2.png\|90%]]|![[Maimai-how-to-rainbow-3.png\|90%]]|![[Maimai-how-to-rainbow-4.png\|100%]]|`, maimaiPostURL);
+assert.match(tableImage.code, /<table>/);
+assert.match(tableImage.code, /Maimai-how-to-rainbow-2\.png/);
+assert.match(tableImage.code, /width:90%;max-width:100%;height:auto/);
+assert.equal((tableImage.code.match(/__ASTRO_IMAGE_/g) ?? []).length, 3);
+assert.doesNotMatch(tableImage.code, /<figure class="gb-figure"/);
+
+const publishedTableImages = await render([
+	'> [!warning]',
+	'>',
+	'> ||||',
+	'> |:--:|:--:|:--:|',
+	'> |![[Maimai-how-to-rainbow-2.png|90%]]|![[Maimai-how-to-rainbow-3.png|90%]]|![[Maimai-how-to-rainbow-4.png|100%]]|',
+].join('\n'), maimaiPostURL);
+assert.equal((publishedTableImages.code.match(/__ASTRO_IMAGE_/g) ?? []).length, 3);
+assert.match(publishedTableImages.code, /width:90%;max-width:100%;height:auto/);
+
+const escapedTableImage = await render(String.raw`| | |
+| --- | --- |
+| ![[Maimai-how-to-rainbow-2.png\|60%]] | visible |`, maimaiPostURL);
+assert.match(escapedTableImage.code, /width:60%;max-width:100%;height:auto/);
+assert.equal((escapedTableImage.code.match(/__ASTRO_IMAGE_/g) ?? []).length, 1);
 
 const heading = await render('# Title\n\n## {漢字|かんじ}と{色}(red)');
 assert.match(heading.code, /<h2 id="漢字と色">/);
