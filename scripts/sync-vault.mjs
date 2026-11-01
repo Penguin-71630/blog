@@ -5,7 +5,6 @@ import { CATEGORY_DEFINITIONS } from '../src/lib/category-definitions.ts';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outputDir = path.join(repoRoot, 'src/content/posts');
-const draftsOutputDir = path.join(repoRoot, 'src/content/drafts');
 const attachmentDirName = '_Attachments';
 const attachmentOutputName = '_attachments';
 const vaultArgument = process.argv[2];
@@ -17,14 +16,12 @@ if (!vaultArgument) {
 const vaultDir = await realpath(path.resolve(vaultArgument));
 const categoryNames = new Set(CATEGORY_DEFINITIONS.map(({ name }) => name));
 
-for (const generatedDir of [outputDir, draftsOutputDir]) {
-	if (
-		vaultDir === generatedDir ||
-		generatedDir.startsWith(`${vaultDir}${path.sep}`) ||
-		vaultDir.startsWith(`${generatedDir}${path.sep}`)
-	) {
-		throw new Error('The vault directory cannot overlap a generated content directory.');
-	}
+if (
+	vaultDir === outputDir ||
+	outputDir.startsWith(`${vaultDir}${path.sep}`) ||
+	vaultDir.startsWith(`${outputDir}${path.sep}`)
+) {
+	throw new Error('The vault directory cannot overlap a generated content directory.');
 }
 
 async function walkMarkdown(directory, relativeDirectory = '') {
@@ -88,30 +85,10 @@ function validatePublishedNote(source, relativePath, frontmatter, body) {
 	}
 }
 
-function getDraftMarkdownImageTargets(source) {
-	const withoutFencedCode = source.replace(
-		/^([ \t]*)(`{3,}|~{3,})[^\r\n]*\r?\n[\s\S]*?^\1\2[ \t]*$/gm,
-		'\n',
-	);
-	const withoutInlineCode = withoutFencedCode.replace(/(`+)[^\n]*?\1/g, '');
-	const targets = [];
-	for (const match of withoutInlineCode.matchAll(
-		/!\[[^\]\r\n]*\]\(\s*(?:<([^>\r\n]+)>|([^\s)]+))(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)/g,
-	)) {
-		const target = match[1] ?? match[2];
-		if (!/^(?:[a-z][a-z\d+.-]*:|\/\/|\/|#)/i.test(target)) targets.push(target);
-	}
-	return targets;
-}
-
 const markdownFiles = await walkMarkdown(vaultDir);
 const posts = [];
-const drafts = [];
 const attachments = new Map();
-const draftAttachments = new Map();
 const outputPaths = new Set();
-const draftOutputPaths = new Set();
-let skippedDrafts = 0;
 
 for (const file of markdownFiles) {
 	const relativePath = file.relativePath.split(path.sep).join('/');
@@ -154,70 +131,7 @@ for (const file of markdownFiles) {
 		}
 		continue;
 	}
-
-	const warnAndSkip = (reason) => {
-		console.warn(`Skipping draft ${relativePath}: ${reason}`);
-		skippedDrafts += 1;
-	};
-
-	if (folderDepth < 1 || folderDepth > 2) {
-		warnAndSkip('notes must be in <L1>/<L2?>/<file>.md.');
-		continue;
-	}
-	if (!categoryNames.has(primary)) {
-		warnAndSkip(`L1 category "${primary}" is missing from src/lib/categories.ts.`);
-		continue;
-	}
-	if (draftOutputPaths.has(outputPath)) {
-		warnAndSkip(`duplicate generated draft path "${outputPath}".`);
-		continue;
-	}
-
-	const noteAttachments = new Map();
-	let invalidAttachment;
-	const attachmentTargets = [
-		...Array.from(body.matchAll(/!\[\[([^\]\r\n]+)\]\]/g), (match) =>
-			match[1].split('|', 1)[0].trim().split('#', 1)[0].trim(),
-		),
-		...getDraftMarkdownImageTargets(body),
-	];
-	for (const rawTarget of attachmentTargets) {
-		let target;
-		try {
-			target = decodeURIComponent(rawTarget.split(/[?#]/, 1)[0].trim());
-		} catch {
-			invalidAttachment = `invalid embedded attachment reference "${rawTarget}".`;
-			break;
-		}
-		if (!target) {
-			invalidAttachment = 'empty embedded attachment reference.';
-			break;
-		}
-		const basename = path.posix.basename(target.replaceAll('\\', '/'));
-		const sourcePath = path.join(vaultDir, attachmentDirName, basename);
-		const previous = draftAttachments.get(basename) ?? noteAttachments.get(basename);
-		if (previous && previous !== sourcePath) {
-			invalidAttachment = `duplicate embedded attachment basename "${basename}".`;
-			break;
-		}
-		try {
-			if (!(await lstat(sourcePath)).isFile()) throw new Error('not a file');
-		} catch {
-			invalidAttachment = `missing embedded attachment: ${path.join(attachmentDirName, basename)}.`;
-			break;
-		}
-		noteAttachments.set(basename, sourcePath);
-	}
-	if (invalidAttachment) {
-		warnAndSkip(invalidAttachment);
-		continue;
-	}
-
-	draftOutputPaths.add(outputPath);
-	drafts.push({ sourcePath: file.absolutePath, outputPath, relativePath });
-	for (const [basename, sourcePath] of noteAttachments) {
-		draftAttachments.set(basename, sourcePath);
-	}
+	continue;
 }
 
 if (posts.length === 0) {
@@ -232,22 +146,18 @@ for (const [basename, sourcePath] of attachments) {
 	}
 }
 
-for (const generatedDir of [outputDir, draftsOutputDir]) {
-	try {
-		if ((await lstat(generatedDir)).isSymbolicLink()) {
-			throw new Error(`${generatedDir} must not be a symbolic link.`);
-		}
-	} catch (error) {
-		if (error.code !== 'ENOENT') throw error;
+try {
+	if ((await lstat(outputDir)).isSymbolicLink()) {
+		throw new Error(`${outputDir} must not be a symbolic link.`);
 	}
+} catch (error) {
+	if (error.code !== 'ENOENT') throw error;
 }
 
-for (const generatedDir of [outputDir, draftsOutputDir]) {
-	await rm(generatedDir, { recursive: true, force: true });
-}
+await rm(outputDir, { recursive: true, force: true });
+await rm(path.join(repoRoot, 'src/content/drafts'), { recursive: true, force: true });
 
 await mkdir(path.join(outputDir, attachmentOutputName), { recursive: true });
-await mkdir(path.join(draftsOutputDir, attachmentOutputName), { recursive: true });
 
 async function copyPreservingMtime(sourcePath, destinationPath) {
 	await copyFile(sourcePath, destinationPath);
@@ -263,15 +173,5 @@ for (const post of posts) {
 for (const [basename, sourcePath] of attachments) {
 	await copyPreservingMtime(sourcePath, path.join(outputDir, attachmentOutputName, basename));
 }
-for (const draft of drafts) {
-	const destination = path.join(draftsOutputDir, draft.outputPath);
-	await mkdir(path.dirname(destination), { recursive: true });
-	await copyPreservingMtime(draft.sourcePath, destination);
-}
-for (const [basename, sourcePath] of draftAttachments) {
-	await copyPreservingMtime(sourcePath, path.join(draftsOutputDir, attachmentOutputName, basename));
-}
 
-console.log(
-	`Synced ${posts.length} published posts and ${attachments.size} attachments, plus ${drafts.length} drafts and ${draftAttachments.size} draft attachments (skipped ${skippedDrafts}) from ${vaultDir}.`,
-);
+console.log(`Synced ${posts.length} published posts and ${attachments.size} attachments from ${vaultDir}.`);

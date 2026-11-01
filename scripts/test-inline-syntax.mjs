@@ -244,17 +244,13 @@ const standaloneImage = await render('![Remote image](https://example.com/remote
 assert.match(standaloneImage.code, /<figure class="gb-figure"><img\b[^>]*alt="Remote image"[^>]*style="max-width:100%;height:auto"[^>]*><\/figure>/);
 assert.doesNotMatch(standaloneImage.code, /<figcaption>/);
 
-const draftEmbed = await render(
-	'![[draft-image.png]]',
-	new URL('../src/content/drafts/Discrete%20Mathematics/lecture.md', import.meta.url),
+const attachmentFixture = '![[draft-image.png]]\n\n![[Pasted image.png]]';
+const postAttachmentEmbeds = await render(
+	attachmentFixture,
+	new URL('../src/content/posts/Discrete%20Mathematics/lecture.md', import.meta.url),
 );
-assert.match(draftEmbed.code, /\.\.\/_attachments\/draft-image\.png/);
-
-const draftStandardImage = await render(
-	'![Local image](Pasted%20image.png)',
-	new URL('../src/content/drafts/Discrete%20Mathematics/lecture.md', import.meta.url),
-);
-assert.match(draftStandardImage.code, /\.\.\/_attachments\/Pasted image\.png/);
+assert.match(postAttachmentEmbeds.code, /\.\.\/_attachments\/draft-image\.png/);
+assert.match(postAttachmentEmbeds.code, /\.\.\/_attachments\/Pasted image\.png/);
 
 const inlineImage = await render('Text before ![Inline image](https://example.com/inline.png) and after.');
 assert.match(inlineImage.code, /<p>Text before <img\b[^>]*alt="Inline image"[^>]*> and after\.<\/p>/);

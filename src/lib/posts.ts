@@ -1,12 +1,9 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import GithubSlugger from 'github-slugger';
-import { statSync } from 'node:fs';
 import { CATEGORIES } from './categories';
 
-export type PostEntry = CollectionEntry<'posts'> | CollectionEntry<'drafts'>;
-
 export interface Post {
-	entry: PostEntry;
+	entry: CollectionEntry<'posts'>;
 	id: string;
 	slug: string;
 	href: string;
@@ -197,8 +194,7 @@ function formatDate(date: string) {
 	return /^\d{4}-\d{2}-\d{2}/.exec(date)?.[0] ?? date;
 }
 
-export function toPost(entry: PostEntry): Post {
-	const isDraft = entry.collection === 'drafts';
+export function toPost(entry: CollectionEntry<'posts'>): Post {
 	const body = entry.body ?? '';
 	const segments = entry.id.replace(/\.md$/i, '').split('/');
 	const filename = segments.at(-1) ?? '';
@@ -211,10 +207,10 @@ export function toPost(entry: PostEntry): Post {
 	}
 
 	const titleMatch = /^#\s+(.+?)\s*#*\s*$/m.exec(body);
-	if (!titleMatch && !isDraft) throw new Error(`Post is missing an H1 title: ${entry.id}`);
-	const title = titleMatch?.[1].trim() || filename;
+	if (!titleMatch) throw new Error(`Post is missing an H1 title: ${entry.id}`);
+	const title = titleMatch[1].trim();
 	const slug = new GithubSlugger().slug(filename);
-	const date = isDraft ? (entry.data.date || statSync(entry.filePath).mtime.toISOString()) : entry.data.date ?? '';
+	const date = entry.data.date;
 	const { cjk, latin, words } = getWordCount(body);
 	const frontmatterDescription = entry.data.description?.trim();
 
@@ -252,27 +248,6 @@ async function loadPublishedPosts() {
 	for (const post of posts) {
 		if (slugs.has(post.slug)) throw new Error(`Duplicate post URL slug: ${post.slug}`);
 		slugs.add(post.slug);
-	}
-
-	if (import.meta.env.DEV) {
-		const draftEntries = await getCollection('drafts', ({ data }) => data.publish !== true);
-		for (const entry of draftEntries) {
-			const post = toPost(entry);
-			const baseSlug = post.slug;
-			let slug = baseSlug;
-			let suffix = 2;
-			while (slugs.has(slug)) {
-				slug = `${baseSlug}-${suffix}`;
-				suffix += 1;
-			}
-			if (slug !== baseSlug) {
-				console.warn(`Draft slug collision for "${entry.id}"; using "${slug}" instead of "${baseSlug}".`);
-				post.slug = slug;
-				post.href = `/posts/${slug}/`;
-			}
-			slugs.add(slug);
-			posts.push(post);
-		}
 	}
 
 	return posts.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
