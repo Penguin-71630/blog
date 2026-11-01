@@ -223,9 +223,8 @@ function replaceInlineSyntax(tree, file) {
 
 	mapNodes(tree, (node) => {
 		wiki.lastIndex = 0;
-		highlight.lastIndex = 0;
 		const wikiMatches = [...node.value.matchAll(wiki)];
-		if (!wikiMatches.length && !/==(.+?)==/.test(node.value)) return [node];
+		if (!wikiMatches.length) return [node];
 
 		const output = [];
 		let cursor = 0;
@@ -250,29 +249,109 @@ function replaceInlineSyntax(tree, file) {
 			cursor = match.index + match[0].length;
 		}
 		if (cursor < node.value.length) output.push(sliceText(node, cursor, node.value.length, file, lineStarts));
-
-		return output.flatMap((part) => {
-			if (part.type !== 'text') return [part];
-			highlight.lastIndex = 0;
-			const matches = [...part.value.matchAll(highlight)];
-			if (!matches.length) return [part];
-
-			const marked = [];
-			let last = 0;
-			for (const match of matches) {
-				if (match.index > last) marked.push(sliceText(part, last, match.index, file, lineStarts));
-				const valueStart = match.index + 2;
-				marked.push({
-					type: 'emphasis',
-					data: { hName: 'mark' },
-					children: [sliceText(part, valueStart, valueStart + match[1].length, file, lineStarts)],
-				});
-				last = match.index + match[0].length;
-			}
-			if (last < part.value.length) marked.push(sliceText(part, last, part.value.length, file, lineStarts));
-			return marked;
-		});
+		return output;
 	});
+}
+
+function visibleText(node) {
+	if (node.type === 'text' || node.type === 'inlineCode' || node.type === 'inlineMath') return node.value ?? '';
+	if (Array.isArray(node.children)) return node.children.map(visibleText).join('');
+	return '';
+}
+
+function visibleCharacter(children, index, offset, direction) {
+	if (direction === 'after') {
+		const current = children[index]?.value?.slice(offset);
+		if (current) return current[0];
+		for (let next = index + 1; next < children.length; next += 1) {
+			const text = visibleText(children[next]);
+			if (text) return text[0];
+		}
+		return '';
+	}
+
+	const current = children[index]?.value?.slice(0, offset);
+	if (current) return current.at(-1);
+	for (let previous = index - 1; previous >= 0; previous -= 1) {
+		const text = visibleText(children[previous]);
+		if (text) return text.at(-1);
+	}
+	return '';
+}
+
+function findHighlightMarker(children, fromIndex, fromOffset, direction, open) {
+	for (let index = fromIndex; index < children.length; index += 1) {
+		const node = children[index];
+		if (node.type !== 'text') continue;
+		let offset = index === fromIndex ? fromOffset : 0;
+		let position = node.value.indexOf('==', offset);
+		while (position >= 0) {
+			if (open) {
+				const next = visibleCharacter(children, index, position + 2, 'after');
+				if (next && !/\s/.test(next)) return { index, position };
+			} else {
+				const previous = visibleCharacter(children, index, position, 'before');
+				if (previous && !/\s/.test(previous)) return { index, position };
+			}
+			offset = position + 2;
+			position = node.value.indexOf('==', offset);
+		}
+	}
+	return null;
+}
+
+function transformHighlights(parent, file, lineStarts) {
+	if (!Array.isArray(parent.children)) return;
+	for (const child of parent.children) transformHighlights(child, file, lineStarts);
+
+	let cursorIndex = 0;
+	let cursorOffset = 0;
+	while (cursorIndex < parent.children.length) {
+		const open = findHighlightMarker(parent.children, cursorIndex, cursorOffset, 'after', true);
+		if (!open) break;
+		const close = findHighlightMarker(parent.children, open.index, open.position + 2, 'before', false);
+		if (!close) {
+			cursorIndex = open.index;
+			cursorOffset = open.position + 2;
+			continue;
+		}
+		if (close.index === open.index && close.position < open.position + 3) {
+			cursorIndex = open.index;
+			cursorOffset = close.position + 2;
+			continue;
+		}
+
+		const children = parent.children;
+		const startNode = children[open.index];
+		const endNode = children[close.index];
+		const before = sliceText(startNode, 0, open.position, file, lineStarts);
+		const after = sliceText(endNode, close.position + 2, endNode.value.length, file, lineStarts);
+		const markedChildren =
+			open.index === close.index
+				? [sliceText(startNode, open.position + 2, close.position, file, lineStarts)]
+				: [
+						sliceText(startNode, open.position + 2, startNode.value.length, file, lineStarts),
+						...children.slice(open.index + 1, close.index),
+						sliceText(endNode, 0, close.position, file, lineStarts),
+					];
+		if (!markedChildren.some((node) => node && visibleText(node).trim())) {
+			cursorIndex = close.index;
+			cursorOffset = close.position + 2;
+			continue;
+		}
+		const replacement = [
+			...(before ? [before] : []),
+			{
+				type: 'emphasis',
+				data: { hName: 'mark' },
+				children: markedChildren.filter(Boolean),
+			},
+			...(after ? [after] : []),
+		];
+		children.splice(open.index, close.index - open.index + 1, ...replacement);
+		cursorIndex = open.index + replacement.length - (after ? 1 : 0);
+		cursorOffset = 0;
+	}
 }
 
 function getImageUrl(file, basename) {
@@ -915,6 +994,7 @@ export default function remarkObsidian() {
 		removeFirstH1(tree);
 		normalizeCodeLanguages(tree);
 		replaceInlineSyntax(tree, file);
+		transformHighlights(tree, file, lineStarts);
 		transformEmbeds(tree, file);
 		transformStandaloneImages(tree);
 		transformCallouts(tree, file, lineStarts);

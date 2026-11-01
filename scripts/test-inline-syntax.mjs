@@ -62,6 +62,20 @@ assert.match(opaque.code, /<code>\{a\|b\}<\/code>/);
 assert.doesNotMatch(opaque.code, /<ruby>|text-color-/);
 assert.equal((opaque.code.match(/class="katex"/g) ?? []).length, 2);
 
+const spanningHighlight = await render('==a **b** *c* [d](https:\/\/example.com) `e` $f$==');
+assert.equal((spanningHighlight.code.match(/<mark>/g) ?? []).length, 1);
+assert.match(spanningHighlight.code, /<mark>a <strong>b<\/strong> <em>c<\/em> <a href="https:\/\/example.com">d<\/a> <code>e<\/code> <span class="katex">[\s\S]*<\/mark>/);
+
+const sameNodeHighlight = await render('Before ==plain text== after; a == b is literal.');
+assert.match(sameNodeHighlight.code, /<mark>plain text<\/mark>/);
+assert.doesNotMatch(sameNodeHighlight.code, /<mark>a == b<\/mark>/);
+
+const highlightContexts = await render('## ==heading **bold**==\n\n- ==list *italic*==\n\n| Head |\n| --- |\n| ==cell **bold**== |\n\n> [!note] ==title **bold**==');
+assert.equal((highlightContexts.code.match(/<mark>/g) ?? []).length, 4);
+
+const s3Highlight = await render('==Because a cache of size $C$ only observes a short sequence of $C$ objects before evictions, most objects will be one-hit wonders (no request after insertion) when evicted==, even though they may have more requests throughout the full trace.');
+assert.match(s3Highlight.code, /<mark>Because a cache of size <span class="katex">[\s\S]*most objects will be one-hit wonders[\s\S]*<\/mark>, even though/);
+
 const table = await render('| {漢字\\|かんじ} | x |\n| --- | --- |\n| a | b |');
 assert.equal((table.code.match(/<t[hd]>/g) ?? []).length, 4);
 assert.match(table.code, /<th><ruby>漢字<rp>\(<\/rp><rt>かんじ<\/rt><rp>\)<\/rp><\/ruby><\/th>/);
