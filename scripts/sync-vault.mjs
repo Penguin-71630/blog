@@ -63,8 +63,9 @@ function readFrontmatter(source, relativePath) {
 
 function validatePublishedNote(source, relativePath, frontmatter, body) {
 	const dateMatch = /^date\s*:\s*(?:"([^"]*)"|'([^']*)'|(.+))\s*$/m.exec(frontmatter);
-	if (!dateMatch || !(dateMatch[1] ?? dateMatch[2] ?? dateMatch[3]).trim()) {
-		throw new Error(`${relativePath}: published notes require a non-empty date.`);
+	const date = dateMatch ? (dateMatch[1] ?? dateMatch[2] ?? dateMatch[3]).trim() : '';
+	if (!/^\d{4}-\d{2}-\d{2}(?:$|T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?)$/.test(date)) {
+		throw new Error(`${relativePath}: published notes require a date in YYYY-MM-DD or ISO datetime format.`);
 	}
 
 	let inFence = false;

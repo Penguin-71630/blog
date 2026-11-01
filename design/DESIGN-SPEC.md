@@ -29,7 +29,7 @@
 ### H1、分類名稱與分類圖示
 
 - 固定的頁面標題（網站名稱、Articles、About Me、Categories、Archives）使用黑板粉筆手寫字圖片；手寫圖完成前，暫用 TeX Gyre Pagella Bold。`<h1>` 內須保留真實文字，供 SEO、分頁標題與螢幕閱讀器使用，圖片僅為視覺呈現。
-- 文章標題使用 Pagella ＋ Noto Serif TC 的大字級。frontmatter 可選填 `titleImage`，有指定時改用手寫圖。
+- 文章標題使用 Pagella ＋ Noto Serif TC 的大字級。
 - 網站名稱的手寫圖已完成：`ginos-blog.webp`（白色粉筆字、透明背景）。
 - **分類名稱**在 Categories 頁的卡片上使用黑板手寫字圖片，檔案為 `categories/<網址代稱>.webp`，`categories/dims.json` 記錄各圖寬高。所有圖片已依小寫字母高度（x-height）統一縮放，網站上以同一個比例顯示，字看起來才會一樣大。目前完成 12 張；Miscellaneous 尚未寫，部分字之後會重寫（見第 6 節）。沒有手寫圖的分類暫用 TeX Gyre Pagella Bold。分類名稱的 `<h2>` 內同樣保留真實文字。
 - 手寫圖在網站上以 CSS `mask-image` 載入，`background-color: currentColor`，因此 light 與 dark mode 都跟著文字顏色變色，不需另做深色版本。
@@ -68,7 +68,7 @@ Obsidian vault 會整理成相同的資料夾結構：`<第一層分類>/<第二
 
 ```yaml
 ---
-date: "2026-07-01T01:53:46+08:00"
+date: 2026-07-01
 description: 文章簡介，顯示在文章列表卡片，也作為 meta description。
 publish: true
 ---
@@ -76,11 +76,9 @@ publish: true
 
 | 欄位 | 說明 |
 | --- | --- |
-| `date` | 第一次完稿的時間，帶時區，以字串保存。顯示為 `2026-07-01 01:53:46`。之後的小幅修改不更新。 |
+| `date` | 第一次完稿的日期，格式 `YYYY-MM-DD`（舊文章的 ISO 時間字串也接受），只顯示日期。之後的小幅修改不更新。 |
 | `description` | 文章簡介。未填時，取內文第一段的開頭。 |
-| `publish` | `true` 才會同步到網站。 |
-| `updated` | 選填。只在重大修改時手動填寫；有值時，文章頁顯示「更新於」。 |
-| `titleImage` | 選填，手寫標題圖。 |
+| `publish` | `true` 才會上站；沒寫視同 `false`。 |
 
 文章標題取自內文最上方的 `# 標題`，不寫在 frontmatter。字數與閱讀時間由網站 build 時計算，不寫在 frontmatter。
 
@@ -126,7 +124,7 @@ vault 沒有開啟 Obsidian 的 Strict line breaks，所以段落內的單一換
 
 #### 文章列表卡片（Articles 頁與分類頁共用同一個元件）
 
-- 第一行：完稿時間（`2026-07-01 01:53:46`，Sometype Mono，次要文字色）＋分類路徑（`# Computer Organization ▷ Cache`，Rubik Regular，強調色）。分類路徑為「第一層 ▷ 第二層」；沒有第二層分類的文章只顯示第一層，例如 `# Life Logs`。Rubik 沒有 `▷` 字元，會回退到其他字型；若大小或基線與兩側不一致，改用 Remix Icon `ri-arrow-right-s-line` 或 `›`。
+- 第一行：完稿日期（`2026-07-01`，Sometype Mono，次要文字色）＋分類路徑（`# Computer Organization ▷ Cache`，Rubik Regular，強調色）。分類路徑為「第一層 ▷ 第二層」；沒有第二層分類的文章只顯示第一層，例如 `# Life Logs`。Rubik 沒有 `▷` 字元，會回退到其他字型；若大小或基線與兩側不一致，改用 Remix Icon `ri-arrow-right-s-line` 或 `›`。
 - 第二行：左側分類圖示，右側文章標題（TeX Gyre Pagella Bold ＋ Noto Serif TC Bold）。
 - 第三行：文章簡介（frontmatter `description`，次要文字色，約兩行），與標題左緣對齊。
 - 右下：字數與閱讀時間（`520 Words | Read Time: 6min`，Sometype Mono，強調色）。由網站 build 時自動計算：中文按字數、英文按單字數。

@@ -51,9 +51,6 @@
 	justify-content: center;
 }
 
-.gb-post-updated {
-	color: var(--muted);
-}
 
 .gb-series-posts[hidden] {
 	display: none;

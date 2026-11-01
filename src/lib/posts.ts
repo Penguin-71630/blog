@@ -13,12 +13,9 @@ export interface Post {
 	title: string;
 	date: string;
 	displayDate: string;
-	updated?: string;
-	displayUpdated?: string;
 	description: string;
 	words: number;
 	readTime: number;
-	titleImage?: string;
 }
 
 function withoutCodeAndMath(source: string) {
@@ -225,12 +222,9 @@ export function toPost(entry: CollectionEntry<'posts'>): Post {
 		title,
 		date,
 		displayDate: formatDate(date),
-		updated: entry.data.updated,
-		displayUpdated: entry.data.updated ? formatDate(entry.data.updated) : undefined,
 		description: frontmatterDescription || getFallbackDescription(body),
 		words,
 		readTime: Math.max(1, Math.ceil(cjk / 300 + latin / 200)),
-		titleImage: entry.data.titleImage,
 	};
 }
 
@@ -250,5 +244,7 @@ async function loadPublishedPosts() {
 		slugs.add(post.slug);
 	}
 
-	return posts.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+	return posts.sort(
+		(a, b) => Date.parse(b.date) - Date.parse(a.date) || a.title.localeCompare(b.title, 'zh-Hant'),
+	);
 }
