@@ -1,6 +1,6 @@
 ---
 import Icon from '../Icon.astro';
-import { pageHref } from '../../lib/pagination';
+import { pageHref, paginationItems } from '../../lib/pagination';
 
 interface Props {
 	current: number;
@@ -9,7 +9,7 @@ interface Props {
 }
 
 const { current, total, base } = Astro.props;
-const pages = Array.from({ length: total }, (_, index) => index + 1);
+const items = paginationItems(current, total);
 ---
 
 {total > 1 && (
@@ -21,8 +21,12 @@ const pages = Array.from({ length: total }, (_, index) => index + 1);
 				<Icon name="ri-arrow-left-s-line" />
 			</a>
 		)}
-		{pages.map((page) => (
-			<a href={pageHref(base, page)} aria-current={page === current ? 'page' : undefined}>{page}</a>
+		{items.map((item) => (
+			item === 'ellipsis' ? (
+				<span class="gb-pager-ellipsis" aria-hidden="true">…</span>
+			) : (
+				<a href={pageHref(base, item)} aria-current={item === current ? 'page' : undefined}>{item}</a>
+			)
 		))}
 		{current >= total ? (
 			<span class="is-disabled" aria-hidden="true"><Icon name="ri-arrow-right-s-line" /></span>

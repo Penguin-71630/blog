@@ -96,11 +96,13 @@
 @media (max-width:639px){.gb-archive-item{flex-direction:column;gap:2px}}
 
 /* ---------- Pagination ---------- */
-.gb-pager{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:40px;font-family:var(--font-mono);font-size:15px}
+.gb-pager{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px;margin-top:40px;font-family:var(--font-mono);font-size:15px}
 .gb-pager a,.gb-pager span{min-width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-lg);color:var(--muted);text-decoration:none;transition:color var(--dur-fast),background-color var(--dur-fast)}
 .gb-pager a:hover{color:var(--accent);background:var(--surface)}
 .gb-pager [aria-current="page"]{color:var(--accent)}
 .gb-pager .is-disabled{opacity:.35;pointer-events:none}
+.gb-pager .gb-pager-ellipsis{color:var(--muted);background:transparent;transition:none}
+@media (max-width:767.98px){.gb-pager{gap:4px}.gb-pager a,.gb-pager span{min-width:32px;height:32px}}
 
 /* ---------- TOC ---------- */
 .gb-toc{position:sticky;top:var(--sidebar-top);width:var(--toc-width);flex-shrink:0;align-self:flex-start;font-size:13.5px;line-height:1.5}
