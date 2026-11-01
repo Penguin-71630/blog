@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 import rehypeWrapTables from './rehype-wrap-tables.mjs';
@@ -30,4 +31,46 @@ export const markdownSyntaxHighlight = {
 	excludeLangs: ['math', 'mermaid', 'abc'],
 };
 
-export const markdownShikiConfig = { theme: 'css-variables' };
+const loadGrammar = (name) =>
+	JSON.parse(readFileSync(new URL(`./grammars/${name}.json`, import.meta.url), 'utf8'));
+
+export const markdownShikiConfig = {
+	theme: 'css-variables',
+	langAlias: {
+		S: 'asm',
+		s: 'asm',
+		gas: 'asm',
+		x86: 'asm',
+		x86asm: 'asm',
+		x86_64: 'asm',
+		nasm: 'asm',
+		rv: 'riscv',
+		rv32: 'riscv',
+		rv64: 'riscv',
+		riscv64: 'riscv',
+		mk: 'make',
+		Makefile: 'make',
+		MAKEFILE: 'make',
+		conf: 'ini',
+		cfg: 'ini',
+		config: 'ini',
+		sh: 'bash',
+		shell: 'bash',
+		zsh: 'bash',
+		arm64: 'arm',
+		aarch64: 'arm',
+		armasm: 'arm',
+		thumb: 'arm',
+		Kconfig: 'kconfig',
+		dts: 'devicetree',
+		dtsi: 'devicetree',
+		ld: 'linkerscript',
+		lds: 'linkerscript',
+	},
+	langs: [
+		loadGrammar('arm'),
+		loadGrammar('kconfig'),
+		loadGrammar('devicetree'),
+		loadGrammar('linkerscript'),
+	],
+};

@@ -303,6 +303,24 @@ assert.match(mermaid.code, /<pre><code class="language-mermaid">/);
 assert.doesNotMatch(mermaid.code, /class="astro-code|class="line"/);
 assert.doesNotMatch(mermaid.code, /class="gb-code"/);
 
+const languageExamples = [
+	['S', '.globl main\nmain:\n  movq $1, %rax # return value'],
+	['riscv', 'main:\n  addi a0, a0, 1'],
+	['mips', 'main:\n  add $t0, $t1, $t2'],
+	['Makefile', 'all:\n\t@echo $(MESSAGE)'],
+	['conf', '[server]\nport = 8080'],
+	['arm', 'main:\n  ldr x0, [x1, #16] // load value'],
+	['Kconfig', 'config FEATURE_X\n  bool "Feature X"\n  default y'],
+	['dts', '/dts-v1/;\n/ {\n  model = "Board";\n};'],
+	['ld', 'SECTIONS { .text : { *(.text*) } }'],
+];
+for (const [language, source] of languageExamples) {
+	const highlighted = await render(`\`\`\`${language}\n${source}\n\`\`\``);
+	assert.match(highlighted.code, new RegExp(`<span class="gb-code-lang">${language}<\\/span>`));
+	const tokenColors = new Set([...highlighted.code.matchAll(/style="color:([^"]+)"/g)].map((match) => match[1]));
+	assert.ok(tokenColors.size > 1, `${language} should render with multiple token colors`);
+}
+
 const graphviz = await render([
 	'```dot',
 	'digraph process_state {',

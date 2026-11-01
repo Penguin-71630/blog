@@ -1,0 +1,29 @@
+{
+  "name": "devicetree",
+  "scopeName": "source.devicetree",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#directives" },
+    { "include": "#references" },
+    { "include": "#labels" },
+    { "include": "#nodes" },
+    { "include": "#properties" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.devicetree", "match": "//.*$" },
+        { "name": "comment.block.devicetree", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": { "patterns": [{ "name": "string.quoted.double.devicetree", "begin": "\"", "end": "\"" }] },
+    "directives": { "patterns": [{ "name": "keyword.control.directive.devicetree", "match": "#include|/(?:dts-v1|include|delete-node|delete-property)/" }] },
+    "references": { "patterns": [{ "name": "variable.language.reference.devicetree", "match": "&[A-Za-z_][\\w-]*" }] },
+    "labels": { "patterns": [{ "name": "entity.name.function.label.devicetree", "match": "\\b[A-Za-z_][\\w-]*(?=\\s*:)" }] },
+    "nodes": { "patterns": [{ "name": "entity.name.function.node.devicetree", "match": "\\b[A-Za-z_][\\w,.-]*(?:@[A-Fa-f0-9]+)?(?=\\s*\\{)" }] },
+    "properties": { "patterns": [{ "name": "support.type.property-name.devicetree", "match": "\\b[A-Za-z_][\\w,.-]*(?=\\s*=)" }] },
+    "numbers": { "patterns": [{ "name": "constant.numeric.devicetree", "match": "\\b(?:0[xX][0-9a-fA-F]+|0[bB][01]+|\\d+)\\b" }] }
+  }
+}

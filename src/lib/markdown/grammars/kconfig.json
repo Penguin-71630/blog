@@ -1,0 +1,22 @@
+{
+  "name": "kconfig",
+  "scopeName": "source.kconfig",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#constants" },
+    { "include": "#symbols" }
+  ],
+  "repository": {
+    "comments": { "patterns": [{ "name": "comment.line.number-sign.kconfig", "match": "#.*$" }] },
+    "strings": { "patterns": [{ "name": "string.quoted.double.kconfig", "begin": "\"", "end": "\"" }] },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.kconfig", "match": "\\b(?:config|menuconfig|choice|endchoice|menu|endmenu|if|endif|source|rsource|osource|comment|mainmenu|bool|tristate|string|hex|int|default|def_bool|def_tristate|depends|on|select|imply|range|help|prompt|visible|option|modules|transitional)\\b" }
+      ]
+    },
+    "constants": { "patterns": [{ "name": "constant.language.kconfig", "match": "\\b[ynm]\\b" }] },
+    "symbols": { "patterns": [{ "name": "variable.other.constant.kconfig", "match": "\\b[A-Z][A-Z0-9_]*\\b" }] }
+  }
+}

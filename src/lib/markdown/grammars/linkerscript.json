@@ -1,0 +1,25 @@
+{
+  "name": "linkerscript",
+  "scopeName": "source.linkerscript",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#numbers" },
+    { "include": "#sections" },
+    { "include": "#patterns" }
+  ],
+  "repository": {
+    "comments": { "patterns": [{ "name": "comment.block.linkerscript", "begin": "/\\*", "end": "\\*/" }] },
+    "strings": { "patterns": [{ "name": "string.quoted.double.linkerscript", "begin": "\"", "end": "\"" }] },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.linkerscript", "match": "\\b(?:SECTIONS|MEMORY|ENTRY|OUTPUT_FORMAT|OUTPUT_ARCH|INCLUDE|PROVIDE|PROVIDE_HIDDEN|KEEP|ALIGN|ASSERT|ADDR|SIZEOF|LOADADDR|AT|ORIGIN|LENGTH|DISCARD)\\b" },
+        { "name": "constant.language.location-counter.linkerscript", "match": "\\.(?=\\s*(?:=|\\+|-))" }
+      ]
+    },
+    "numbers": { "patterns": [{ "name": "constant.numeric.linkerscript", "match": "\\b(?:0[xX][0-9a-fA-F]+|\\d+)(?:[KkMm])?\\b" }] },
+    "sections": { "patterns": [{ "name": "entity.name.function.section.linkerscript", "match": "\\.[A-Za-z_][\\w.]*\\*?" }] },
+    "patterns": { "patterns": [{ "name": "support.function.input-section.linkerscript", "match": "\\*\\([^)]*\\)" }] }
+  }
+}

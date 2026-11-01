@@ -1,0 +1,53 @@
+{
+  "name": "arm",
+  "scopeName": "source.arm",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#directives" },
+    { "include": "#labels" },
+    { "include": "#registers" },
+    { "include": "#mnemonics" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.arm", "match": "//.*$" },
+        { "name": "comment.line.at-sign.arm", "match": "@.*$" },
+        { "name": "comment.block.arm", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        { "name": "string.quoted.double.arm", "begin": "\"", "end": "\"", "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.arm" } }, "endCaptures": { "0": { "name": "punctuation.definition.string.end.arm" } } },
+        { "name": "string.quoted.single.arm", "begin": "'", "end": "'" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.arm", "match": "#?(?:0[xX][0-9a-fA-F]+|0[bB][01]+|\\d+)" }
+      ]
+    },
+    "directives": {
+      "patterns": [
+        { "name": "keyword.control.directive.arm", "match": "^\\s*\\.[A-Za-z][\\w.]*" }
+      ]
+    },
+    "labels": {
+      "patterns": [
+        { "name": "entity.name.function.arm", "match": "^\\s*[A-Za-z_.$][\\w.$]*:" }
+      ]
+    },
+    "registers": {
+      "patterns": [
+        { "name": "variable.language.register.arm", "match": "\\b(?:r(?:1[0-5]|[0-9])|[xw](?:[12]?[0-9]|30)|sp|lr|pc|xzr|wzr|[vqdshb](?:[12]?[0-9]|3[01])|cpsr)\\b" }
+      ]
+    },
+    "mnemonics": {
+      "patterns": [
+        { "name": "support.function.mnemonic.arm", "match": "^\\s*[A-Za-z][A-Za-z0-9_.]*" }
+      ]
+    }
+  }
+}
