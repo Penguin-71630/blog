@@ -208,6 +208,38 @@ assert.match(mermaid.code, /<pre><code class="language-mermaid">/);
 assert.doesNotMatch(mermaid.code, /class="astro-code|class="line"/);
 assert.doesNotMatch(mermaid.code, /class="gb-code"/);
 
+const graphviz = await render([
+	'```dot',
+	'digraph process_state {',
+	'  bgcolor="transparent";',
+	'  node [shape=ellipse, color="white", fontcolor="white", fontname="Rubik"];',
+	'  edge [color="#888888", fontcolor="white", fontname="Rubik"];',
+	'  new_ [label="New", color="#b91c1c", penwidth=4];',
+	'  ready [label="Ready"]; running [label="Running"];',
+	'  { rank=same; new_; ready; }',
+	'  new_ -> ready [label="Admitted"];',
+	'  ready -> running [label="Scheduler\\nDispatch"];',
+	'}',
+	'```',
+].join('\n'));
+assert.match(graphviz.code, /class="gb-graphviz"/);
+assert.match(graphviz.code, /<svg\b/);
+assert.doesNotMatch(graphviz.code, /<pre\b/);
+
+const graphvizWarnings = [];
+const originalWarn = console.warn;
+console.warn = (...args) => graphvizWarnings.push(args.join(' '));
+let invalidGraphviz;
+try {
+	invalidGraphviz = await render('```dot\ndigraph {\n```');
+} finally {
+	console.warn = originalWarn;
+}
+assert.match(invalidGraphviz.code, /<pre\b/);
+const graphvizRenderWarnings = graphvizWarnings.filter((warning) => warning.startsWith('[remark-graphviz]'));
+assert.equal(graphvizRenderWarnings.length, 1);
+assert.match(graphvizRenderWarnings[0], /inline-syntax-test\.md/);
+
 const standaloneImage = await render('![Remote image](https://example.com/remote.png)');
 assert.match(standaloneImage.code, /<figure class="gb-figure"><img\b[^>]*alt="Remote image"[^>]*style="max-width:100%;height:auto"[^>]*><\/figure>/);
 assert.doesNotMatch(standaloneImage.code, /<figcaption>/);

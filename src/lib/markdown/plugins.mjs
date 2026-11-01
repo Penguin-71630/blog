@@ -4,6 +4,7 @@ import rehypeWrapTables from './rehype-wrap-tables.mjs';
 import rehypeRemoveEmptyParagraphs from './rehype-remove-empty-paragraphs.mjs';
 import rehypeCodeBlock from './rehype-code-block.mjs';
 import remarkObsidian from './remark-obsidian.mjs';
+import remarkGraphviz from './remark-graphviz.mjs';
 import remarkRubyColor from './remark-ruby-color.mjs';
 import remarkBreaks from 'remark-breaks';
 import remarkTableWidths from './remark-table-widths.mjs';
@@ -11,6 +12,7 @@ import remarkTableWidths from './remark-table-widths.mjs';
 export const markdownRemarkPlugins = [
 	remarkMath,
 	remarkObsidian,
+	remarkGraphviz,
 	remarkRubyColor,
 	remarkBreaks,
 	remarkTableWidths,

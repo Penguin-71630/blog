@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.4",
+    "@viz-js/viz": "^3.31.0",
     "abcjs": "^6.7.2",
     "astro": "^7.4.2",
     "github-slugger": "^2.0.0",

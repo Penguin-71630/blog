@@ -64,6 +64,19 @@
 	align-items: center;
 }
 
+.gb-prose .gb-graphviz {
+	margin: 1.2em 0;
+	display: flex;
+	justify-content: center;
+	overflow-x: auto;
+	break-inside: avoid;
+}
+
+.gb-prose .gb-graphviz svg {
+	max-width: 100%;
+	height: auto;
+}
+
 .text-color-blue {
 	color: var(--text-color-blue);
 }
