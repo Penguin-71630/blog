@@ -14,7 +14,7 @@ export const NAV_ITEMS = [
 	{ key: 'articles', label: 'Articles', href: '/', word: articlesWord, icon: articlesIcon },
 	{ key: 'about', label: 'About Me', href: '/about/', word: aboutWord, icon: aboutIcon },
 	{ key: 'categories', label: 'Categories', href: '/categories/', word: categoriesWord, icon: categoriesIcon },
-	{ key: 'archives', label: 'Archives', href: '/archives/', word: archivesWord, icon: archivesIcon },
+	{ key: 'archives', label: 'Archive', href: '/archives/', word: archivesWord, icon: archivesIcon },
 ] as const satisfies readonly {
 	key: NavKey;
 	label: string;
