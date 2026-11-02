@@ -150,7 +150,7 @@
 
 /* aside & reference: small, low chroma */
 .gb-aside{display:flex;align-items:flex-start;gap:10px;margin:.75em 0;color:var(--muted);font-size:var(--size-small);line-height:1.7}
-.gb-aside-label{display:flex;flex:none;align-items:center;gap:4px;white-space:nowrap;font-weight:700;user-select:none}
+.gb-aside-label{display:flex;flex:none;align-items:center;gap:4px;white-space:nowrap;font-family:var(--font-heading);font-weight:400;color:inherit;user-select:none}
 .gb-aside-label .gb-icon{display:inline-flex;flex-shrink:0;font-size:1em;line-height:1}
 .gb-aside-body{flex:1;min-width:0}
 .gb-aside-body>*:first-child{margin-top:0}
