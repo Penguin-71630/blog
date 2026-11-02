@@ -22,7 +22,7 @@ const posts = defineCollection({
 	schema: z.object({
 		date: dateSchema,
 		publish: z.boolean().default(false),
-		description: z.string().optional(),
+		description: z.string().nullish(),
 	}),
 });
 
