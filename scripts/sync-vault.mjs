@@ -1,7 +1,8 @@
-import { copyFile, lstat, mkdir, readdir, readFile, realpath, rm, stat, utimes } from 'node:fs/promises';
+import { copyFile, lstat, mkdir, open, readdir, readFile, realpath, rm, stat, utimes } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CATEGORY_DEFINITIONS } from '../src/lib/category-definitions.ts';
+import { fillFrontmatter } from './vault-frontmatter.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const outputDir = path.join(repoRoot, 'src/content/posts');
@@ -90,6 +91,35 @@ const markdownFiles = await walkMarkdown(vaultDir);
 const posts = [];
 const attachments = new Map();
 const outputPaths = new Set();
+let filledCount = 0;
+
+for (const file of markdownFiles) {
+	const fileStats = await stat(file.absolutePath);
+	const source = await readFile(file.absolutePath, 'utf8');
+	const birthtime = Number.isFinite(fileStats.birthtimeMs) && fileStats.birthtimeMs !== 0
+		? fileStats.birthtime
+		: fileStats.mtime;
+	const { updated, added } = fillFrontmatter(source, birthtime);
+	if (updated === source) continue;
+
+	const fileHandle = await open(file.absolutePath, 'r+');
+	try {
+		await fileHandle.truncate(0);
+		await fileHandle.writeFile(updated, 'utf8');
+	} finally {
+		await fileHandle.close();
+	}
+	await utimes(file.absolutePath, fileStats.atime, fileStats.mtime);
+	if (fileStats.atimeMs % 1 !== 0 || fileStats.mtimeMs % 1 !== 0) {
+		await utimes(file.absolutePath, fileStats.atimeMs / 1000, fileStats.mtimeMs / 1000);
+	}
+	filledCount += 1;
+	console.log(`Filled frontmatter (${added.join(', ')}): ${file.relativePath.split(path.sep).join('/')}`);
+}
+
+if (filledCount > 0) {
+	console.log(`Filled frontmatter for ${filledCount} notes.`);
+}
 
 for (const file of markdownFiles) {
 	const relativePath = file.relativePath.split(path.sep).join('/');

@@ -13,6 +13,7 @@
     "links:fetch": "node scripts/fetch-link-previews.mjs",
     "sync:vault": "node scripts/sync-vault.mjs",
     "test:markdown": "node scripts/test-inline-syntax.mjs",
+    "test:frontmatter": "TZ=Asia/Taipei node scripts/test-vault-frontmatter.mjs",
     "astro": "astro"
   },
   "dependencies": {
