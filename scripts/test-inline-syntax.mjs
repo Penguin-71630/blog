@@ -68,6 +68,10 @@ assert.match(opaque.code, /<code>\{a\|b\}<\/code>/);
 assert.doesNotMatch(opaque.code, /<ruby>|text-color-/);
 assert.equal((opaque.code.match(/class="katex"/g) ?? []).length, 2);
 
+const dsum = await render('$\\dsum_{i=1}^n i$');
+assert.doesNotMatch(dsum.code, /katex-error|#cc0000/);
+assert.match(dsum.code, /large-op/);
+
 const spanningHighlight = await render('==a **b** *c* [d](https:\/\/example.com) `e` $f$==');
 assert.equal((spanningHighlight.code.match(/<mark>/g) ?? []).length, 1);
 assert.match(spanningHighlight.code, /<mark>a <strong>b<\/strong> <em>c<\/em> <a href="https:\/\/example.com">d<\/a> <code>e<\/code> <span class="katex">[\s\S]*<\/mark>/);

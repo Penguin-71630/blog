@@ -20,7 +20,7 @@ export const markdownRemarkPlugins = [
 ];
 
 export const markdownRehypePlugins = [
-	rehypeKatex,
+	[rehypeKatex, { macros: { '\\dsum': '\\displaystyle\\sum' } }],
 	rehypeWrapTables,
 	rehypeRemoveEmptyParagraphs,
 	rehypeCodeBlock,
